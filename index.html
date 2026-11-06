@@ -49,6 +49,7 @@ main{display:flex;height:calc(100% - 52px)}
 /* edit chrome */
 .ed-mod{position:relative;margin-bottom:22px;border-radius:12px;outline:2px solid transparent;outline-offset:6px;transition:outline-color .12s}
 .ed-mod>.cdc-m{margin-bottom:0}
+.ed-mod.ed-el{margin-bottom:18px}
 .ed-mod:hover{outline-color:#d5e9f7}
 .ed-mod.sel{outline-color:var(--sel)}
 .ed-child{position:relative;margin-bottom:18px;border-radius:6px;outline:1.5px dashed transparent;outline-offset:4px}
@@ -209,6 +210,9 @@ textarea.f-i{min-height:140px;font:12px/1.6 ui-monospace,Menlo,monospace;resize:
   <button data-rt="btn">小按鈕</button>
   <div class="s"></div>
   <button data-rt="clear" title="把選取的文字變回純文字">清除格式</button>
+  <div class="s"></div>
+  <button data-rt="al-left" title="整段靠左">靠左</button>
+  <button data-rt="al-center" title="整段置中">置中</button>
 </div>
 <div class="pop" id="pop">
   <b id="popTitle">插入連結</b>
@@ -252,7 +256,9 @@ base:t=>[`.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif
 .cdc-hl{display:inline;font-weight:bold;color:${t.dark};}
 .cdc-mark{display:inline;color:${t.acc};font-weight:bold;border-bottom:2px solid ${t.mark};padding-bottom:1px;}
 .cdc-btn-sm{display:inline-block;color:${t.link} !important;border:1.5px solid ${t.link};border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
-.cdc-btn-sm:hover{background:${t.link};color:#fff !important;}`,[]],
+.cdc-btn-sm:hover{background:${t.link};color:#fff !important;}
+.cdc-al-c{text-align:center;}
+.cdc-cta.cdc-al-c{justify-content:center;}`,[]],
 card:t=>[`.cdc-hd{background:linear-gradient(to right,${t.g1},${t.g2}) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
 .cdc-hd h2{color:${t.dark} !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
 .cdc-hd.lg{padding:18px 32px;}
@@ -375,7 +381,7 @@ function buildCSS(theme,used,mode){
  }
  return css;
 }
-function usedTypes(mods){const s=new Set();for(const m of mods){s.add(m.type);if(m.type==='card'){(m.children||[]).forEach(c=>s.add(c.type==='btn2'?'btn':c.type));}}return s}
+function usedTypes(mods){const s=new Set();for(const m of mods){s.add(m.type==='btn2'?'btn':m.type);if(m.type==='card'){(m.children||[]).forEach(c=>s.add(c.type==='btn2'?'btn':c.type));}}return s}
 function liveCSS(){ $('#liveCss').textContent=buildCSS(S.theme,new Set(Object.keys(CSS)),'live'); }
 
 /* ========= 渲染工具 ========= */
@@ -383,6 +389,9 @@ let EDIT=false,PV=false; const EXP={ph:true,data:true};
 function T(p,v,ph){return EDIT?` contenteditable="true" spellcheck="false" data-k="${p}" data-ph="${esc(ph||'輸入文字')}">${esc(v)}`:`>${esc(v)}`}
 function H(p,v,ph){return EDIT?` contenteditable="true" spellcheck="false" data-rich="1" data-k="${p}" data-ph="${esc(ph||'輸入內容')}">${v||''}`:`>${v||''}`}
 const TGT=n=>n?' target="_blank"':'';
+const AL=o=>o&&o.align==='center'?' cdc-al-c':'';
+const DEF=t=>MODS[t]||CH[t];
+const isEl=t=>!!CH[t];
 function phSVG(alt,src,forExport){
  const l1=forExport?'請到後台替換圖片':(src?'已設定：'+src.split('/').pop():'圖片（到後台再選取）');
  const l2=(alt||'').slice(0,30);
@@ -406,11 +415,11 @@ function N(kind){if(!NCTX){NCTX={};queueMicrotask(()=>{NCTX=null})}
  return kind+(++NCTX[kind])}
 const CH={
 p:{n:'段落文字',i:'¶',d:'一般說明文字',def:(o={})=>({html:g(o,'html',()=>N('內文')),size:'md'}),
- f:[{k:'html',l:'內容',t:'rich'},{k:'size',l:'字級',t:'select',o:[['sm','小 15px'],['md','中 16px'],['lg','大 17px']]}],
- r:(c,p)=>`<p class="cdc-el cdc-p${c.size&&c.size!=='md'?' '+c.size:''}"${H(p+'html',c.html,'輸入段落文字')}</p>`},
+ f:[{k:'html',l:'內容',t:'rich'},{k:'size',l:'字級',t:'select',o:[['sm','小 15px'],['md','中 16px'],['lg','大 17px']]},{k:'align',l:'對齊',t:'select',o:[['left','靠左'],['center','置中']]}],
+ r:(c,p)=>`<p class="cdc-el cdc-p${c.size&&c.size!=='md'?' '+c.size:''}${AL(c)}"${H(p+'html',c.html,'輸入段落文字')}</p>`},
 lead:{n:'強調大字',i:'A',d:'問候語、對象說明',def:(o={})=>({html:g(o,'html',()=>N('強調文字'))}),
  f:[{k:'html',l:'內容',t:'rich'}],
- r:(c,p)=>`<div class="cdc-el cdc-lead"${H(p+'html',c.html,'強調文字')}</div>`},
+ r:(c,p)=>`<div class="cdc-el cdc-lead${AL(c)}"${H(p+'html',c.html,'強調文字')}</div>`},
 num:{n:'編號項目',i:'①',d:'資格、文件、獎勵對象',def:(o={})=>({style:'num',items:g(o,'items',()=>[{tag:'',html:N('項目'),subs:[]},{tag:'',html:N('項目'),subs:[]}])}),
  f:[{k:'style',l:'編號樣式',t:'select',o:[['num','1 2 3'],['cn','一 二 三'],['gan','甲 乙 丙'],['abc','A B C'],['custom','自訂文字'],['none','不顯示編號']]},
   {k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({tag:'',html:N('項目'),subs:[]}),of:[
@@ -455,8 +464,8 @@ imggrid:{n:'圖片連結格',i:'▦',d:'圖片卡片，點了跳頁',def:(o={})=
   {k:'items',l:'圖片卡',t:'list',add:'新增圖片卡',nu:()=>({img:{src:'',alt:N('圖片')},href:'',nt:false}),of:[IMGF(),{k:'href',l:'連結',t:'url',ph:'/p/412-1004-xxxx.php'},{k:'nt',l:'另開新分頁',t:'check'}]}],
  r:(c,p)=>`<div class="cdc-el cdc-ig c${c.cols||3}">${(c.items||[]).map(it=>`<div class="cdc-ig-col">${it.href?`<a class="cdc-ig-card" href="${esc(it.href)}"${TGT(it.nt)}>${IMG(it.img)}</a>`:`<div class="cdc-ig-card">${IMG(it.img)}</div>`}</div>`).join('')}</div>`},
 btn:{n:'實心按鈕',i:'⬬',d:'漸層底色，報名、問卷',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'solid',dv:false,nt:true}),
- f:[{k:'text',l:'按鈕文字',t:'text'},{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'},{k:'style',l:'樣式',t:'select',o:[['solid','實心漸層'],['outline','外框']]},{k:'lead',l:'按鈕左邊的大字（可留空）',t:'text',ph:'例：歡迎企業踴躍報名！'},{k:'dv',l:'上方加分隔線',t:'check'}],
- r:(c,p)=>`<div class="cdc-el cdc-cta${c.dv?' dv':''}">${c.lead?`<span class="cdc-cta-tx"${T(p+'lead',c.lead)}</span>`:''}<a class="cdc-btn ${c.style||'solid'}" href="${esc(c.href||'#')}"${TGT(c.nt)}${T(p+'text',c.text,'按鈕文字')}</a></div>`},
+ f:[{k:'text',l:'按鈕文字',t:'text'},{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'},{k:'style',l:'樣式',t:'select',o:[['solid','實心漸層'],['outline','外框']]},{k:'lead',l:'按鈕左邊的大字（可留空）',t:'text',ph:'例：歡迎企業踴躍報名！'},{k:'dv',l:'上方加分隔線',t:'check'},{k:'align',l:'對齊',t:'select',o:[['left','靠左'],['center','置中']]}],
+ r:(c,p)=>`<div class="cdc-el cdc-cta${c.dv?' dv':''}${AL(c)}">${c.lead?`<span class="cdc-cta-tx"${T(p+'lead',c.lead)}</span>`:''}<a class="cdc-btn ${c.style||'solid'}" href="${esc(c.href||'#')}"${TGT(c.nt)}${T(p+'text',c.text,'按鈕文字')}</a></div>`},
 btn2:{n:'外框按鈕',i:'⬭',d:'外框樣式，次要連結',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'outline',dv:false,nt:true}),f:[],r:(c,p)=>CH.btn.r(c,p)},
 bullets:{n:'項目符號清單',i:'•',d:'一般圓點清單',def:(o={})=>({items:g(o,'items',()=>[{html:N('清單項目')},{html:N('清單項目')}])}),
  f:[{k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({html:N('清單項目')}),of:[{k:'html',l:'內容',t:'rich'}]}],
@@ -471,13 +480,13 @@ const ADDS={num:['items','新增項目'],info:['items','新增一列'],bullets:[
 const MODS={
 card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',def:(o={})=>({header:'gradient',title:g(o,'title',()=>N(o.big?'大標題':'區塊標題')),big:false,img:{src:'',alt:''},frame:true,children:g(o,'children',()=>[C('p')])}),
  f:[{k:'header',l:'頂部樣式',t:'select',o:[['gradient','漸層標題列'],['image','圖片橫幅'],['none','不要頂部']]},
-  {k:'title',l:'標題',t:'text',show:o=>o.header==='gradient'},{k:'big',l:'大標題（字級較大）',t:'check',show:o=>o.header==='gradient'},
+  {k:'title',l:'標題',t:'text',show:o=>o.header==='gradient'},{k:'big',l:'大標題（字級較大）',t:'check',show:o=>o.header==='gradient'},{k:'align',l:'標題對齊',t:'select',o:[['left','靠左'],['center','置中']],show:o=>o.header==='gradient'},
   {k:'img',l:'頂部圖片',t:'img',show:o=>o.header==='image'},{k:'frame',l:'顯示外框',t:'check',show:o=>o.header==='none'}],
  r:(m,p)=>{let h='';
-  if(m.header==='gradient')h=`<div class="cdc-hd${m.big?' lg':''}"><h2${T('title',m.title,'區塊標題')}</h2></div>`;
+  if(m.header==='gradient')h=`<div class="cdc-hd${m.big?' lg':''}${AL(m)}"><h2${T('title',m.title,'區塊標題')}</h2></div>`;
   else if(m.header==='image')h=`<div class="cdc-hdimg">${IMG(m.img)}</div>`;
   const bc=m.header==='none'?(m.frame?'cdc-bd solo':'cdc-plain'):'cdc-bd';
-  const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c')}${html}${ADDS[c.type]?`<button class="ed-add" data-addlist="children.${i}.${ADDS[c.type][0]}" title="在項目裡按 Ctrl／⌘ + Enter 也能新增下一項">＋ ${ADDS[c.type][1]}</button>`:''}</div>`:html}).join('');
+  const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c',c)}${html}${ADDS[c.type]?`<button class="ed-add" data-addlist="children.${i}.${ADDS[c.type][0]}" title="在項目裡按 Ctrl／⌘ + Enter 也能新增下一項">＋ ${ADDS[c.type][1]}</button>`:''}</div>`:html}).join('');
   return `<div class="cdc-m cdc-card">${h}<div class="${bc}"${EDIT?' data-body="1"':''}>${kids||(EDIT?'<div class="ed-empty">把左邊的「內容元件」拖進來，或選取這張卡片後點元件加入</div>':'')}</div></div>`}},
 grid:{n:'卡片連結格',i:'▥',d:'入口卡片、Logo 連結牆',def:(o={})=>({variant:'text',cols:'3',items:g(o,'items',()=>[0,1,2].map(()=>({text:N('卡片'),href:'',img:{src:'',alt:''},nt:false})))}),
  f:[{k:'variant',l:'卡片樣式',t:'select',o:[['text','純文字卡片'],['logo','Logo＋名稱'],['image','整張圖片']]},{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
@@ -493,7 +502,7 @@ banner:{n:'橫幅圖片',i:'▭',d:'頁首大圖，可加連結',def:(o={})=>({i
  f:[IMGF('img','圖片'),{k:'href',l:'連結（可留空）',t:'url'},{k:'nt',l:'另開新分頁',t:'check',show:o=>o.href}],
  r:(m)=>`<div class="cdc-m cdc-banner">${m.href?`<a href="${esc(m.href)}"${TGT(m.nt)}>${IMG(m.img)}</a>`:IMG(m.img)}</div>`},
 bar:{n:'區段標題條',i:'▬',d:'獨立的漸層標題',def:(o={})=>({text:g(o,'text',()=>N('大標題'))}),
- f:[{k:'text',l:'文字',t:'text'}], r:(m)=>`<div class="cdc-m cdc-bar"${T('text',m.text,'標題')}</div>`},
+ f:[{k:'text',l:'文字',t:'text'},{k:'align',l:'對齊',t:'select',o:[['left','靠左'],['center','置中']]}], r:(m)=>`<div class="cdc-m cdc-bar${AL(m)}"${T('text',m.text,'標題')}</div>`},
 staff:{n:'成員卡片',i:'☺',d:'姓名、聯絡資訊、業務職掌',def:(o={})=>({name:g(o,'name',()=>N('姓名')+' 職稱'),pills:[{html:'連絡電話：'},{html:'電子信箱：'},{html:'職務代理：'}],dutyTitle:'業務職掌',duties:g(o,'duties',()=>[{text:N('職掌')},{text:N('職掌')}])}),
  f:[{k:'name',l:'姓名職稱',t:'text'},{k:'pills',l:'資訊膠囊',t:'list',add:'新增',nu:()=>({html:'資訊'}),of:[{k:'html',l:'內容',t:'rich'}]},{k:'dutyTitle',l:'小標',t:'text'},{k:'duties',l:'職掌',t:'list',add:'新增職掌',nu:()=>({text:N('職掌')}),of:[{k:'text',l:'內容',t:'text'}]}],
  r:(m)=>`<div class="cdc-m cdc-staff"><div class="cdc-staff-name"${T('name',m.name,'姓名')}</div><div class="cdc-staff-info">${(m.pills||[]).map((x,i)=>`<span class="cdc-pill"${H('pills.'+i+'.html',x.html)}</span>`).join('')}</div><div class="cdc-staff-st"${T('dutyTitle',m.dutyTitle)}</div><ul class="cdc-duties">${(m.duties||[]).map((x,i)=>`<li${T('duties.'+i+'.text',x.text)}</li>`).join('')}</ul></div>`},
@@ -505,9 +514,10 @@ html:{n:'自訂 HTML',i:'{ }',d:'放任何現成程式碼',def:()=>({code:'<p>�
 
 /* ========= 快速組合 ========= */
 const C=(type,o={})=>({type,...CH[type].def(o),...o});
+const E=(type,o={})=>({id:uid(),...C(type,o)});
 const M=(type,o={})=>({id:uid(),type,...MODS[type].def(o),...o});
 const BLUEPRINTS=[
- {n:'活動發文',d:'海報圖＋標題＋內文＋按鈕（無外框）',make:()=>[M('card',{header:'none',frame:false,title:'',children:[C('imgs'),C('p',{html:'<strong>'+N('標題')+'</strong>'}),C('p'),C('btn',{style:'outline'})]})]},
+ {n:'活動發文',d:'海報圖＋標題＋內文＋按鈕（無外框）',make:()=>[E('imgs'),E('p',{html:'<strong>'+N('標題')+'</strong>'}),E('p'),E('btn2')]},
  {n:'說明＋按鈕',d:'大標題＋強調文字＋內文＋按鈕',make:()=>[M('card',{big:true,title:N('大標題'),children:[C('lead'),C('p',{size:'lg'}),C('p',{size:'lg'}),C('btn',{dv:true})]})]},
  {n:'獎助方案三段式',d:'編號項目×2＋檔案下載',make:()=>[M('card',{children:[C('num')]}),M('card',{children:[C('num')]}),M('card',{children:[C('docs',{badges:false})]})]},
  {n:'活動介紹',d:'橫幅＋資訊列＋成果照片',make:()=>[M('banner'),M('card',{children:[C('info',{items:[0,1,2].map(i=>({label:N('標籤'),html:N('內文')+(i===2?' <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">連結按鈕</a>':''),notes:[]})).concat([{label:N('標籤'),html:'',notes:[{html:N('注意事項')},{html:N('注意事項')}]}])})]}),M('card',{children:[C('p'),C('imgs',{items:[{img:{src:'',alt:N('圖片')}},{img:{src:'',alt:N('圖片')}}]})]})]},
@@ -534,11 +544,12 @@ function updUndo(){$('#undo').disabled=hi<=0;$('#redo').disabled=hi>=hist.length
 function restore(i){hi=i;S=JSON.parse(hist[hi]);save();if(!modById(sel.mid))sel={mid:null,ci:null};renderAll();updUndo()}
 
 /* ========= 畫布渲染 ========= */
-function bar(name,kind){return `<div class="ed-bar"><span class="ed-h" draggable="true" data-drag="${kind}" title="拖曳移動">⠿</span><span class="nm">${name}</span><button data-a="${kind}up" title="上移">↑</button><button data-a="${kind}down" title="下移">↓</button><button data-a="${kind}dup" title="複製">⧉</button><button data-a="${kind}del" title="刪除">✕</button></div>`}
-function renderMod(m){EDIT=true;const h=MODS[m.type].r(m,'');return `<div class="ed-mod${sel.mid===m.id?' sel':''}" data-mid="${m.id}">${bar(MODS[m.type].n,'m')}${h}</div>`}
+function canAlign(o){const d=o&&DEF(o.type);return !!(d&&d.f&&d.f.some(f=>f.k==='align'))}
+function bar(name,kind,o){return `<div class="ed-bar"><span class="ed-h" draggable="true" data-drag="${kind}" title="拖曳移動">⠿</span><span class="nm">${name}</span>${canAlign(o)?`<button data-a="${kind}align" title="切換靠左／置中">${o.align==='center'?'⇤ 靠左':'⇔ 置中'}</button>`:''}<button data-a="${kind}up" title="上移">↑</button><button data-a="${kind}down" title="下移">↓</button><button data-a="${kind}dup" title="複製">⧉</button><button data-a="${kind}del" title="刪除">✕</button></div>`}
+function renderMod(m){EDIT=true;const d=DEF(m.type);const h=d.r(m,'');const add=isEl(m.type)&&ADDS[m.type]?`<button class="ed-add" data-addlist="${ADDS[m.type][0]}" title="在項目裡按 Ctrl／⌘ + Enter 也能新增下一項">＋ ${ADDS[m.type][1]}</button>`:'';return `<div class="ed-mod${isEl(m.type)?' ed-el':''}${sel.mid===m.id?' sel':''}" data-mid="${m.id}">${bar(d.n,'m',m)}${h}${add}</div>`}
 function renderCanvas(){
  const cv=$('#canvas');
- if(MODE==='preview'){EDIT=false;PV=true;cv.innerHTML=mods().map(m=>MODS[m.type].r(m,'')).join('');PV=false;return}
+ if(MODE==='preview'){EDIT=false;PV=true;cv.innerHTML=mods().map(m=>DEF(m.type).r(m,'')).join('');PV=false;return}
  if(!mods().length){cv.innerHTML=`<div class="start"><h2>從左邊把模組拖進來開始排版</h2><p>或直接套用一個組合／載入現有頁面，再改文字就好。</p><div class="chips">${BLUEPRINTS.map((b,i)=>`<button class="chip" data-bp="${i}">${b.n}</button>`).join('')}<button class="chip" data-opentpl="1" style="border-color:var(--pri);color:var(--pri)">載入現有頁面…</button></div></div>`;return}
  cv.innerHTML=mods().map(renderMod).join('');
 }
@@ -570,7 +581,7 @@ function renderIns(){
  LISTDEF={};const el=$('#ins');const m=modById(sel.mid);
  if(MODE==='preview'){el.innerHTML=`<div class="ins-empty"><b>預覽模式</b><br>這是貼到網站後的樣子。切回「編輯」才能修改。</div>`;return}
  if(!m){el.innerHTML=`<div class="ins-empty"><b>怎麼用</b><br>① 從左邊拖模組到中間（或直接點一下加入）<br>② 文字直接在畫面上點了就能改<br>③ 選取文字會跳出工具列：粗體、強調、加連結<br>④ 清單類（編號項目、標籤資訊列、清單…）：滑過去下方有「＋ 新增」；或在項目裡按 <b>Ctrl／⌘ + Enter</b> 新增下一項，清空後按 <b>Backspace</b> 刪掉這項。Enter 是換行<br>⑤ 點一下模組，這裡會出現連結、圖片、項目增減等設定<br>⑥ 按右上「產出程式碼」複製貼到後台<br><br><b>圖片</b>：路徑可以先空著，輸出會放一張「請替換」的佔位圖，到後台點兩下換成正式圖片即可。</div>`;return}
- const def=MODS[m.type];
+ const def=DEF(m.type);
  if(m.type==='card'&&sel.ci!=null&&m.children[sel.ci]){
   const c=m.children[sel.ci],cd=CH[c.type],base='children.'+sel.ci+'.';
   el.innerHTML=`<div class="ins-hd"><div class="crumb"><a data-selci="-1">← ${esc(m.title||'標題卡片')}</a></div><h2>${cd.i} ${cd.n}</h2><div class="ins-act"><button data-a="cup">↑ 上移</button><button data-a="cdown">↓ 下移</button><button data-a="cdup">⧉ 複製</button><button class="del" data-a="cdel">✕ 刪除</button></div></div><div class="ins-bd">${cd.f.length?F(cd.f,c,base,c):'<div class="f-hint">這個元件沒有可調整的設定。</div>'}</div>`;
@@ -586,7 +597,7 @@ let PALTAB=(()=>{try{return localStorage.getItem('cdc-paltab')||'bp'}catch(e){re
 function renderPal(){
  const tabs=[['bp','快速組合'],['child','內容元件'],['mod','版面模組']];
  const body=PALTAB==='bp'?`<div class="pal-note">點一下就加入一整組，再改文字就好。</div>${BLUEPRINTS.map((b,i)=>`<div class="pal-i" data-bp="${i}" style="cursor:pointer"><b>✦</b><span>${b.n}<small>${b.d}</small></span></div>`).join('')}`
-  :PALTAB==='child'?`<div class="pal-note">放進「標題卡片」裡。拖到空白處會自動包一張新卡片。</div>${Object.entries(CH).map(([k,v])=>`<div class="pal-i child" draggable="true" data-pal="child" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}`
+  :PALTAB==='child'?`<div class="pal-note">可以直接放在頁面上，也可以拖進「標題卡片」裡。</div>${Object.entries(CH).map(([k,v])=>`<div class="pal-i child" draggable="true" data-pal="child" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}`
   :`<div class="pal-note">頁面的大區塊，拖進中間或點一下加入。</div>${Object.entries(MODS).map(([k,v])=>`<div class="pal-i" draggable="true" data-pal="mod" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}`;
  $('#pal').innerHTML=`<div class="pal-tabs">${tabs.map(([k,n])=>`<button data-ptab="${k}" class="${PALTAB===k?'on':''}">${n}</button>`).join('')}</div><div class="pal-list">${body}</div>`;
 }
@@ -598,7 +609,7 @@ let lastGroup=[];
 function insertMods(list,at){const ms=mods();if(at==null){let i=ms.findIndex(m=>m.id===sel.mid);if(i>=0&&lastGroup.includes(sel.mid))i=Math.max(...lastGroup.map(id=>ms.findIndex(m=>m.id===id)));at=i<0?ms.length:i+1}ms.splice(at,0,...list);lastGroup=list.map(m=>m.id);sel={mid:list[0].id,ci:null};commit();renderCanvas();renderIns();setTimeout(()=>{const e=$(`#canvas .ed-mod[data-mid="${list[0].id}"]`);e&&e.scrollIntoView({behavior:'smooth',block:'nearest'})},30)}
 function addChild(type,mid,at){
  let m=modById(mid);
- if(!m||m.type!=='card'){const card=M('card',{children:[]});const ms=mods();let i=ms.findIndex(x=>x.id===mid);ms.splice(i<0?ms.length:i+1,0,card);m=card;at=0}
+ if(!m||m.type!=='card'){insertMods([{id:uid(),...C(type)}],at===undefined?null:at);return}
  if(at==null)at=sel.mid===m.id&&sel.ci!=null?sel.ci+1:m.children.length;
  m.children.splice(at,0,C(type));sel={mid:m.id,ci:at};commit();renderCanvas();renderIns();
 }
@@ -606,6 +617,8 @@ function modAct(a){const ms=mods();const i=ms.findIndex(m=>m.id===sel.mid);if(i<
  if(a==='mup'&&i>0){[ms[i-1],ms[i]]=[ms[i],ms[i-1]]}
  else if(a==='mdown'&&i<ms.length-1){[ms[i+1],ms[i]]=[ms[i],ms[i+1]]}
  else if(a==='mdup'){const c=clone(m);c.id=uid();ms.splice(i+1,0,c);sel={mid:c.id,ci:null}}
+ else if(a==='malign'){m.align=m.align==='center'?'left':'center'}
+ else if(a==='calign'&&m.children&&m.children[sel.ci]){const c=m.children[sel.ci];c.align=c.align==='center'?'left':'center'}
  else if(a==='mdel'){ms.splice(i,1);sel={mid:(ms[i]||ms[i-1]||{}).id||null,ci:null};toast('已刪除（可按 ↶ 復原）')}
  else if(m.type==='card'&&sel.ci!=null){const k=m.children,j=sel.ci;
   if(a==='cup'&&j>0){[k[j-1],k[j]]=[k[j],k[j-1]];sel.ci--}
@@ -624,8 +637,13 @@ function listAct(a,k,i){const m=modById(sel.mid);const arr=getPath(m,k);const f=
  commit();rerenderMod(m.id);renderIns();
 }
 
+function alignFromField(el,v){const inIns=!!el.closest('#ins');const m=modById(inIns?sel.mid:(el.closest('[data-mid]')||{}).dataset?.mid);if(!m)return;
+ const k=el.dataset.k;const mt=k.match(/^children\.(\d+)\./);const owner=mt?m.children[+mt[1]]:m;
+ if(!canAlign(owner)){toast('這個元件不能設定對齊');return}
+ owner.align=v;commit();rerenderMod(m.id);renderIns();
+ if(!inIns){const t=$(`#canvas .ed-mod[data-mid="${m.id}"] [data-k="${k}"]`);t&&t.focus()}}
 /* 清單項目：新增／刪除 */
-function listField(m,path){let fields=MODS[m.type].f,parts=path.split('.');
+function listField(m,path){let fields=DEF(m.type).f,parts=path.split('.');
  if(parts[0]==='children'){const c=m.children[+parts[1]];if(!c)return null;fields=CH[c.type].f;parts=parts.slice(2)}
  let f=null;for(const k of parts){if(/^\d+$/.test(k)){fields=(f&&f.of)||[];continue}f=fields.find(x=>x.k===k);if(!f)return null}
  return f&&f.t==='list'?f:null}
@@ -766,7 +784,7 @@ function pretty(html){
 function exportParts(){
  EDIT=false;const ms=mods();
  const css=buildCSS(S.theme,usedTypes(ms),'export');
- const body=ms.map(m=>MODS[m.type].r(m,'')).join('');
+ const body=ms.map(m=>DEF(m.type).r(m,'')).join('');
  let html=pretty(`<div class="cdc">${body}</div>`);
  if(EXP.data){const d=JSON.stringify({v:1,theme:S.theme,mods:stripPrev(clone(ms)).map(({id,...r})=>r)});html+=`\n<!-- cdc-data:${btoa(unescape(encodeURIComponent(d)))} -->`}
  return {css:`<style type="text/css">\n${css}</style>`,html};
@@ -871,6 +889,7 @@ $('#rt').addEventListener('click',e=>{const b=e.target.closest('[data-rt]');if(!
  if(a==='bold'){document.execCommand('bold');rtTarget.dispatchEvent(new Event('input',{bubbles:true}))}
  else if(a==='hl')wrapSel('cdc-hl');else if(a==='mark')wrapSel('cdc-mark');
  else if(a==='link'||a==='btn')openPop(a);
+ else if(a==='al-left'||a==='al-center')alignFromField(rtTarget,a==='al-center'?'center':'left');
  else if(a==='clear'){const t=getSelection().toString();if(t)document.execCommand('insertText',false,t);else toast('先選取要清除格式的文字');rtTarget.dispatchEvent(new Event('input',{bubbles:true}))}});
 $('#popOk').onclick=()=>applyPop(false);$('#popRm').onclick=()=>applyPop(true);$('#popCancel').onclick=closePop;
 $('#popUrl').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyPop(false)}});
@@ -926,7 +945,7 @@ document.addEventListener('dragstart',e=>{
  const p=e.target.closest&&e.target.closest('[data-pal]');
  const h=e.target.closest&&e.target.closest('.ed-h');
  if(p){drag={src:'pal',kind:p.dataset.pal==='mod'?'mod':'child',type:p.dataset.type}}
- else if(h){const md=h.closest('.ed-mod');if(h.dataset.drag==='m'){drag={src:'mod',kind:'mod',id:md.dataset.mid};e.dataTransfer.setDragImage(md,30,20)}else{const ch=h.closest('.ed-child');drag={src:'child',kind:'child',mid:md.dataset.mid,ci:+ch.dataset.ci};e.dataTransfer.setDragImage(ch,30,20)}}
+ else if(h){const md=h.closest('.ed-mod');if(h.dataset.drag==='m'){drag={src:'mod',kind:isEl((modById(md.dataset.mid)||{}).type)?'child':'mod',id:md.dataset.mid};e.dataTransfer.setDragImage(md,30,20)}else{const ch=h.closest('.ed-child');drag={src:'child',kind:'child',mid:md.dataset.mid,ci:+ch.dataset.ci};e.dataTransfer.setDragImage(ch,30,20)}}
  else{if(e.target.closest&&e.target.closest('#canvas')&&(e.target.tagName==='A'||e.target.tagName==='IMG'))e.preventDefault();drag=null;return}
  e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','cdc')}catch(_){}
  if(MODE!=='edit')setMode('edit');
@@ -956,12 +975,14 @@ $('#stage').addEventListener('drop',e=>{if(!drag)return;e.preventDefault();const
  if(g.src==='pal'){
   if(g.kind==='mod')insertMods([M(g.type)],d.idx);
   else if(d.t==='child')addChild(g.type,d.mid,d.ci);
-  else{const card=M('card',{children:[C(g.type)]});insertMods([card],d.idx);sel={mid:card.id,ci:0};updSel();renderIns()}
+  else insertMods([{id:uid(),...C(g.type)}],d.idx);
   return}
- if(g.src==='mod'){const from=ms.findIndex(m=>m.id===g.id);if(from<0)return;let to=d.t==='mod'?d.idx:ms.findIndex(m=>m.id===d.mid);const [m]=ms.splice(from,1);if(to>from)to--;ms.splice(to,0,m);sel={mid:m.id,ci:null}}
+ if(g.src==='mod'){const from=ms.findIndex(m=>m.id===g.id);if(from<0)return;
+  if(d.t==='child'){const [m]=ms.splice(from,1);const {id,...c}=m;const tgt=modById(d.mid);tgt.children.splice(d.ci,0,c);sel={mid:tgt.id,ci:d.ci}}
+  else{let to=d.idx;const [m]=ms.splice(from,1);if(to>from)to--;ms.splice(to,0,m);sel={mid:m.id,ci:null}}}
  else if(g.src==='child'){const src=modById(g.mid);const [c]=src.children.splice(g.ci,1);
   if(d.t==='child'){const tgt=modById(d.mid);let ci=d.ci;if(tgt===src&&ci>g.ci)ci--;tgt.children.splice(ci,0,c);sel={mid:tgt.id,ci}}
-  else{const card=M('card',{children:[c]});let idx=d.idx;ms.splice(idx,0,card);sel={mid:card.id,ci:0}}}
+  else{const el={id:uid(),...c};ms.splice(d.idx,0,el);sel={mid:el.id,ci:null}}}
  commit();renderCanvas();renderIns();
 });
 
