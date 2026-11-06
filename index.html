@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>處室網頁模組編輯器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ui:#1f2a2e;--ui2:#5b6b70;--bd:#e3e8ea;--bg:#f4f6f7;--pri:#139c8f;--pri2:#e6f6f4;--sel:#2f80ed;--danger:#d94040}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ui);background:var(--bg);font-size:13px;overflow:hidden}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.top{height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:#fff;border-bottom:1px solid var(--bd);position:relative;z-index:5}
+.brand{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-right:6px;white-space:nowrap}
+.brand i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);display:inline-block}
+.tb{height:32px;border:1px solid var(--bd);background:#fff;border-radius:8px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tb:hover{background:#f7f9fa}
+.tb:disabled{opacity:.4;cursor:default}
+.tb.pri{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
+.tb.pri:hover{filter:brightness(1.06)}
+select.tb{padding-right:4px}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;height:32px}
+.seg button{border:0;background:#fff;padding:0 10px}
+.seg button.on{background:var(--pri2);color:var(--pri);font-weight:700}
+.sp{flex:1}
+.vsep{width:1px;height:22px;background:var(--bd);margin:0 2px}
+main{display:flex;height:calc(100% - 52px)}
+.pal{width:228px;flex-shrink:0;background:#fff;border-right:1px solid var(--bd);overflow-y:auto;padding:10px 10px 30px}
+.pal h3{font-size:12px;color:var(--ui2);margin:14px 4px 6px;font-weight:700;letter-spacing:.05em}
+.pal h3:first-child{margin-top:4px}
+.pal-i{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--bd);border-radius:8px;margin-bottom:5px;background:#fff;cursor:grab;user-select:none}
+.pal-i:hover{border-color:#9fd9d2;background:#f6fcfb}
+.pal-i b{width:26px;height:26px;border-radius:6px;background:var(--pri2);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.pal-i span{display:flex;flex-direction:column;line-height:1.3}
+.pal-i small{color:var(--ui2);font-size:11px}
+.pal-i.child b{background:#eef2fb;color:#4a6fb5}
+.pal-note{font-size:11px;color:var(--ui2);margin:2px 4px 8px;line-height:1.5}
+.stage{flex:1;overflow:auto;padding:28px 24px 120px;position:relative}
+.paper{background:#fff;margin:0 auto;max-width:924px;padding:32px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 24px rgba(0,0,0,.04);min-height:400px;transition:max-width .25s}
+.paper.ed-mob{max-width:390px;padding:16px}
+.ins{width:320px;flex-shrink:0;background:#fff;border-left:1px solid var(--bd);overflow-y:auto}
+/* edit chrome */
+.ed-mod{position:relative;margin-bottom:22px;border-radius:12px;outline:2px solid transparent;outline-offset:6px;transition:outline-color .12s}
+.ed-mod>.cdc-m{margin-bottom:0}
+.ed-mod:hover{outline-color:#d5e9f7}
+.ed-mod.sel{outline-color:var(--sel)}
+.ed-child{position:relative;margin-bottom:18px;border-radius:6px;outline:1.5px dashed transparent;outline-offset:4px}
+.ed-child:last-child{margin-bottom:0}
+.ed-child:hover{outline-color:#b9c9e6}
+.ed-child.sel{outline:2px solid #8fb4f0}
+.ed-bar{position:absolute;top:-16px;right:8px;display:none;gap:2px;background:var(--sel);border-radius:7px;padding:2px;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.ed-mod:hover>.ed-bar,.ed-mod.sel>.ed-bar{display:flex}
+.ed-child>.ed-bar{top:-14px;right:4px;background:#5b7fc4}
+.ed-child:hover>.ed-bar,.ed-child.sel>.ed-bar{display:flex}
+.ed-mod:hover .ed-child:not(:hover):not(.sel)>.ed-bar{display:none}
+.ed-bar span,.ed-bar button{color:#fff;background:none;border:0;font-size:12px;height:22px;min-width:22px;padding:0 6px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.ed-bar button:hover{background:rgba(255,255,255,.2)}
+.ed-bar .ed-h{cursor:grab;font-size:13px}
+.ed-bar .nm{font-weight:700;padding-right:8px}
+.ed-empty{border:2px dashed #cfe3e0;border-radius:10px;padding:22px;text-align:center;color:#7a9a96;font-size:14px}
+.ed-pdfph{height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6b8b88;background:repeating-linear-gradient(45deg,#f7fbfb,#f7fbfb 10px,#f0f7f6 10px,#f0f7f6 20px);font-size:14px;text-align:center;padding:10px;word-break:break-all}
+.ed-pdfph small{color:#99b0ad;margin-top:6px}
+.ed-spacer{height:24px;border:1px dashed #d8e1e3;border-radius:6px;color:#a9b8bb;font-size:11px;display:flex;align-items:center;justify-content:center}
+.ed-html{border:1px dashed #c9d3d6;border-radius:8px;padding:12px 14px;background:#fafbfc;font:12px/1.6 ui-monospace,Menlo,monospace;color:#56666b;white-space:pre-wrap;max-height:160px;overflow:hidden}
+.ed-html b{font-family:"Noto Sans TC",sans-serif;color:var(--ui);display:block;margin-bottom:4px}
+#canvas [contenteditable]{outline:none;cursor:text;border-radius:3px}
+#canvas [contenteditable]:hover{box-shadow:0 0 0 1px rgba(47,128,237,.25)}
+#canvas [contenteditable]:focus{box-shadow:0 0 0 2px rgba(47,128,237,.55)}
+[contenteditable]:empty::before{content:attr(data-ph);color:#b5c2c5;font-weight:normal}
+.ed-drop{position:fixed;height:3px;background:var(--sel);border-radius:3px;pointer-events:none;z-index:50;display:none;box-shadow:0 0 0 3px rgba(47,128,237,.18)}
+.ed-dropin{outline:2px solid var(--sel)!important;outline-offset:2px}
+.start{text-align:center;padding:50px 20px;color:var(--ui2)}
+.start h2{color:var(--ui);font-size:20px;margin:0 0 8px}
+.start p{margin:0 0 20px;line-height:1.8}
+.start .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:620px;margin:0 auto}
+.chip{border:1px solid var(--bd);background:#fff;border-radius:20px;padding:6px 14px}
+.chip:hover{border-color:var(--pri);color:var(--pri)}
+/* inspector */
+.ins-hd{padding:14px 16px 10px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:#fff;z-index:2}
+.ins-hd .crumb{font-size:12px;color:var(--ui2);margin-bottom:4px}
+.ins-hd .crumb a{color:var(--sel);cursor:pointer}
+.ins-hd h2{margin:0;font-size:15px;display:flex;align-items:center;gap:6px}
+.ins-act{display:flex;gap:4px;margin-top:8px}
+.ins-act button{border:1px solid var(--bd);background:#fff;border-radius:6px;padding:3px 8px;font-size:12px}
+.ins-act button:hover{background:#f5f7f8}
+.ins-act .del{color:var(--danger)}
+.ins-bd{padding:12px 16px 40px}
+.ins-empty{padding:30px 20px;color:var(--ui2);line-height:1.9}
+.ins-empty b{color:var(--ui)}
+.f{margin-bottom:12px}
+.f-l{display:block;font-weight:700;font-size:12px;margin-bottom:5px}
+.f-l small{font-weight:400;color:var(--ui2);margin-left:6px}
+.f-i{width:100%;border:1px solid var(--bd);border-radius:7px;padding:6px 9px;background:#fff;min-height:32px}
+.f-i:focus{outline:none;border-color:#7fb8ea;box-shadow:0 0 0 3px rgba(47,128,237,.12)}
+textarea.f-i{min-height:140px;font:12px/1.6 ui-monospace,Menlo,monospace;resize:vertical}
+.f-rich{line-height:1.7;min-height:54px}
+.f-rich .cdc-hl{font-weight:bold;color:#1a5f5a}.f-rich .cdc-mark{border-bottom:2px solid #f5e124;font-weight:bold}
+.f-rich a{color:#1a73c7}
+.f-c{display:flex;align-items:center;gap:7px;margin-bottom:12px;cursor:pointer;font-weight:500}
+.f-hint{font-size:11.5px;color:var(--ui2);background:#f6f8f9;border-radius:7px;padding:8px 10px;line-height:1.7;margin-bottom:12px}
+.f-img-row{display:flex;gap:8px}
+.f-thumb{width:64px;height:64px;object-fit:contain;border:1px solid var(--bd);border-radius:7px;background:#f7f9fa;flex-shrink:0}
+.f-img-row>div{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.f-img-row input{width:100%;border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:12px}
+.f-img-act{display:flex;gap:5px}
+.mini{font-size:11px;border:1px solid var(--bd);border-radius:5px;padding:2px 7px;background:#fff;cursor:pointer;color:var(--ui2)}
+.mini:hover{background:#f5f7f8}
+.li{border:1px solid var(--bd);border-radius:8px;margin-bottom:6px;background:#fff}
+.li[open]{border-color:#cbd6da}
+.li>summary{list-style:none;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 8px;cursor:pointer;user-select:none}
+.li>summary::-webkit-details-marker{display:none}
+.li-n{width:18px;height:18px;border-radius:50%;background:#eef2f3;font-size:10.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ui2)}
+.li-s{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px}
+.li-a{display:flex;gap:1px;opacity:.55}
+.li>summary:hover .li-a{opacity:1}
+.li-a button{border:0;background:none;width:21px;height:21px;border-radius:4px;font-size:11px;padding:0}
+.li-a button:hover{background:#eef2f3}
+.li-a .x:hover{color:var(--danger)}
+.li-b{padding:4px 10px 2px;border-top:1px solid #eef2f3}
+.li-b .li-b{padding-left:6px}
+.li-add{width:100%;border:1px dashed #b9cfd2;background:#fbfdfd;border-radius:7px;padding:5px;color:var(--pri);font-weight:500}
+.li-add:hover{background:var(--pri2)}
+.kids{margin:6px 0 12px}
+.kid{display:flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:7px;padding:5px 6px 5px 9px;margin-bottom:5px;cursor:pointer}
+.kid:hover{border-color:#8fb4f0;background:#f7faff}
+.kid .k1{font-weight:700;white-space:nowrap}
+.kid .k2{color:var(--ui2);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px}
+.sec{font-size:12px;font-weight:700;color:var(--ui2);margin:16px 0 8px;letter-spacing:.04em;border-top:1px solid #eef2f3;padding-top:14px}
+/* rich toolbar */
+.rt{position:fixed;display:none;z-index:60;background:#1f2a2e;border-radius:8px;padding:3px;gap:2px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.rt button{background:none;border:0;color:#fff;height:26px;padding:0 8px;border-radius:5px;font-size:12px;white-space:nowrap}
+.rt button:hover{background:rgba(255,255,255,.15)}
+.rt .s{width:1px;background:rgba(255,255,255,.2);margin:4px 2px}
+.pop{position:fixed;display:none;z-index:61;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;width:300px;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.pop input[type=text]{width:100%;border:1px solid var(--bd);border-radius:6px;padding:6px 8px;margin:4px 0 8px}
+.pop .row{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+.pop .row button{border:1px solid var(--bd);background:#fff;border-radius:6px;padding:4px 10px}
+.pop .row .ok{background:var(--pri);color:#fff;border-color:var(--pri)}
+.pop .row .rm{margin-right:auto;color:var(--danger)}
+/* modal */
+.mdl{position:fixed;inset:0;background:rgba(20,30,34,.4);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+.mdl.on{display:flex}
+.mdl-box{background:#fff;border-radius:14px;width:min(820px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.mdl-box.sm{width:min(440px,100%)}
+.mdl-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center}
+.mdl-hd h2{margin:0;font-size:16px;flex:1}
+.mdl-hd button{border:0;background:none;font-size:18px;color:var(--ui2)}
+.mdl-bd{padding:16px 20px;overflow:auto}
+.mdl-ft{padding:12px 20px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.code{width:100%;height:46vh;border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font:12px/1.55 ui-monospace,Menlo,monospace;background:#fafbfc;resize:vertical;white-space:pre;tab-size:2}
+.opts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:10px}
+.opts label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.note{font-size:12px;color:var(--ui2);line-height:1.8;background:#f6f8f9;border-radius:8px;padding:10px 12px;margin-top:10px}
+.tabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--bd)}
+.tabs button{border:0;background:none;padding:8px 12px;border-bottom:2px solid transparent;color:var(--ui2)}
+.tabs button.on{color:var(--pri);border-bottom-color:var(--pri);font-weight:700}
+.tplgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.tpl{border:1px solid var(--bd);border-radius:9px;padding:10px 12px;background:#fff;text-align:left;line-height:1.5}
+.tpl:hover{border-color:var(--pri);background:#f6fcfb}
+.tpl.on{border-color:var(--pri);box-shadow:0 0 0 2px rgba(19,156,143,.2)}
+.tpl small{display:block;color:var(--ui2);font-size:11px}
+.fl{display:block;font-weight:700;margin:10px 0 6px}
+.fi{width:100%;border:1px solid var(--bd);border-radius:7px;padding:7px 10px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#1f2a2e;color:#fff;padding:9px 16px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none;z-index:90}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.preview #canvas{pointer-events:auto}
+@media (max-width:1100px){.pal{width:190px}.ins{width:280px}.brand span{display:none}}
+</style>
+<style id="liveCss"></style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><i></i><span>處室網頁模組編輯器</span></div>
+  <select class="tb" id="pageSel" title="切換頁面"></select>
+  <button class="tb" id="pageMenu" title="頁面管理">⋯</button>
+  <div class="vsep"></div>
+  <button class="tb" id="undo" title="復原 (Ctrl+Z)">↶</button>
+  <button class="tb" id="redo" title="重做 (Ctrl+Shift+Z)">↷</button>
+  <div class="vsep"></div>
+  <div class="seg" id="modeSeg"><button data-mode="edit" class="on">編輯</button><button data-mode="preview">預覽</button></div>
+  <div class="seg" id="devSeg"><button data-dev="pc" class="on">桌面</button><button data-dev="mob">手機</button></div>
+  <select class="tb" id="themeSel" title="配色"></select>
+  <div class="sp"></div>
+  <button class="tb" id="btnImport">匯入舊程式碼</button>
+  <button class="tb pri" id="btnExport">產出程式碼</button>
+</header>
+<main>
+  <aside class="pal" id="pal"></aside>
+  <section class="stage" id="stage"><div class="paper" id="paper"><div id="canvas" class="cdc"></div></div></section>
+  <aside class="ins" id="ins"></aside>
+</main>
+<div class="ed-drop" id="drop"></div>
+<div class="rt" id="rt">
+  <button data-rt="bold" title="粗體"><b>B</b></button>
+  <button data-rt="hl" title="深色粗體強調">強調</button>
+  <button data-rt="mark" title="主色＋黃底線">螢光</button>
+  <div class="s"></div>
+  <button data-rt="link">連結</button>
+  <button data-rt="btn">小按鈕</button>
+  <div class="s"></div>
+  <button data-rt="clear" title="把選取的文字變回純文字">清除格式</button>
+</div>
+<div class="pop" id="pop">
+  <b id="popTitle">插入連結</b>
+  <input type="text" id="popUrl" placeholder="https://… 或 /p/412-1004-xxxx.php">
+  <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="popNew" checked> 另開新分頁</label>
+  <div class="row"><button class="rm" id="popRm">移除連結</button><button id="popCancel">取消</button><button class="ok" id="popOk">確定</button></div>
+</div>
+<div class="mdl" id="mdl"><div class="mdl-box" id="mdlBox"><div class="mdl-hd"><h2 id="mdlTitle"></h2><button id="mdlX">✕</button></div><div class="mdl-bd" id="mdlBd"></div><div class="mdl-ft" id="mdlFt"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========= 現有頁面範本（來自 Google 文件「網頁編輯」） ========= */
+const TEMPLATES = [{"name": "企業好夥伴", "html": "<div class=\"pdf-wrap\">\n<div class=\"pdf-header\"><span>企業夥伴招募計畫<\/span> <a href=\"/var/file/4/1004/img/226/569905170.pdf\" target=\"_blank\">下載 PDF<\/a><\/div>\n\n<div class=\"pdf-viewer\" style=\"text-align: center;\"><iframe src=\"/var/file/4/1004/img/226/569905170.pdf#zoom=55\"><\/iframe><\/div>\n<\/div>\n\n<p>&nbsp;<\/p>"}, {"name": "探索好未來", "html": "<div class=\"explore-wrap\">\n<div class=\"row\">\n<div class=\"col-sm-4\"><a class=\"explore-card\" href=\"/p/412-1004-2455.php\">校園徵才活動<\/a><\/div>\n\n<div class=\"col-sm-4\"><a class=\"explore-card\" href=\"/p/412-1004-3075.php\">校內工讀機會調查<\/a><\/div>\n\n<div class=\"col-sm-4\"><a class=\"explore-card\" href=\"/p/412-1004-3107.php\">就業求職<br />\n相關資源連結<\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "校園徵才活動", "html": "<div class=\"invite-wrap\">\n<div class=\"invite-banner\"><img alt=\"\" src=\"/var/file/4/1004/img/217/531777414.jpg\" /><\/div>\n\n<div class=\"invite-body\">\n<div class=\"invite-greeting\">尊敬的企業主　您好<\/div>\n\n<p>宜蘭大學長期以來與不同規模的企業緊密合作，<\/p>\n\n<p>為了讓更多企業有機會受益於本校優秀人才，並與學生攜手實踐企業與自身目標。<\/p>\n\n<p>我們將於 <span class=\"invite-highlight\">115年03月25日（星期三）<\/span>，辦理「2026校園徵才博覽會」。<\/p>\n\n<div class=\"invite-cta\"><span class=\"invite-cta-text\">歡迎企業踴躍報名！<\/span> <a class=\"invite-btn\" href=\"https://docs.google.com/forms/d/1_6gzGbwz1ZEyLJedZzQmEdkaPHtcoPaJl5vVsltS_Vc/edit\" target=\"_blank\">立即報名<\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "校園工讀機會調查", "html": "<div class=\"survey-wrap\">\n<div class=\"survey-header\">\n<h2>校內工讀機會調查<\/h2>\n<\/div>\n\n<div class=\"survey-body\">\n<div class=\"survey-meta\">調查對象：<span>本校各單位、師長<\/span><\/div>\n\n<p>為提供同學們更完善的服務，如有計畫案、專案活動或其他工讀生需求，請協助提供招募資訊。<\/p>\n\n<p>本項資料彙整後將定期更新於職涯發展中心網頁，以提供本校學生校內工讀機會。<\/p>\n\n<div class=\"survey-cta\"><a class=\"survey-btn\" href=\"https://forms.gle/1EQWoCmXxAdcYv6i9\" target=\"_blank\">請由此進入校內工讀需求表<\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "就業求職相關資源連結", "html": "<div class=\"link-section-title\">就業求職相關資源連結<\/div>\n\n<div class=\"link-wrap\">\n<div class=\"row\">\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.yda.gov.tw/\"><img alt=\"教育部青年發展署\" src=\"/var/file/4/1004/img/217/248053263.png\" /> <span class=\"link-card-label\"><strong>教育部青年發展署<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.mol.gov.tw/\"><img alt=\"勞動部\" src=\"/var/file/4/1004/img/217/586419939.png\" /> <span class=\"link-card-label\"><strong>勞動部<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.wda.gov.tw/\"><img alt=\"勞動力發展署全球資訊網\" src=\"/var/file/4/1004/img/217/441596750.png\" /> <span class=\"link-card-label\"><strong>勞動力發展署全球資訊網<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.taiwanjobs.gov.tw/Internet/index/index.aspx\"><img alt=\"台灣就業通網\" src=\"/var/file/4/1004/img/217/129473940.png\" /> <span class=\"link-card-label\"><strong>台灣就業通網<\/strong><\/span> <\/a><\/div>\n<\/div>\n\n<div class=\"row\">\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://rich.yda.gov.tw/rich/#/\"><img alt=\"Rich職場體驗網\" src=\"/var/file/4/1004/img/217/846829318.png\" /> <span class=\"link-card-label\"><strong>Rich職場體驗網<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.gov.tw/\"><img alt=\"職業訓練-電子化政府入口網\" src=\"/var/file/4/1004/img/217/326562072.png\" /> <span class=\"link-card-label\"><strong>職業訓練 - 電子化政府入口網<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://www.itri.org.tw/\"><img alt=\"工業技術研究院\" src=\"/var/file/4/1004/img/217/259460501.png\" /> <span class=\"link-card-label\"><strong>工業技術研究院<\/strong><\/span> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"http://ttqs.wda.gov.tw/\"><img alt=\"TTQS訓練品質系統實施計畫\" src=\"/var/file/4/1004/img/217/TTQS_logo.png\" /> <span class=\"link-card-label\"><strong>TTQS訓練品質系統實施計畫<\/strong><\/span> <\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "聯絡我們", "html": "<div class=\"contact-wrap\">\n<div class=\"contact-header\">\n<h2>聯絡我們<\/h2>\n<\/div>\n\n<div class=\"contact-body\">\n<div class=\"contact-item\"><span class=\"contact-label\">聯絡信箱<\/span>\n\n<div class=\"contact-value\"><a href=\"mailto:niucss@niu.edu.tw\">niucss@niu.edu.tw<\/a><\/div>\n<\/div>\n\n<div class=\"contact-item\"><span class=\"contact-label\">意見信箱<\/span>\n\n<div class=\"contact-value\"><a href=\"https://contactus.niu.edu.tw/email/Default.aspx?mail=aa@niu.edu.tw\" target=\"_blank\">線上意見表單 <\/a><\/div>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "多元學習認證專區", "html": "<div class=\"docs-wrap\">\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>法規與作業要點<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"提升學生多元學習能力實施要點.pdf\" href=\"/var/file/4/1004/img/749400839.pdf\" target=\"_blank\">提升學生多元學習能力實施要點<\/a><\/li>\n\t<li><a download=\"學生多元學習認證要點.pdf\" href=\"/var/file/4/1004/img/507/265130444.pdf\" target=\"_blank\">學生多元學習認證要點<\/a><\/li>\n\t<li><a download=\"學生多元學習認證作業.pdf\" href=\"/var/file/4/1004/img/253114449.pdf\" target=\"_blank\">學生多元學習認證作業<\/a><\/li>\n\t<li><a download=\"學生多元學習時數認證說明.pptx\" href=\"/var/file/4/1004/img/872030822.pptx\" target=\"_blank\">學生多元學習時數認證說明<\/a><\/li>\n\t<li><a download=\"查詢學生個人多元學習時數方法.pdf\" href=\"/var/file/4/1004/img/226/361741170.pdf\" target=\"_blank\">查詢學生個人多元學習時數方法<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>申請表單<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"多元學習認證相關系統服務申請單.doc\" href=\"/var/file/4/1004/img/217/213119451.doc\" target=\"_blank\">多元學習認證相關系統服務申請單<\/a><\/li>\n\t<li><a download=\"學生校外多元學習認證採認申請表.docx\" href=\"/var/file/4/1004/img/217/149463473.docx\" target=\"_blank\">學生校外多元學習認證採認申請表<\/a><\/li>\n\t<li><a download=\"學生多元學習認證紀錄證明文件申請表.pdf\" href=\"/var/file/4/1004/img/441852061.pdf\" target=\"_blank\">學生多元學習認證紀錄證明文件申請表<\/a><\/li>\n\t<li><a download=\"原就讀本校學生多元學習認證時數轉入申請表.docx\" href=\"/var/file/4/1004/img/217/141697030.docx\" target=\"_blank\">原就讀本校學生多元學習認證時數轉入申請表<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "畢業生流向調查", "html": "<div class=\"survey2-wrap\">\n<div class=\"survey2-banner\"><img alt=\"畢業生流向調查\" src=\"/var/file/4/1004/img/819282437.jpg\" /><\/div>\n\n<div class=\"survey2-header\">\n<h2>畢業生流向調查<\/h2>\n<\/div>\n\n<div class=\"survey2-body\">\n<div class=\"survey2-item\"><span class=\"survey2-label\">調查對象<\/span>\n\n<div class=\"survey2-content\">113學年度（114年6月畢業）、<br />\n111學年度（112年6月畢業）、<br />\n109學年度（110年6月畢業）之<strong>本國籍畢業生<\/strong><\/div>\n<\/div>\n\n<div class=\"survey2-item\"><span class=\"survey2-label\">調查期間<\/span>\n\n<div class=\"survey2-content\">115年9月9日 ～ 11月3日<\/div>\n<\/div>\n\n<div class=\"survey2-item\"><span class=\"survey2-label\">問卷網址<\/span>\n\n<div class=\"survey2-content\"><a class=\"survey2-btn\" href=\"http://ccsys.niu.edu.tw/MvcTeam/QuesGrad/StdIndex\" target=\"_blank\">請由此進入問卷系統<\/a><\/div>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "深耕助學專區", "html": "<div class=\"deep-wrap\"><!-- 計畫說明 -->\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>關於深耕計畫 ／ 附錄一　完善就學協助機制<\/h2>\n<\/div>\n\n<div class=\"deep-body\">\n<p class=\"deep-intro\">為配合教育部推動高等教育深耕計畫提升高教公共性政策，擬透過課業輔導、課程學習、實習機會、職涯規劃輔導等輔導機制直接幫助經濟不利學生，以學習替代工讀，使經濟不利學生得以安心就學。<\/p>\n<\/div>\n<\/div>\n<!-- 獎勵對象 -->\n\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>獎勵對象<\/h2>\n<\/div>\n\n<div class=\"deep-body\">\n<ul class=\"deep-list\">\n\t<li><span class=\"deep-num\">一<\/span>\n\n\t<div>低收入戶學生、中低收入戶學生、身心障礙學生及身心障礙人士子女、特殊境遇家庭子女孫子女學生、原住民學生等符合教育部法令規定學雜費減免資格學生。<\/div>\n\t<\/li>\n\t<li><span class=\"deep-num\">二<\/span>\n\t<div>獲教育部大專校院不利處境學生助學計畫補助學生。<\/div>\n\t<\/li>\n\t<li><span class=\"deep-num\">三<\/span>\n\t<div>懷孕學生、扶養未滿三歲子女之學生。<\/div>\n\t<\/li>\n\t<li><span class=\"deep-num\">四<\/span>\n\t<div>符合衛生福利部所定青(少)年照顧者之學生。<\/div>\n\t<\/li>\n\t<li><span class=\"deep-num\">五<\/span>\n\t<div>符合本校自訂標準經濟不利學生資格者：\n\t<ul class=\"deep-sub\">\n\t\t<li>在校期間曾符合教育部法令規定中低收入戶學雜費減免資格學生，後因地方政府調整不動產現值影響而未取得中低收入戶學雜費減免資格者。<\/li>\n\t\t<li>符合第一款及第二款獎勵對象，惟因轉學生、本校校內轉系、復學生等情形，致就讀之相當學期已辦理學雜費減免及教育部弱勢助學金而無法重複辦理者。<\/li>\n\t\t<li>經濟困難或家庭突遭變故經校內程序審核通過者。<\/li>\n\t<\/ul>\n\t<\/div>\n\t<\/li>\n\t<li><span class=\"deep-num\">六<\/span>\n\t<div>符合以上條件之大學部及碩士班在校學生（不含碩士在職專班），依經濟條件較為不利者優先獎勵。<\/div>\n\t<\/li>\n<\/ul>\n<\/div>\n<\/div>\n<!-- 輔導機制 -->\n\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>輔導機制<\/h2>\n<\/div>\n\n<div class=\"deep-body\">\n<div class=\"mech-row\">\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-2992.php\"><img alt=\"輔導機制1\" src=\"/var/file/4/1004/img/217/134851208.jpg\" /> <\/a><\/div>\n\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-2993.php\"><img alt=\"輔導機制2\" src=\"/var/file/4/1004/img/217/63511630.jpg\" /> <\/a><\/div>\n\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-2994.php\"><img alt=\"輔導機制3\" src=\"/var/file/4/1004/img/217/966373081.jpg\" /> <\/a><\/div>\n\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-2995.php\"><img alt=\"職涯規劃輔導\" src=\"/var/file/4/1004/img/217/248826344.png\" /> <\/a><\/div>\n\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-3421.php\"><img alt=\"揪團共學\" src=\"/var/file/4/1004/img/217/734187586.png\" /> <\/a><\/div>\n\n<div class=\"mech-col\"><a class=\"mech-card\" href=\"/p/412-1004-2997.php\"><img alt=\"實踐永續責任\" src=\"/var/file/4/1004/img/217/707259153.png\" /> <\/a><\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 資料下載 -->\n\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>資料下載<\/h2>\n<\/div>\n\n<div class=\"deep-body\">\n<ul class=\"docs-list\">\n\t<li>\n\t<div><a href=\"/var/file/4/1004/img/226/779896772.pdf\" target=\"_blank\" title=\"國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點\">國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點 <\/a> <span class=\"docs-note\">（115學年度第5次行政會議修正通過）<\/span><\/div>\n\t<\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/611912559.zip\" target=\"_blank\">115年度高教深耕計畫提升高教公共性獎勵要點申請表 <\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/217/1080187502A.pdf\" target=\"_blank\">國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點免稅證明 <\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<!-- 說明圖片 -->\n\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>申請須知<\/h2>\n<\/div>\n\n<div class=\"deep-body\"><img alt=\"115年深耕附錄1申請須知\" class=\"deep-img\" src=\"/var/file/4/1004/img/217/474662729.jpg\" /> <img alt=\"115年揪團共學主題\" class=\"deep-img\" src=\"/var/file/4/1004/img/217/859983984.jpg\" /><\/div>\n<\/div>\n<!-- 其他相關網站 -->\n\n<div class=\"deep-block\">\n<div class=\"deep-header\">\n<h2>其他相關網站<\/h2>\n<\/div>\n\n<div class=\"deep-body\">\n<ul class=\"site-list\">\n\t<li><a href=\"https://www.edu.tw/helpdreams/Default.aspx\" target=\"_blank\">圓夢助學網<\/a>\n\n\t<div class=\"site-desc\">教育部匯集各項獎、助學資訊所設立之網站，結合政府、民間資源，為有需求的青年朋友提供必要的支援。<\/div>\n\t<\/li>\n\t<li><a href=\"http://sme.moeasmea.gov.tw/startup/\" target=\"_blank\">青年創業及圓夢網<\/a><\/li>\n\t<li><a href=\"http://www.yda.gov.tw/index.aspx?SiteID=563426067575657313\" target=\"_blank\">教育部青年發展署<\/a><\/li>\n\t<li><a href=\"https://lic.niu.edu.tw/files/11-1010-2304.php\" target=\"_blank\">宜大磨課師<\/a><\/li>\n\t<li><a href=\"http://ocw.niu.edu.tw/moodle/\" target=\"_blank\">宜大開放式課程<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "雁行課業輔導", "html": "<div class=\"tutor-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"tutor-block\">\n<div class=\"tutor-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"tutor-body\">\n<div class=\"tutor-item\"><span class=\"tutor-num\">1<\/span>\n\n<div class=\"tutor-text\">課業輔導科目成績為全班排名百分之十以內，或經該科目任課老師推薦且符合本要點第二點獎勵之對象者，可申請擔任<span class=\"tutor-highlight\">雁行課業輔導員<\/span>，每月獎助「<span class=\"tutor-highlight\">雁行輔導獎助學金<\/span>」<span class=\"tutor-highlight\">六千元<\/span>，表現優良者將優先任用。<\/div>\n<\/div>\n\n<div class=\"tutor-item\"><span class=\"tutor-num\">2<\/span>\n\n<div class=\"tutor-text\">參加課業輔導者，科目以必修科目期中考成績不及格或重修者為優先，每月獎助「<span class=\"tutor-highlight\">安心學習獎助學金<\/span>」<span class=\"tutor-highlight\">三千元<\/span>，每人至多申請二科。受課業輔導時段應按時出席，如因故無法出席時，均應事前辦妥請假手續，無故缺席者，不得申請次月「安心學習獎助學金」。<\/div>\n<\/div>\n\n<div class=\"tutor-item\"><span class=\"tutor-num\">3<\/span>\n\n<div class=\"tutor-text\">雁行課輔科目重修之學期成績及格，頒發「<span class=\"tutor-highlight\">進步獎助學金<\/span>」<span class=\"tutor-highlight\">三千元<\/span>。<\/div>\n<\/div>\n\n<div class=\"tutor-item\"><span class=\"tutor-num\">4<\/span>\n\n<div class=\"tutor-text\">申請本項獎助學金者，除「進步獎助學金」外，其餘皆須按月申請獎助學金。<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"tutor-block\">\n<div class=\"tutor-header\">\n<h2>2. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"tutor-body\">\n<div class=\"tutor-item\"><span class=\"tutor-num\">1<\/span>\n\n<div class=\"tutor-text\">申請「<span class=\"tutor-highlight\">雁行輔導獎學金<\/span>」者須檢附本要點之一般申請表及雁行課業輔導員申請表，核定通過後依雁行課業輔導員輔導心得報告按月申請獎助學金。<\/div>\n<\/div>\n\n<div class=\"tutor-item\"><span class=\"tutor-num\">2<\/span>\n\n<div class=\"tutor-text\">申請「<span class=\"tutor-highlight\">安心學習獎助學金<\/span>」者須檢附本要點之一般申請表及參加雁行課業輔導學習心得報告按月申請獎助學金。<\/div>\n<\/div>\n\n<div class=\"tutor-item\"><span class=\"tutor-num\">3<\/span>\n\n<div class=\"tutor-text\">申請「<span class=\"tutor-highlight\">進步獎助學金<\/span>」者須檢附本要點之一般申請表及成績單。<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"tutor-block\">\n<div class=\"tutor-header\">\n<h2>3. 附件下載<\/h2>\n<\/div>\n\n<div class=\"tutor-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/217/203160263.docx\" target=\"_blank\">雁行課業輔導員申請表<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/604467446.doc\" target=\"_blank\">雁行課業輔導員心得報告表<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/172669069.doc\" target=\"_blank\">參加雁行課業輔導心得報告表<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "國家考試及證照輔導", "html": "<div class=\"cert-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"cert-block\">\n<div class=\"cert-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"cert-body\">\n<div class=\"cert-item\"><span class=\"cert-num\">1<\/span>\n\n<div class=\"cert-text\">參加校內各單位辦理之國家考試或證照輔導相關課程學習後，須報考並通過考試，<strong>全額補助報名費用<\/strong>。<\/div>\n<\/div>\n\n<div class=\"cert-item\"><span class=\"cert-num\">2<\/span>\n\n<div class=\"cert-text\">參加校內各單位辦理之相關課程學習後，須報考相關專業之國家考試或證照考試並取得合格證明者，分級獎助如下：\n<table class=\"award-table\">\n\t<thead>\n\t\t<tr>\n\t\t\t<th>類別<\/th>\n\t\t\t<th>項目<\/th>\n\t\t\t<th>獎助金額<\/th>\n\t\t<\/tr>\n\t<\/thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td rowspan=\"4\"><span class=\"award-cat\">甲、國家考試<\/span><\/td>\n\t\t\t<td>公務人員高等考試三級或相當等級<\/td>\n\t\t\t<td><span class=\"award-amount\">10,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>公務人員普通考試或相當等級<\/td>\n\t\t\t<td><span class=\"award-amount\">8,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>公務人員初等考試或相當等級<\/td>\n\t\t\t<td><span class=\"award-amount\">5,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>其他相當等級考試（由各學系自訂，經系務會議通過）<\/td>\n\t\t\t<td><span class=\"award-amount\">至多 10,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td rowspan=\"2\"><span class=\"award-cat\">乙、專業／技術士<\/span><\/td>\n\t\t\t<td>一般類專業證照、丙級技術士或同級<\/td>\n\t\t\t<td><span class=\"award-amount\">1,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>乙級技術士或同級<\/td>\n\t\t\t<td><span class=\"award-amount\">5,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td rowspan=\"3\"><span class=\"award-cat\">丙、外國語言<\/span><\/td>\n\t\t\t<td>GEPT 中級複試 / 相當 CEFR B1 或其他外語同等級<\/td>\n\t\t\t<td><span class=\"award-amount\">3,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>GEPT 中高級初試或其他外語同等級<\/td>\n\t\t\t<td><span class=\"award-amount\">4,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>GEPT 中高級複試以上 / 相當 CEFR B2 或其他外語同等級<\/td>\n\t\t\t<td><span class=\"award-amount\">5,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td rowspan=\"3\" style=\"background-color:#fff\"><span class=\"award-cat\">丁、本土語言<\/span><\/td>\n\t\t\t<td>原住民語／閩南語／客家語 初級認證<\/td>\n\t\t\t<td><span class=\"award-amount\">1,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>原住民語／閩南語／客家語 中級認證<\/td>\n\t\t\t<td><span class=\"award-amount\">3,000 元<\/span><\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>原住民語／閩南語／客家語 中高級認證<\/td>\n\t\t\t<td><span class=\"award-amount\">5,000 元<\/span><\/td>\n\t\t<\/tr>\n\t<\/tbody>\n<\/table>\n<\/div>\n<\/div>\n\n<div class=\"cert-item\"><span class=\"cert-num\">3<\/span>\n\n<div class=\"cert-text\">同類科每張（級）證照或國家考試錄取證明以申請<strong>一次<\/strong>為限，且不得向本校其他單位重覆申請獎助。<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"cert-block\">\n<div class=\"cert-header\">\n<h2>2. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"cert-body\">\n<div class=\"cert-item\"><span class=\"cert-num\">1<\/span>\n\n<div class=\"cert-text\">由辦理輔導課程單位出具之證照相關課程學習參與證明、證照相關課程學習成果報告表、本要點之一般申請表及報名費收據正本。<\/div>\n<\/div>\n\n<div class=\"cert-item\"><span class=\"cert-num\">2<\/span>\n\n<div class=\"cert-text\">本要點之一般申請表、檢定成績單或合格證照（申請「專業證照考試獎助學金」者檢附）。<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"cert-block\">\n<div class=\"cert-header\">\n<h2>3. 附件下載<\/h2>\n<\/div>\n\n<div class=\"cert-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/486522964.doc\" target=\"_blank\">證照相關課程學習參與證明<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/361612772.doc\" target=\"_blank\">證照相關課程學習成果報告表<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/135488700.doc\" target=\"_blank\">未重複申領證照補助切結書<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "校外實習輔導", "html": "<div class=\"intern-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"intern-block\">\n<div class=\"intern-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"intern-body\">\n<p class=\"intern-text\">參加校內各單位審定之校外實習，每學分實習獎助學金津貼 <span class=\"intern-highlight\">二千元<\/span>，每人至多申請 <span class=\"intern-highlight\">四學分<\/span>；本方案限非畢業必修課程且未領取校外實習薪資者。<br />\n完成實習、獲該科目學分且成績達 <span class=\"intern-highlight\">八十分以上<\/span>者，加發獎助 <span class=\"intern-highlight\">二千元<\/span>。<\/p>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"intern-block\">\n<div class=\"intern-header\">\n<h2>2. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"intern-body\">\n<div class=\"intern-item\"><span class=\"intern-num\">1<\/span>\n\n<div class=\"intern-text\">校外實習計畫或校外實習合約書<\/div>\n<\/div>\n\n<div class=\"intern-item\"><span class=\"intern-num\">2<\/span>\n\n<div class=\"intern-text\">校外實習證明<\/div>\n<\/div>\n\n<div class=\"intern-item\"><span class=\"intern-num\">3<\/span>\n\n<div class=\"intern-text\">校外實習成果報告表<\/div>\n<\/div>\n\n<div class=\"intern-item\"><span class=\"intern-num\">4<\/span>\n\n<div class=\"intern-text\">本要點之一般申請表<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"intern-block\">\n<div class=\"intern-header\">\n<h2>3. 附件下載<\/h2>\n<\/div>\n\n<div class=\"intern-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/852864639.doc\" target=\"_blank\">校外實習成果報告表<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "職涯規劃輔導", "html": "<div class=\"career-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"career-block\">\n<div class=\"career-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"career-body\">\n<p class=\"career-text\">經與各學系職涯導師職涯輔導及晤談後，每人每次獎助「<span class=\"career-highlight\">職涯規劃獎助學金<\/span>」<span class=\"career-highlight\">三百元<\/span>，每人每學期至多申請 <span class=\"career-highlight\">二次<\/span>。<br />\n連續 <span class=\"career-highlight\">二學期（含）以上<\/span>參與本方案者，加發獎助 <span class=\"career-highlight\">一百元<\/span>。<\/p>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"career-block\">\n<div class=\"career-header\">\n<h2>2. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"career-body\">\n<div class=\"career-item\"><span class=\"career-num\">1<\/span>\n\n<div class=\"career-text\">職涯導師輔導紀錄表<\/div>\n<\/div>\n\n<div class=\"career-item\"><span class=\"career-num\">2<\/span>\n\n<div class=\"career-text\">職涯輔導回饋單<\/div>\n<\/div>\n\n<div class=\"career-item\"><span class=\"career-num\">3<\/span>\n\n<div class=\"career-text\">本要點之一般申請表<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"career-block\">\n<div class=\"career-header\">\n<h2>3. 附件下載<\/h2>\n<\/div>\n\n<div class=\"career-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/217/245194069.docx\" target=\"_blank\">職涯輔導回饋單<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "實踐永續責任", "html": "<div class=\"sdg-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"sdg-block\">\n<div class=\"sdg-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"sdg-body\">\n<div class=\"sdg-item\"><span class=\"sdg-num\">1<\/span>\n\n<div class=\"sdg-text\">欲參加本方案學生，須事先向職涯發展中心領取「<span class=\"sdg-highlight\">實踐永續責任護照<\/span>」。<\/div>\n<\/div>\n\n<div class=\"sdg-item\"><span class=\"sdg-num\">2<\/span>\n\n<div class=\"sdg-text\">參與校內各單位辦理有關下列甲至戊五種類型活動（服務活動得參加校外服務，不在此限）且完成學習成果者，每人獎助 <span class=\"sdg-highlight\">三千元<\/span>，每人每學期獎助一次為限；完成實踐永續責任學習方案並將成果製作成學習分享短片（三至五分鐘）者，加發獎助 <span class=\"sdg-highlight\">一千元<\/span>。\n\n<ul class=\"sdg-activities\">\n\t<li><span class=\"sdg-tag\">甲<\/span>\n\n\t<div>健康與福祉活動 <strong>至少一場<\/strong>：如健康促進、食品衛生安全、防災演練或心理健康等相關活動。<\/div>\n\t<\/li>\n\t<li><span class=\"sdg-tag\">乙<\/span>\n\t<div>服務活動 <strong>至少二場次<\/strong>：如校園服務、社會服務或資訊服務等能提升公民文化素養活動。<\/div>\n\t<\/li>\n\t<li><span class=\"sdg-tag\">丙<\/span>\n\t<div>職涯發展（增能）活動或講座合計 <strong>至少三場<\/strong>。<\/div>\n\t<\/li>\n\t<li><span class=\"sdg-tag\">丁<\/span>\n\t<div>多元文化活動 <strong>至少一場<\/strong>。<\/div>\n\t<\/li>\n\t<li><span class=\"sdg-tag\">戊<\/span>\n\t<div>其他符合 SDGs 任一指標活動 <strong>至少一場<\/strong>。<\/div>\n\t<\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"sdg-block\">\n<div class=\"sdg-header\">\n<h2>2. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"sdg-body\">\n<div class=\"sdg-item\"><span class=\"sdg-num\">1<\/span>\n\n<div class=\"sdg-text\">本要點之一般申請表<\/div>\n<\/div>\n\n<div class=\"sdg-item\"><span class=\"sdg-num\">2<\/span>\n\n<div class=\"sdg-text\">活動成果報告表<\/div>\n<\/div>\n\n<div class=\"sdg-item\"><span class=\"sdg-num\">3<\/span>\n\n<div class=\"sdg-text\">實踐永續責任護照<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"sdg-block\">\n<div class=\"sdg-header\">\n<h2>3. 附件下載<\/h2>\n<\/div>\n\n<div class=\"sdg-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/602174161.doc\" target=\"_blank\">活動成果報告表<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "揪團共學", "html": "<div class=\"group-wrap\"><!-- 獎助資格與金額 -->\n<div class=\"group-block\">\n<div class=\"group-header\">\n<h2>1. 獎助資格與金額<\/h2>\n<\/div>\n\n<div class=\"group-body\">\n<p class=\"group-text\">共學目標以當年度公告主題為主，團隊至少由 <span class=\"group-highlight\">三人<\/span> 組成，成員可跨不同學院及學系，惟成員需有 <span class=\"group-highlight\">二分之一以上（含）<\/span> 為符合本要點獎勵對象。<br />\n符合獎勵資格者每人每月獎助 <span class=\"group-highlight\">三千元<\/span>，每人申請獎助以一個方案為限，獎助上限 <span class=\"group-highlight\">四個月<\/span>；<br />\n第二次以上參與本項方案並完成學習成果，加發獎助金 <span class=\"group-highlight\">一千元<\/span> 以茲鼓勵。<\/p>\n<\/div>\n<\/div>\n<!-- 執行方式 -->\n\n<div class=\"group-block\">\n<div class=\"group-header\">\n<h2>2. 執行方式<\/h2>\n<\/div>\n\n<div class=\"group-body\">\n<div class=\"group-item\"><span class=\"group-num\">1<\/span>\n\n<div class=\"group-text\">共學團體執行為構思發想、設計解決及成果運作。<\/div>\n<\/div>\n\n<div class=\"group-item\"><span class=\"group-num\">2<\/span>\n\n<div class=\"group-text\">學員可視情況提出與共學主題相關之講座及工作坊需求，由學生事務處協作並安排講師進行授課。<\/div>\n<\/div>\n\n<div class=\"group-item\"><span class=\"group-num\">3<\/span>\n\n<div class=\"group-text\">學生事務處不定期依共學之成果辦理發表，發表型式不拘，可採小型研討會、簡報、報告書或影音方式呈現。<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 檢附文件 -->\n\n<div class=\"group-block\">\n<div class=\"group-header\">\n<h2>3. 檢附文件<\/h2>\n<\/div>\n\n<div class=\"group-body\">\n<div class=\"group-item\"><span class=\"group-num\">1<\/span>\n\n<div class=\"group-text\">本要點之一般申請表<\/div>\n<\/div>\n\n<div class=\"group-item\"><span class=\"group-num\">2<\/span>\n\n<div class=\"group-text\">揪團共學規劃表及紀錄表<\/div>\n<\/div>\n\n<div class=\"group-item\"><span class=\"group-num\">3<\/span>\n\n<div class=\"group-text\">活動成果報告表（以影音呈現成果者另需繳交影音資料檔）<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 附件下載 -->\n\n<div class=\"group-block\">\n<div class=\"group-header\">\n<h2>4. 附件下載<\/h2>\n<\/div>\n\n<div class=\"group-body\">\n<ul class=\"docs-list\">\n\t<li><a href=\"/var/file/4/1004/img/226/575469140.docx\" target=\"_blank\">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/252596422.docx\" target=\"_blank\">揪團共學規劃表及紀錄表<\/a><\/li>\n\t<li><a href=\"/var/file/4/1004/img/226/215805411.doc\" target=\"_blank\">揪團共學活動成果<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "升學考試專區", "html": "<div class=\"edu-wrap\">\n<div class=\"row\">\n<div class=\"col-sm-4\"><a class=\"edu-card\" href=\"http://www.edu.tw/Default.aspx?WID=409cab38-69fe-4a61-ad3a-5d32a88deb5d\" target=\"_blank\"><img alt=\"\" src=\"/var/file/4/1004/img/217/S__11427845.jpg\" /> <\/a><\/div>\n\n<div class=\"col-sm-4\"><a class=\"edu-card\" href=\"http://studyabroadinfo.moe.gov.tw/\" target=\"_blank\"><img alt=\"\" src=\"/var/file/4/1004/img/217/S__11427844.jpg\" /> <\/a><\/div>\n\n<div class=\"col-sm-4\"><a class=\"edu-card\" href=\"http://www.moex.gov.tw/\" target=\"_blank\"><img alt=\"\" src=\"/var/file/4/1004/img/217/S__11427842.jpg\" /> <\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "成員執掌", "html": "<!-- 陳建樺 主任 -->\n<section class=\"staff-card\">\n<div class=\"staff-header\">\n<div class=\"staff-name\">楊汶達 主任<\/div>\n<\/div>\n\n<div class=\"info-row\">\n<div class=\"pill\"><b>連絡電話：<b style=\"color: rgb(0, 0, 0); display: inline !important;\">03-9317177<\/b><\/b><\/div>\n\n<div class=\"pill\"><b>電子信箱：<a href=\"mailto:wtyang@niu.edu.tw\" style=\"display: inline !important;\">wtyang@niu.edu.tw<\/a><\/b><\/div>\n\n<div class=\"pill\"><b>職務代理：謝楚培 先生<\/b><\/div>\n<\/div>\n\n<div class=\"section-title\">業務職掌<\/div>\n\n<ul class=\"duties\">\n\t<li>綜理並督導中心所有業務<\/li>\n\t<li>年度工作計畫之策劃、指導及推展<\/li>\n\t<li>年度預算編列、修訂、控管與督導<\/li>\n\t<li>業務核稿並修訂各項活動宣導內容及宣傳方式<\/li>\n\t<li>年度大事紀要綜整<\/li>\n<\/ul>\n<\/section>\n<!-- 陳亦芸 小姐 -->\n\n<section class=\"staff-card\">\n<div class=\"staff-header\">\n<div class=\"staff-name\">陳亦芸 小姐<\/div>\n<\/div>\n\n<div class=\"info-row\">\n<div class=\"pill\"><b>連絡電話：03-9317178<\/b><\/div>\n\n<div class=\"pill\"><b>電子信箱：<a href=\"mailto:yiyun@niu.edu.tw\" style=\"display: inline !important;\">yiyun@niu.edu.tw<\/a><\/b><\/div>\n\n<div class=\"pill\"><b>職務代理：謝楚培 先生<\/b><\/div>\n<\/div>\n\n<div class=\"section-title\">業務職掌<\/div>\n\n<ul class=\"duties\">\n\t<li>辦理「大專校院就業職能平台(UCAN)」相關業務<\/li>\n\t<li>辦理「學生學習歷程檔案系統」相關業務<\/li>\n\t<li>辦理「學生多元學習認證」相關業務<\/li>\n\t<li>辦理教育部青年發展署大專校院推動職涯輔導補助計畫<\/li>\n\t<li>辦理教育部青年發展署相關業務<\/li>\n\t<li>辦理企業夥伴相關業務<\/li>\n\t<li>推動職涯導師業務及職涯輔導知能講座<\/li>\n\t<li>網頁更新、維護、管理<\/li>\n\t<li>經費管理<\/li>\n\t<li>其他臨時交辦事項<\/li>\n<\/ul>\n<\/section>\n<!-- 謝楚培 先生 -->\n\n<section class=\"staff-card\">\n<div class=\"staff-header\">\n<div class=\"staff-name\">謝楚培 先生<\/div>\n<\/div>\n\n<div class=\"info-row\">\n<div class=\"pill\"><b>連絡電話：03-9317180<\/b><\/div>\n\n<div class=\"pill\"><b>電子信箱：<a href=\"mailto:cphsieh@niu.edu.tw\" style=\"display: inline !important;\">cphsieh@niu.edu.tw<\/a><\/b><\/div>\n\n<div class=\"pill\"><b>職務代理：陳亦芸 小姐<\/b><\/div>\n<\/div>\n\n<div class=\"section-title\">業務職掌<\/div>\n\n<ul class=\"duties\">\n\t<li>政府單位、企業徵(求)才及有關就業講座公告<\/li>\n\t<li>辦理勞動部勞動力發展署「結合大專校院辦理就業服務補助計畫」<\/li>\n\t<li>辦理國家考試講座、大專校院職場參訪專案及青年就業達人班等相關業務<\/li>\n\t<li>辦理單一廠商徵才活動、企業說明會與校園徵才活動<\/li>\n\t<li>系所友楷模遴選與文宣製作<\/li>\n\t<li>各項資料調查彙整：學生考取公職及提早接受就業輔導調查等<\/li>\n\t<li>本中心佈告欄管理與海報張貼<\/li>\n\t<li>管理公務信箱、財產物品、維護修繕申請<\/li>\n\t<li>電子公文系統收發、登記、歸檔<\/li>\n\t<li>其他臨時交辦事項<\/li>\n<\/ul>\n<\/section>\n<!-- 吳伊涵 小姐 -->\n\n<section class=\"staff-card\">\n<div class=\"staff-header\">\n<div class=\"staff-name\">吳伊涵 小姐<\/div>\n<\/div>\n\n<div class=\"info-row\">\n<div class=\"pill\"><b>連絡電話：03-9317183<\/b><\/div>\n\n<div class=\"pill\"><b>電子信箱：<a href=\"mailto:yihan@niu.edu.tw\" style=\"display: inline !important;\">yihan@niu.edu.tw<\/a><\/b><\/div>\n\n<div class=\"pill\"><b>職務代理：李慧婷 小姐<\/b><\/div>\n<\/div>\n\n<div class=\"section-title\">業務職掌<\/div>\n\n<ul class=\"duties\">\n\t<li>畢業1、3、5年之畢業生流向及雇主滿意度問卷調查<\/li>\n\t<li>職場能力培訓講座、工作坊、證照班、企業參訪<\/li>\n\t<li>高教深耕計畫預算編列、資料彙整及管考<\/li>\n\t<li>職涯輔導入班規劃與執行<\/li>\n\t<li>辦理職涯探索與諮詢服務<\/li>\n\t<li>好夥伴社群管理<\/li>\n<\/ul>\n<\/section>\n<!-- 李慧婷 小姐 -->\n\n<section class=\"staff-card\">\n<div class=\"staff-header\">\n<div class=\"staff-name\">李慧婷 小姐<\/div>\n<\/div>\n\n<div class=\"info-row\">\n<div class=\"pill\"><b>連絡電話：03-9317181<\/b><\/div>\n\n<div class=\"pill\"><b>電子信箱：<a href=\"mailto:htli@ems.niu.edu.tw\" style=\"display: inline !important;\">htli@ems.niu.edu.tw<\/a><\/b><\/div>\n\n<div class=\"pill\"><b>職務代理：吳伊涵 小姐<\/b><\/div>\n<\/div>\n\n<div class=\"section-title\">業務職掌<\/div>\n\n<ul class=\"duties\">\n\t<li>高教深耕計畫附錄窗口<\/li>\n\t<li>高教深耕計畫附錄預算編列、資料彙整及管考<\/li>\n\t<li>高教深耕計畫附錄由學務處辦理之相關講座及座談會<\/li>\n\t<li>工讀生管理<\/li>\n\t<li>校內工讀專區管理<\/li>\n\t<li>彙整主管會議、行政會議、校務會議、學務會議、大事紀等資料<\/li>\n\t<li>其他臨時交辦事項<\/li>\n<\/ul>\n<\/section>"}, {"name": "職輔好資源", "html": "<p><a href=\"/p/412-1004-2264.php?Lang=zh-tw\"><img alt=\"\" src=\"/var/file/4/1004/img/217/001.jpg\" style=\"width: 300px; height: 300px;\" /><\/a>&nbsp;<a href=\"/p/412-1004-2915.php?Lang=zh-tw\"><img alt=\"\" src=\"/var/file/4/1004/img/217/002.jpg\" style=\"width: 300px; height: 300px;\" /><\/a><\/p>\n\n<p><a href=\"/p/412-1004-3033.php?Lang=zh-tw\"><img alt=\"\" src=\"/var/file/4/1004/img/217/003.jpg\" style=\"width: 300px; height: 300px;\" /><\/a>&nbsp;<a href=\"/p/412-1004-3105.php?Lang=zh-tw\"><img alt=\"\" src=\"/var/file/4/1004/img/217/004.jpg\" style=\"width: 300px; height: 300px;\" /><\/a><\/p>"}, {"name": "線上求職人力網", "html": "<div class=\"link-section-title\">線上求職人力網<\/div>\n\n<div class=\"link-wrap\">\n<div class=\"row\">\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.104.com.tw/jobs/main/\"><img alt=\"104人力銀行\" src=\"/var/file/4/1004/img/217/104_logo.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.1111.com.tw/\"><img alt=\"1111人力銀行\" src=\"/var/file/4/1004/img/217/1111_logo.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.9999.com.tw/\"><img alt=\"汎亞人力集團\" src=\"/var/file/4/1004/img/217/528519628.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.1111.com.tw/search/job?ks=學生實習\"><img alt=\"學生實習\" src=\"/var/file/4/1004/img/217/772019357.png\" /> <\/a><\/div>\n<\/div>\n\n<div class=\"row\">\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.1111.com.tw/news/job-news.php?type=3&amp;class=1\"><img alt=\"產經新聞\" src=\"/var/file/4/1004/img/217/549898168.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.cakeresume.com/jobs\"><img alt=\"Cake\" src=\"/var/file/4/1004/img/217/cake_logo.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://www.taiwanjobs.gov.tw/Internet/Index/index.aspx\"><img alt=\"台灣就業通\" src=\"/var/file/4/1004/img/217/129473940.png\" /> <\/a><\/div>\n\n<div class=\"col-sm-3\"><a class=\"link-card\" href=\"https://tkyhkm.wda.gov.tw/Content_List.aspx?n=47102889CDE6B3EB\"><img alt=\"羅東就業中心\" src=\"/var/file/4/1004/img/217/388992643.png\" /> <\/a><\/div>\n<\/div>\n<\/div>"}, {"name": "系友楷模-學長姊職場經驗談", "html": "<div class=\"pdf-wrap\">\n<div class=\"pdf-header\"><span>115年度系所楷模<\/span><\/div>\n\n<div class=\"pdf-viewer\"><iframe src=\"/var/file/4/1004/img/226/367359991.pdf\"><\/iframe><\/div>\n<\/div>\n\n<p>&nbsp;<\/p>"}, {"name": "職涯輔導入班", "html": "<div class=\"activity-wrap\"><!-- 圖片 -->\n<div class=\"activity-banner\"><img alt=\"職涯輔導入班\" src=\"/var/file/4/1004/img/217/438142292.png\" /><\/div>\n<!-- 簡介 -->\n\n<div class=\"activity-block\">\n<div class=\"activity-header\">\n<h2>簡介<\/h2>\n<\/div>\n\n<div class=\"activity-body\">\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">活動目的<\/span>\n\n<div class=\"activity-info-content\">鼓勵系所申請職涯輔導入班活動，協助學生職涯規劃與發展<\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">申請時間<\/span>\n\n<div class=\"activity-info-content\">115年4月 ～ 6月<\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">申請方式<\/span>\n\n<div class=\"activity-info-content\">填寫線上表單提出申請 <a class=\"activity-btn\" href=\"https://forms.gle/yXNP86BgoYL1XKGE7\" target=\"_blank\">活動申請表<\/a><\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">注意事項<\/span>\n\n<div class=\"activity-info-content\">\n<ul class=\"activity-notes\">\n\t<li>經費由職涯發展中心支應<\/li>\n\t<li>名額有限，每系至多 2 案<\/li>\n\t<li>依申請時間排序，如經費提前用罄，將截止受理申請<\/li>\n\t<li>活動申請案件以職涯導師為主<\/li>\n\t<li>活動結束後，請參與學生填寫 <a class=\"activity-btn\" href=\"https://forms.gle/maXdZxW5uDk1yn5i8\" target=\"_blank\">回饋表<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<!-- 成果 -->\n\n<div class=\"activity-block\">\n<div class=\"activity-header\">\n<h2>成果<\/h2>\n<\/div>\n\n<div class=\"activity-body\">\n<p class=\"activity-result-text\">為讓同學們提前做好職涯準備，了解自我的優勢及如何展現個人特質，職涯發展中心規劃不同種類的職涯輔導入班活動，並針對不同的班級作個別適性的輔導，期透過個別化的輔導措施，將更貼近學生的需求。<\/p>\n<img alt=\"\" class=\"activity-photo\" src=\"/var/file/4/1004/img/226/120974924.jpg\" /> <img alt=\"\" class=\"activity-photo\" src=\"/var/file/4/1004/img/226/203379329.jpg\" /> <img alt=\"\" class=\"activity-photo\" src=\"/var/file/4/1004/img/226/137941035.jpg\" /><\/div>\n<\/div>\n<\/div>"}, {"name": "職涯諮詢", "html": "<div class=\"activity-wrap\"><!-- 圖片 -->\n<div class=\"activity-banner\"><img alt=\"一對一職涯諮詢\" src=\"/var/file/4/1004/img/217/780922256.png\" /><\/div>\n<!-- 簡介 -->\n\n<div class=\"activity-block\">\n<div class=\"activity-header\">\n<h2>簡介<\/h2>\n<\/div>\n\n<div class=\"activity-body\">\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">執行目的<\/span>\n\n<div class=\"activity-info-content\">藉由預約方式讓學生先釐清自己的生涯現況及需求，透過一對一諮詢的方式和諮詢顧問的事前預備，讓學生可以檢視自我的職涯目標、討論具體求職所需先備的履歷、面試技巧、職業態度等等，有效協助同學對未來的職涯發展聚焦。<\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">主辦單位<\/span>\n\n<div class=\"activity-info-content\">國立宜蘭大學 職涯發展中心、勞動部勞動力發展署北基宜花金馬分署<\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">諮詢場次<\/span>\n\n<div class=\"activity-info-content\">5月27日(三)、5月28日(四)、6月1日(一)、6月2日(二)、6月5日(五)<\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">申請方式<\/span>\n\n<div class=\"activity-info-content\">填寫線上表單進行預約 <a class=\"activity-btn\" href=\"https://reurl.cc/8eL837\" target=\"_blank\">預約表單<\/a><\/div>\n<\/div>\n\n<div class=\"activity-info-item\"><span class=\"activity-info-label\">預約諮詢<\/span>\n\n<div class=\"activity-info-content\">\n<ul class=\"activity-notes\">\n\t<li>在校園活動系統公告並發送全校E-mail宣傳活動訊息<\/li>\n\t<li>學校公告可諮詢日期及時段，學生自主預約報名（表單）<\/li>\n\t<li>學校了解學生需求會盡快安排諮詢時段，以E-mail信件回覆通知學生確定諮詢日期及時段<\/li>\n\t<li>學校於諮詢前一星期E-mail通知學生CPAS線上測驗資訊與代碼<\/li>\n\t<li>學生諮詢前完成線上CPAS職涯測驗 <a class=\"activity-btn\" href=\"https://cpas2.career.com.tw/\" target=\"_blank\">CPAS職涯測驗<\/a><\/li>\n\t<li>每個諮詢時段僅接受1位同學進行一對一諮詢。【每一次諮詢為一小時：50分鐘一對一諮詢；10分鐘就業服務相關宣導說明並填寫回饋單】<\/li>\n\t<li>報名後，請務必依媒合時段進行測驗解測與諮詢，避免資源浪費<\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "相關法規及資料專區", "html": "<div class=\"docs-wrap\">\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>1. 多元學習相關法規與作業要點<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"國立宜蘭大學提升學生多元學習能力實施要點.pdf\" href=\"/var/file/4/1004/img/749400839.pdf\" target=\"_blank\">國立宜蘭大學提升學生多元學習能力實施要點<\/a><\/li>\n\t<li><a download=\"國立宜蘭大學學生多元學習認證要點.pdf\" href=\"/var/file/4/1004/img/507/265130444.pdf\" target=\"_blank\">國立宜蘭大學學生多元學習認證要點<\/a><\/li>\n\t<li><a download=\"學生多元學習認證作業.pdf\" href=\"/var/file/4/1004/img/217/175724158.pdf\" target=\"_blank\">學生多元學習認證作業<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>2. 職涯導師相關法規與作業要點<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"國立宜蘭大學職涯導師實施要點.pdf\" href=\"/var/file/4/1004/img/226/149405420.pdf\" target=\"_blank\">國立宜蘭大學職涯導師實施要點<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>3. 系所友楷模相關法規與作業要點<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"國立宜蘭大學院系所中心友楷模推薦作業要點.pdf\" href=\"/var/file/4/1004/img/226/999216697.pdf\" target=\"_blank\">國立宜蘭大學院系所中心友楷模推薦作業要點<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n\n<div class=\"docs-block\">\n<div class=\"docs-header\">\n<h2>4. 其他相關法規與作業要點<\/h2>\n<\/div>\n\n<div class=\"docs-body\">\n<ul class=\"docs-list\">\n\t<li><a download=\"大專校院推動職涯輔導計畫作業須知.pdf\" href=\"/var/file/4/1004/img/217/146210568.pdf\" target=\"_blank\">大專校院推動職涯輔導計畫作業須知<\/a><\/li>\n\t<li><a download=\"國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點.pdf\" href=\"/var/file/4/1004/img/217/129117492.pdf\" target=\"_blank\">國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點<\/a><\/li>\n<\/ul>\n<\/div>\n<\/div>\n<\/div>"}, {"name": "發文1", "html": "<div class=\"notice-wrap\">\n<div class=\"notice-img\"><img alt=\"續書承愛師長贈書\" height=\"707\" src=\"/var/file/4/1004/img/217/392348614.png\" width=\"500\" /><\/div>\n\n<div class=\"notice-body\">\n<p><strong>領取教科書對象<\/strong>：<\/p>\n\n<ul>\n\t<li>符合學雜費減免資格學生<\/li>\n\t<li>不利處境學生助學計畫資格學生<\/li>\n<\/ul>\n\n<p><strong>聯絡窗口<\/strong>：<\/p>\n\n<ul>\n\t<li>生輔組 &mdash; 莊輔導員 | 分機 7187<\/li>\n\t<li>職涯發展中心 &mdash; 李小姐 | 分機 7181<\/li>\n<\/ul>\n\n<p><a class=\"notice-btn\" href=\"https://docs.google.com/spreadsheets/d/1wI4gYi1egp8DZLI6neVfDwDNHIaE1v3iZPldzvbEcMg/edit?usp=sharing\" target=\"_blank\">師長贈書清單<\/a><\/p>\n<\/div>\n<\/div>"}];
+
+/* ========= 小工具 ========= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid=()=>'m'+Math.random().toString(36).slice(2,9);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return (d.textContent||'').replace(/\s+/g,' ').trim()};
+function getPath(o,p){if(!p)return o;return p.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,p,v){const ks=p.split('.');const last=ks.pop();const par=ks.length?getPath(o,ks.join('.')):o;if(par)par[last]=v}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+function rgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${n>>8&255},${n&255},${a})`}
+
+/* ========= 配色 ========= */
+const THEMES={
+ teal:{name:'青綠（目前網站）',g1:'#a8e6e1',g2:'#6dd5ce',acc:'#59c0d4',dark:'#1a5f5a',link:'#1ab3a4',line:'#e0f7f5',soft:'#f5fdfc',row:'#e8f7f6',mark:'#f5e124'},
+ sky:{name:'天空藍',g1:'#bfe0f8',g2:'#86bdec',acc:'#4a90d9',dark:'#1d4b7a',link:'#2f7bc4',line:'#e3effa',soft:'#f5f9fe',row:'#ebf3fc',mark:'#f5c524'},
+ orange:{name:'暖橘',g1:'#ffdcb6',g2:'#ffbb7c',acc:'#ee9246',dark:'#7a3d10',link:'#d9752a',line:'#fdeede',soft:'#fffaf5',row:'#fff2e6',mark:'#f5e124'},
+ purple:{name:'薰衣草',g1:'#ddd2f6',g2:'#bba8ec',acc:'#8e74d6',dark:'#4a3480',link:'#7a5cc9',line:'#efeafb',soft:'#faf8fe',row:'#f3effc',mark:'#f5d824'}
+};
+
+/* ========= 輸出用 CSS（依模組只輸出用到的） ========= */
+const CSS={
+base:t=>[`.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:${t.dark};}
+.cdc-mark{display:inline;color:${t.acc};font-weight:bold;border-bottom:2px solid ${t.mark};padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:${t.link} !important;border:1.5px solid ${t.link};border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:${t.link};color:#fff !important;}`,[]],
+card:t=>[`.cdc-hd{background:linear-gradient(to right,${t.g1},${t.g2}) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:${t.dark} !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,${t.g1},${t.g2}) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}`,['.cdc-bd{padding:18px 16px;}','.cdc-hd{padding:12px 16px;}','.cdc-hd.lg{padding:14px 18px;}','.cdc-hd.lg h2{font-size:20px;}']],
+p:t=>[`.cdc-p{font-size:16px;line-height:2;color:#333;margin:0 0 18px;}
+.cdc-p.sm{font-size:15px;line-height:1.9;}
+.cdc-p.lg{font-size:17px;}
+.cdc-p:last-child{margin-bottom:0;}`,[]],
+lead:t=>[`.cdc-lead{font-size:20px;color:${t.dark};font-weight:bold;line-height:1.6;}`,[]],
+num:t=>[`.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid ${t.line};font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:${t.acc};border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:${t.acc};position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed ${t.line};}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:${t.dark} !important;background:linear-gradient(135deg,${t.g1},${t.g2});border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}`,['.cdc-num>li{gap:10px;}']],
+info:t=>[`.cdc-info-row{display:flex;align-items:flex-start;padding:14px 0;border-bottom:1px solid ${t.line};}
+.cdc-info-row:first-child{padding-top:0;}
+.cdc-info-row:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-info-lb{font-size:15px;font-weight:bold;color:#fff;background:${t.acc};border-radius:20px;padding:4px 16px;white-space:nowrap;margin-right:18px;flex-shrink:0;margin-top:2px;line-height:1.6;}
+.cdc-info-ct{font-size:16px;color:#333;line-height:1.8;flex:1;min-width:0;word-break:break-word;}
+.cdc-info-ct a:not(.cdc-btn-sm){color:${t.link} !important;text-decoration:none !important;border-bottom:1.5px solid ${t.g1};}
+.cdc-notes{list-style:none;padding:0;margin:4px 0 0;font-size:15px;color:#444;line-height:2;}
+.cdc-notes li::before{content:"✦";color:${t.acc};margin-right:8px;font-size:12px;}`,['.cdc-info-row{flex-direction:column;}','.cdc-info-lb{margin:0 0 8px;}']],
+docs:t=>[`.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid ${t.line};line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:${t.dark} !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:${t.link} !important;border-bottom-color:${t.g1};}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}`,[]],
+sites:t=>[`.cdc-sites{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-sites:last-child{margin-bottom:0;}
+.cdc-sites li{padding:10px 0;border-bottom:1px solid ${t.line};}
+.cdc-sites li:first-child{padding-top:0;}
+.cdc-sites li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-sites a{font-size:15px;font-weight:bold;color:${t.link} !important;text-decoration:none !important;border-bottom:1.5px solid ${t.g1};transition:color .2s;}
+.cdc-sites a:hover{color:${t.acc} !important;}
+.cdc-site-desc{font-size:14px;color:#555;line-height:1.8;margin-top:4px;}`,[]],
+table:t=>[`.cdc-tblw{overflow-x:auto;}
+.cdc-tbl{width:100%;border-collapse:collapse;font-size:14px;}
+.cdc-tbl th{background:${t.acc};color:#fff;padding:9px 14px;text-align:left;font-weight:bold;border:1px solid ${rgba(t.acc,.22)};}
+.cdc-tbl td{padding:9px 14px;border:1px solid ${rgba(t.acc,.22)};vertical-align:middle;line-height:1.7;background:#fff;}
+.cdc-tbl tr.alt td{background:${t.row};}
+.cdc-tcat{font-weight:bold;color:${t.acc};}
+.cdc-tamt{font-weight:bold;color:${t.dark};white-space:nowrap;}`,['.cdc-tbl th{padding:8px 8px;}','.cdc-tbl td{padding:8px 8px;}']],
+imgs:t=>[`.cdc-img{width:100%;height:auto;border-radius:10px;display:block;margin-bottom:14px;box-shadow:0 2px 12px ${rgba(t.acc,.15)};}
+.cdc-img:last-child{margin-bottom:0;}`,[]],
+imggrid:t=>[`.cdc-ig{display:flex;flex-wrap:wrap;margin:-6px -6px 12px;}
+.cdc-ig:last-child{margin-bottom:-6px;}
+.cdc-ig-col{width:33.333%;padding:6px;display:flex;}
+.cdc-ig.c2 .cdc-ig-col{width:50%;}
+.cdc-ig.c4 .cdc-ig-col{width:25%;}
+.cdc-ig-card{flex:1;display:block;border-radius:10px;overflow:hidden;border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,${t.g1},${t.g2}) border-box;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px ${rgba(t.g1,.2)};}
+.cdc-ig-card:hover{transform:translateY(-4px);box-shadow:0 8px 20px ${rgba(t.g2,.35)};}
+.cdc-ig-card img{width:100%;height:auto;display:block;}`,['.cdc-ig .cdc-ig-col{width:50%;}']],
+btn:t=>[`.cdc-cta{display:flex;align-items:center;flex-wrap:wrap;gap:16px;}
+.cdc-cta.dv{margin-top:28px;padding-top:24px;border-top:1.5px solid ${t.line};}
+.cdc-cta-tx{font-size:22px;font-weight:bold;color:${t.dark};}
+.cdc-btn{display:inline-block;text-decoration:none !important;transition:all .2s;}
+.cdc-btn.solid{color:${t.dark} !important;background:linear-gradient(to right,${t.g1},${t.g2}) !important;border-radius:24px;padding:10px 28px;font-size:17px;font-weight:bold;letter-spacing:.05em;box-shadow:0 3px 12px ${rgba(t.acc,.3)};}
+.cdc-btn.solid:hover{transform:translateY(-3px);box-shadow:0 8px 20px ${rgba(t.acc,.45)};}
+.cdc-btn.outline{color:${t.link} !important;border:1.5px solid ${t.link};border-radius:20px;padding:6px 20px;background:#fff;font-size:15px;font-weight:bold;}
+.cdc-btn.outline:hover{background:${t.link};color:#fff !important;}`,['.cdc-cta-tx{font-size:19px;}']],
+bullets:t=>[`.cdc-ul{margin:0 0 18px;padding-left:22px;font-size:15px;line-height:2;color:#333;}
+.cdc-ul:last-child{margin-bottom:0;}`,[]],
+hr:t=>[`.cdc-hr{border:0;border-top:1.5px solid ${t.line};margin:0 0 18px;}`,[]],
+grid:t=>[`.cdc-grid{display:flex;flex-wrap:wrap;margin:-6px -6px 16px;}
+.cdc-gcol{width:33.333%;padding:6px;display:flex;}
+.cdc-grid.c2 .cdc-gcol{width:50%;}
+.cdc-grid.c4 .cdc-gcol{width:25%;}
+.cdc-gc{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,${t.g1},${t.g2}) border-box;border:2.5px solid transparent;border-radius:14px;overflow:hidden;text-decoration:none !important;color:${t.dark} !important;box-shadow:0 2px 12px ${rgba(t.g1,.2)};transition:transform .25s ease,box-shadow .25s ease;}
+.cdc-gc:hover{transform:translateY(-6px);box-shadow:0 12px 30px ${rgba(t.g2,.32)};background:linear-gradient(${t.soft},${t.soft}) padding-box,linear-gradient(135deg,${t.acc},${t.g2}) border-box;}
+.cdc-gc.text{min-height:120px;padding:40px 20px;text-align:center;font-size:1.2rem;font-weight:bold;line-height:1.7;letter-spacing:.05em;}
+.cdc-gc.logo{padding-bottom:12px;}
+.cdc-gc.logo img{width:100%;height:100px;object-fit:contain;padding:14px 14px 6px;display:block;}
+.cdc-gc.image img{width:100%;height:auto;display:block;}
+.cdc-gc-lb{font-size:14px;font-weight:bold;text-align:center;padding:0 10px;line-height:1.5;}`,['.cdc-grid .cdc-gcol{width:50%;}','.cdc-grid.c2 .cdc-gcol{width:100%;}','.cdc-gc.text{min-height:90px;padding:26px 14px;font-size:1.05rem;}']],
+pdf:t=>[`.cdc-pdf-hd{background:linear-gradient(to right,${t.g1},${t.g2}) !important;border-radius:10px 10px 0 0;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.cdc-pdf-hd span{color:${t.dark} !important;font-size:16px;font-weight:bold;}
+.cdc-pdf-hd a{color:${t.dark} !important;background:rgba(255,255,255,.55);border:2px solid rgba(255,255,255,.8);border-radius:20px;padding:3px 14px;font-size:14px;font-weight:bold;white-space:nowrap;text-decoration:none !important;transition:background .2s;}
+.cdc-pdf-hd a:hover{background:#fff;}
+.cdc-pdf-vw{border:2.5px solid transparent;border-top:none;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,${t.g1},${t.g2}) border-box;border-radius:0 0 14px 14px;overflow:hidden;}
+.cdc-pdf-vw iframe{display:block;width:100%;border:none;}`,['.cdc-pdf-hd{padding:12px 16px;}']],
+banner:t=>[`.cdc-banner img{width:100%;height:auto;border-radius:10px;display:block;}`,[]],
+bar:t=>[`.cdc-bar{font-size:20px;font-weight:bold;color:${t.dark} !important;background:linear-gradient(to right,${t.g1},${t.g2}) !important;border-radius:6px;padding:10px 20px;letter-spacing:.05em;}`,[]],
+staff:t=>[`.cdc-staff{background:${t.soft};border-radius:10px;box-shadow:3px 3px 10px #c8d3d3;padding:20px 18px 18px;}
+.cdc-staff-name{display:inline-block;font-weight:800;color:#fff;background:${t.acc};padding:8px 16px;border-radius:8px;box-shadow:2px 2px 4px #c3cfcf;font-size:22px;margin-bottom:12px;}
+.cdc-staff-info{display:flex;flex-wrap:wrap;gap:8px;margin:0 2px 14px;}
+.cdc-pill{display:inline-block;border:2px solid ${t.acc};border-radius:999px;padding:5px 12px;font-size:14px;color:#000;background:#fff;font-weight:bold;}
+.cdc-pill a{color:#000 !important;text-decoration:none !important;}
+.cdc-staff-st{margin:10px 0 8px 12px;font-weight:bold;color:#000;font-size:16px;}
+.cdc-duties{list-style:none;margin:0 0 0 12px;padding:0 0 0 12px;border-left:8px solid ${t.acc};}
+.cdc-duties li{line-height:1.9;font-size:14px;color:#222;}`,['.cdc-staff-name{font-size:17px;}','.cdc-pill{font-size:13px;}']],
+spacer:t=>['',[]], html:t=>['',[]]
+};
+function buildCSS(theme,used,mode){
+ const t=THEMES[theme]||THEMES.teal; let css='',mob=[];
+ for(const k of Object.keys(CSS)){ if(k!=='base'&&!used.has(k))continue; const [c,m]=CSS[k](t); if(c)css+=c+'\n'; mob.push(...m); }
+ if(mob.length){
+   if(mode==='export') css+='@media (max-width:600px){\n'+mob.map(r=>'  '+r).join('\n')+'\n}\n';
+   else css+=mob.map(r=>{const i=r.indexOf('{');return r.slice(0,i).split(',').map(s=>'.ed-mob '+s.trim()).join(',')+r.slice(i)}).join('\n');
+ }
+ return css;
+}
+function usedTypes(mods){const s=new Set();for(const m of mods){s.add(m.type);if(m.type==='card'){(m.children||[]).forEach(c=>s.add(c.type));}}return s}
+function liveCSS(){ $('#liveCss').textContent=buildCSS(S.theme,new Set(Object.keys(CSS)),'live'); }
+
+/* ========= 渲染工具 ========= */
+let EDIT=false,PV=false; const EXP={ph:true,data:true};
+function T(p,v,ph){return EDIT?` contenteditable="true" spellcheck="false" data-k="${p}" data-ph="${esc(ph||'輸入文字')}">${esc(v)}`:`>${esc(v)}`}
+function H(p,v,ph){return EDIT?` contenteditable="true" spellcheck="false" data-rich="1" data-k="${p}" data-ph="${esc(ph||'輸入內容')}">${v||''}`:`>${v||''}`}
+const TGT=n=>n?' target="_blank"':'';
+function phSVG(alt,src,forExport){
+ const l1=forExport?'請到後台替換圖片':(src?'已設定：'+src.split('/').pop():'圖片（到後台再選取）');
+ const l2=(alt||'').slice(0,30);
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="320" viewBox="0 0 800 320"><rect width="800" height="320" fill="#eef4f4"/><rect x="6" y="6" width="788" height="308" fill="none" stroke="#b9d3d1" stroke-width="3" stroke-dasharray="14 10" rx="12"/><g fill="#8aaeab" font-family="sans-serif" text-anchor="middle"><text x="400" y="${l2?150:172}" font-size="30">${esc(l1)}</text>${l2?`<text x="400" y="196" font-size="24">${esc(l2)}</text>`:''}</g></svg>`;
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function IMG(o,cls){o=o||{};const src=o.src||'';let shown;
+ if(EDIT||PV) shown=o._prev||(src.startsWith('data:')?src:phSVG(o.alt,src));
+ else shown=src||(EXP.ph?phSVG(o.alt,'',true):'');
+ return `<img${cls?` class="${cls}"`:''} alt="${esc(o.alt||'')}" src="${esc(shown)}"${EDIT?' draggable="false"':''} />`}
+const CN='一二三四五六七八九十'.split(''),GAN='甲乙丙丁戊己庚辛壬癸'.split('');
+function autoTag(s,i,it){return s==='num'?String(i+1):s==='cn'?(CN[i]||String(i+1)):s==='gan'?(GAN[i]||String(i+1)):s==='abc'?String.fromCharCode(65+i):s==='custom'?(it.tag||''):''}
+
+/* ========= 內容元件（放在標題卡片裡） ========= */
+const IMGF=(k='img',l='圖片')=>({k,l,t:'img'});
+const CH={
+p:{n:'段落文字',i:'¶',d:'一般說明文字',def:()=>({html:'在這裡輸入說明文字。',size:'md'}),
+ f:[{k:'html',l:'內容',t:'rich'},{k:'size',l:'字級',t:'select',o:[['sm','小 15px'],['md','中 16px'],['lg','大 17px']]}],
+ r:(c,p)=>`<p class="cdc-el cdc-p${c.size&&c.size!=='md'?' '+c.size:''}"${H(p+'html',c.html,'輸入段落文字')}</p>`},
+lead:{n:'強調大字',i:'A',d:'問候語、對象說明',def:()=>({html:'尊敬的企業主　您好'}),
+ f:[{k:'html',l:'內容',t:'rich'}],
+ r:(c,p)=>`<div class="cdc-el cdc-lead"${H(p+'html',c.html,'強調文字')}</div>`},
+num:{n:'編號項目',i:'①',d:'資格、文件、獎勵對象',def:()=>({style:'num',items:[{tag:'',html:'第一項說明',subs:[]},{tag:'',html:'第二項說明',subs:[]}]}),
+ f:[{k:'style',l:'編號樣式',t:'select',o:[['num','1 2 3'],['cn','一 二 三'],['gan','甲 乙 丙'],['abc','A B C'],['custom','自訂文字'],['none','不顯示編號']]},
+  {k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({tag:'',html:'新項目',subs:[]}),of:[
+   {k:'tag',l:'編號文字',t:'text',show:(o,m)=>m&&m.style==='custom'},
+   {k:'html',l:'內容',t:'rich'},
+   {k:'subs',l:'子項目',hint:'有「標籤」會顯示成小方塊，沒有就是 › 符號',t:'list',add:'新增子項目',nu:()=>({tag:'',html:'子項目'}),of:[{k:'tag',l:'標籤（可留空）',t:'text'},{k:'html',l:'內容',t:'rich'}]}]}],
+ r:(c,p)=>`<ul class="cdc-el cdc-num">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';const tag=autoTag(c.style,i,it);
+  const tg=c.style==='none'?'':c.style==='custom'?`<span class="cdc-tag"${T(ip+'tag',it.tag,'編號')}</span>`:`<span class="cdc-tag">${esc(tag)}</span>`;
+  const subs=(it.subs||[]).length?`<ul class="cdc-sub">${it.subs.map((s,j)=>{const sp=ip+'subs.'+j+'.';return s.tag?`<li class="t"><span class="cdc-stag"${T(sp+'tag',s.tag)}</span><div${H(sp+'html',s.html)}</div></li>`:`<li${H(sp+'html',s.html)}</li>`}).join('')}</ul>`:'';
+  return `<li>${tg}<div class="cdc-num-tx"><div${H(ip+'html',it.html,'項目內容')}</div>${subs}</div></li>`}).join('')}</ul>`},
+info:{n:'標籤資訊列',i:'⊟',d:'左標籤＋右內容',def:()=>({items:[{label:'活動目的',html:'說明文字',notes:[]},{label:'申請方式',html:'填寫線上表單 <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">申請表</a>',notes:[]}]}),
+ f:[{k:'items',l:'資訊列',t:'list',add:'新增一列',nu:()=>({label:'標籤',html:'內容',notes:[]}),of:[
+  {k:'label',l:'標籤',t:'text'},{k:'html',l:'內容',hint:'選取文字可加小按鈕',t:'rich'},
+  {k:'notes',l:'✦ 注意事項清單',t:'list',add:'新增注意事項',nu:()=>({html:'注意事項'}),of:[{k:'html',l:'內容',t:'rich'}]}]}],
+ r:(c,p)=>`<div class="cdc-el cdc-info">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
+  const notes=(it.notes||[]).length?`<ul class="cdc-notes">${it.notes.map((n,j)=>`<li${H(ip+'notes.'+j+'.html',n.html)}</li>`).join('')}</ul>`:'';
+  const ct=(it.html||EDIT||!notes)?`<div${H(ip+'html',it.html,'內容')}</div>`:'';
+  return `<div class="cdc-info-row"><span class="cdc-info-lb"${T(ip+'label',it.label,'標籤')}</span><div class="cdc-info-ct">${ct}${notes}</div></div>`}).join('')}</div>`},
+docs:{n:'檔案下載列表',i:'⇩',d:'法規、表單、附件',def:()=>({badges:true,items:[{text:'檔案名稱',href:'/var/file/4/1004/img/xxx.pdf',note:'',nt:true}]}),
+ f:[{k:'badges',l:'依副檔名顯示 PDF／DOC 小標籤',t:'check'},
+  {k:'items',l:'檔案',t:'list',add:'新增檔案',nu:()=>({text:'檔案名稱',href:'',note:'',nt:true}),of:[
+   {k:'text',l:'顯示名稱',t:'text'},{k:'href',l:'檔案路徑',t:'url',ph:'/var/file/4/1004/img/…/xxx.pdf'},{k:'note',l:'灰色備註（可留空）',t:'text'},{k:'nt',l:'另開新分頁',t:'check'}]}],
+ r:(c,p)=>`<ul class="cdc-el cdc-docs${c.badges?' bg':''}">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
+  return `<li><a href="${esc(it.href||'#')}"${TGT(it.nt)}${T(ip+'text',it.text,'檔案名稱')}</a>${it.note||EDIT?`<span class="cdc-note"${T(ip+'note',it.note,EDIT?'（備註）':'')}</span>`:''}</li>`}).join('')}</ul>`},
+sites:{n:'網站連結列表',i:'🔗',d:'名稱＋一行說明',def:()=>({items:[{text:'網站名稱',href:'https://',desc:'網站說明（可留空）',nt:true}]}),
+ f:[{k:'items',l:'網站',t:'list',add:'新增網站',nu:()=>({text:'網站名稱',href:'https://',desc:'',nt:true}),of:[
+  {k:'text',l:'名稱',t:'text'},{k:'href',l:'網址',t:'url'},{k:'desc',l:'說明（可留空）',t:'text'},{k:'nt',l:'另開新分頁',t:'check'}]}],
+ r:(c,p)=>`<ul class="cdc-el cdc-sites">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
+  return `<li><a href="${esc(it.href||'#')}"${TGT(it.nt)}${T(ip+'text',it.text,'網站名稱')}</a>${it.desc||EDIT?`<div class="cdc-site-desc"${T(ip+'desc',it.desc,'說明（可留空）')}</div>`:''}</li>`}).join('')}</ul>`},
+table:{n:'獎助金額表',i:'▦',d:'分類＋項目＋金額',def:()=>({c1:'類別',c2:'項目',c3:'獎助金額',useCat:true,groups:[{cat:'甲、類別一',rows:[{a:'項目說明',b:'1,000 元'},{a:'項目說明',b:'2,000 元'}]}]}),
+ f:[{k:'useCat',l:'顯示「類別」欄（合併儲存格）',t:'check'},{k:'c1',l:'第 1 欄標題',t:'text',show:o=>o.useCat},{k:'c2',l:'項目欄標題',t:'text'},{k:'c3',l:'金額欄標題',t:'text'},
+  {k:'groups',l:'類別',t:'list',add:'新增類別',nu:()=>({cat:'新類別',rows:[{a:'項目',b:'0 元'}]}),of:[
+   {k:'cat',l:'類別名稱',t:'text',show:(o,m)=>m&&m.useCat},{k:'rows',l:'列',t:'list',add:'新增一列',nu:()=>({a:'項目',b:'0 元'}),of:[{k:'a',l:'項目',t:'text'},{k:'b',l:'金額',t:'text'}]}]}],
+ r:(c,p)=>{let rows='';(c.groups||[]).forEach((g,gi)=>{const gp=p+'groups.'+gi+'.';(g.rows||[]).forEach((r,ri)=>{const rp=gp+'rows.'+ri+'.';
+  rows+=`<tr${gi%2?' class="alt"':''}>${c.useCat&&ri===0?`<td rowspan="${g.rows.length}"><span class="cdc-tcat"${T(gp+'cat',g.cat,'類別')}</span></td>`:''}<td${T(rp+'a',r.a,'項目')}</td><td><span class="cdc-tamt"${T(rp+'b',r.b,'金額')}</span></td></tr>`})});
+  return `<div class="cdc-el cdc-tblw"><table class="cdc-tbl"><thead><tr>${c.useCat?`<th${T(p+'c1',c.c1)}</th>`:''}<th${T(p+'c2',c.c2)}</th><th${T(p+'c3',c.c3)}</th></tr></thead><tbody>${rows}</tbody></table></div>`}},
+imgs:{n:'圖片',i:'▣',d:'一張或多張滿版圖',def:()=>({items:[{img:{src:'',alt:''}}]}),
+ f:[{k:'items',l:'圖片',t:'list',add:'新增圖片',nu:()=>({img:{src:'',alt:''}}),of:[IMGF()]}],
+ r:(c,p)=>`<div class="cdc-el cdc-imgs">${(c.items||[]).map(it=>IMG(it.img,'cdc-img')).join('')}</div>`},
+imggrid:{n:'圖片連結格',i:'▦',d:'圖片卡片，點了跳頁',def:()=>({cols:'3',items:[{img:{src:'',alt:'圖片1'},href:'',nt:false},{img:{src:'',alt:'圖片2'},href:'',nt:false},{img:{src:'',alt:'圖片3'},href:'',nt:false}]}),
+ f:[{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
+  {k:'items',l:'圖片卡',t:'list',add:'新增圖片卡',nu:()=>({img:{src:'',alt:''},href:'',nt:false}),of:[IMGF(),{k:'href',l:'連結',t:'url',ph:'/p/412-1004-xxxx.php'},{k:'nt',l:'另開新分頁',t:'check'}]}],
+ r:(c,p)=>`<div class="cdc-el cdc-ig c${c.cols||3}">${(c.items||[]).map(it=>`<div class="cdc-ig-col">${it.href?`<a class="cdc-ig-card" href="${esc(it.href)}"${TGT(it.nt)}>${IMG(it.img)}</a>`:`<div class="cdc-ig-card">${IMG(it.img)}</div>`}</div>`).join('')}</div>`},
+btn:{n:'按鈕',i:'⬭',d:'報名、問卷、表單',def:()=>({lead:'',text:'立即報名',href:'https://forms.gle/',style:'solid',dv:false,nt:true}),
+ f:[{k:'text',l:'按鈕文字',t:'text'},{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'},{k:'style',l:'樣式',t:'select',o:[['solid','實心漸層'],['outline','外框']]},{k:'lead',l:'按鈕左邊的大字（可留空）',t:'text',ph:'例：歡迎企業踴躍報名！'},{k:'dv',l:'上方加分隔線',t:'check'}],
+ r:(c,p)=>`<div class="cdc-el cdc-cta${c.dv?' dv':''}">${c.lead?`<span class="cdc-cta-tx"${T(p+'lead',c.lead)}</span>`:''}<a class="cdc-btn ${c.style||'solid'}" href="${esc(c.href||'#')}"${TGT(c.nt)}${T(p+'text',c.text,'按鈕文字')}</a></div>`},
+bullets:{n:'項目符號清單',i:'•',d:'一般圓點清單',def:()=>({items:[{html:'清單項目'},{html:'清單項目'}]}),
+ f:[{k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({html:'清單項目'}),of:[{k:'html',l:'內容',t:'rich'}]}],
+ r:(c,p)=>`<ul class="cdc-el cdc-ul">${(c.items||[]).map((it,i)=>`<li${H(p+'items.'+i+'.html',it.html)}</li>`).join('')}</ul>`},
+hr:{n:'分隔線',i:'—',d:'細線分隔',def:()=>({}),f:[],r:()=>`<hr class="cdc-el cdc-hr" />`}
+};
+
+/* ========= 版面模組 ========= */
+const MODS={
+card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',def:()=>({header:'gradient',title:'區塊標題',big:false,img:{src:'',alt:''},frame:true,children:[CH.p.def()].map(c=>({type:'p',...c}))}),
+ f:[{k:'header',l:'頂部樣式',t:'select',o:[['gradient','漸層標題列'],['image','圖片橫幅'],['none','不要頂部']]},
+  {k:'title',l:'標題',t:'text',show:o=>o.header==='gradient'},{k:'big',l:'大標題（字級較大）',t:'check',show:o=>o.header==='gradient'},
+  {k:'img',l:'頂部圖片',t:'img',show:o=>o.header==='image'},{k:'frame',l:'顯示外框',t:'check',show:o=>o.header==='none'}],
+ r:(m,p)=>{let h='';
+  if(m.header==='gradient')h=`<div class="cdc-hd${m.big?' lg':''}"><h2${T('title',m.title,'區塊標題')}</h2></div>`;
+  else if(m.header==='image')h=`<div class="cdc-hdimg">${IMG(m.img)}</div>`;
+  const bc=m.header==='none'?(m.frame?'cdc-bd solo':'cdc-plain'):'cdc-bd';
+  const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c')}${html}</div>`:html}).join('');
+  return `<div class="cdc-m cdc-card">${h}<div class="${bc}"${EDIT?' data-body="1"':''}>${kids||(EDIT?'<div class="ed-empty">把左邊的「內容元件」拖進來，或選取這張卡片後點元件加入</div>':'')}</div></div>`}},
+grid:{n:'卡片連結格',i:'▥',d:'入口卡片、Logo 連結牆',def:()=>({variant:'text',cols:'3',items:[{text:'校園徵才活動',href:'/p/412-1004-2455.php',img:{src:'',alt:''},nt:false},{text:'校內工讀機會調查',href:'',img:{src:'',alt:''},nt:false},{text:'就業求職<br>相關資源連結',href:'',img:{src:'',alt:''},nt:false}]}),
+ f:[{k:'variant',l:'卡片樣式',t:'select',o:[['text','純文字卡片'],['logo','Logo＋名稱'],['image','整張圖片']]},{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
+  {k:'items',l:'卡片',t:'list',add:'新增卡片',nu:()=>({text:'新卡片',href:'',img:{src:'',alt:''},nt:false}),of:[
+   {k:'text',l:'文字',hint:'Logo 樣式可留空',t:'rich',show:(o,m)=>m&&m.variant!=='image'},IMGF('img','圖片'),{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'}].map(f=>f.t==='img'?{...f,show:(o,m)=>m&&m.variant!=='text'}:f)}],
+ r:(m,p)=>`<div class="cdc-m cdc-grid c${m.cols||3}">${(m.items||[]).map((it,i)=>{const ip='items.'+i+'.';
+  const inner=m.variant==='text'?`<span${H(ip+'text',it.text,'卡片文字')}</span>`:IMG(it.img)+(m.variant==='logo'&&(it.text||EDIT)?`<span class="cdc-gc-lb"${H(ip+'text',it.text,'名稱（可留空）')}</span>`:'');
+  return `<div class="cdc-gcol"><a class="cdc-gc ${m.variant}" href="${esc(it.href||'#')}"${TGT(it.nt)}>${inner}</a></div>`}).join('')}</div>`},
+pdf:{n:'PDF 嵌入',i:'⎙',d:'標題列＋下載鈕＋PDF 預覽',def:()=>({title:'文件標題',src:'',dl:true,dlText:'下載 PDF',zoom:'',height:700}),
+ f:[{k:'title',l:'標題',t:'text'},{k:'src',l:'PDF 路徑',t:'url',ph:'/var/file/4/1004/img/226/xxx.pdf'},{k:'dl',l:'顯示下載按鈕',t:'check'},{k:'dlText',l:'下載按鈕文字',t:'text',show:o=>o.dl},{k:'zoom',l:'預設縮放 %（可留空）',t:'number'},{k:'height',l:'高度 px',t:'number'}],
+ r:(m)=>`<div class="cdc-m cdc-pdf"><div class="cdc-pdf-hd"><span${T('title',m.title,'文件標題')}</span>${m.dl?`<a href="${esc(m.src||'#')}" target="_blank"${T('dlText',m.dlText,'下載 PDF')}</a>`:''}</div><div class="cdc-pdf-vw">${EDIT||PV?`<div class="ed-pdfph">PDF 預覽：${esc(m.src||'尚未設定檔案路徑（右側面板填寫）')}<small>網站上實際高度 ${esc(m.height||700)}px</small></div>`:`<iframe src="${esc((m.src||'')+(m.zoom?'#zoom='+m.zoom:''))}" style="height:${parseInt(m.height)||700}px"></iframe>`}</div></div>`},
+banner:{n:'橫幅圖片',i:'▭',d:'頁首大圖，可加連結',def:()=>({img:{src:'',alt:'橫幅'},href:'',nt:false}),
+ f:[IMGF('img','圖片'),{k:'href',l:'連結（可留空）',t:'url'},{k:'nt',l:'另開新分頁',t:'check',show:o=>o.href}],
+ r:(m)=>`<div class="cdc-m cdc-banner">${m.href?`<a href="${esc(m.href)}"${TGT(m.nt)}>${IMG(m.img)}</a>`:IMG(m.img)}</div>`},
+bar:{n:'區段標題條',i:'▬',d:'獨立的漸層標題',def:()=>({text:'就業求職相關資源連結'}),
+ f:[{k:'text',l:'文字',t:'text'}], r:(m)=>`<div class="cdc-m cdc-bar"${T('text',m.text,'標題')}</div>`},
+staff:{n:'成員卡片',i:'☺',d:'姓名、聯絡資訊、業務職掌',def:()=>({name:'王小明 小姐',pills:[{html:'連絡電話：03-9317xxx'},{html:'電子信箱：xxx@niu.edu.tw'},{html:'職務代理：○○○ 先生'}],dutyTitle:'業務職掌',duties:[{text:'業務一'},{text:'業務二'}]}),
+ f:[{k:'name',l:'姓名職稱',t:'text'},{k:'pills',l:'資訊膠囊',t:'list',add:'新增',nu:()=>({html:'資訊'}),of:[{k:'html',l:'內容',t:'rich'}]},{k:'dutyTitle',l:'小標',t:'text'},{k:'duties',l:'職掌',t:'list',add:'新增職掌',nu:()=>({text:'業務'}),of:[{k:'text',l:'內容',t:'text'}]}],
+ r:(m)=>`<div class="cdc-m cdc-staff"><div class="cdc-staff-name"${T('name',m.name,'姓名')}</div><div class="cdc-staff-info">${(m.pills||[]).map((x,i)=>`<span class="cdc-pill"${H('pills.'+i+'.html',x.html)}</span>`).join('')}</div><div class="cdc-staff-st"${T('dutyTitle',m.dutyTitle)}</div><ul class="cdc-duties">${(m.duties||[]).map((x,i)=>`<li${T('duties.'+i+'.text',x.text)}</li>`).join('')}</ul></div>`},
+spacer:{n:'空白間距',i:'↕',d:'多空一行',def:()=>({}),f:[],r:()=>EDIT?'<div class="cdc-m ed-spacer">空白間距</div>':'<p class="cdc-m">&nbsp;</p>'},
+html:{n:'自訂 HTML',i:'{ }',d:'放任何現成程式碼',def:()=>({code:'<p>自訂內容</p>'}),
+ f:[{k:'code',l:'HTML 程式碼',t:'area'},{t:'hint',l:'這段會原封不動輸出。編輯模式只顯示程式碼，切到「預覽」才看得到效果。'}],
+ r:(m)=>EDIT?`<div class="cdc-m ed-html"><b>自訂 HTML</b>${esc((m.code||'').slice(0,400))}</div>`:`<div class="cdc-m">${m.code||''}</div>`}
+};
+
+/* ========= 快速組合 ========= */
+const C=(type,o={})=>({type,...CH[type].def(),...o});
+const M=(type,o={})=>({id:uid(),type,...MODS[type].def(),...o});
+const BLUEPRINTS=[
+ {n:'說明＋按鈕',d:'如：校內工讀機會調查',make:()=>[M('card',{title:'校內工讀機會調查',big:true,children:[C('lead',{html:'調查對象：本校各單位、師長'}),C('p',{html:'說明文字第一段。',size:'lg'}),C('p',{html:'說明文字第二段。',size:'lg'}),C('btn',{text:'請由此進入表單',dv:true})]})]},
+ {n:'獎助方案三段式',d:'資格與金額／檢附文件／附件下載',make:()=>[M('card',{title:'1. 獎助資格與金額',children:[C('num')]}),M('card',{title:'2. 檢附文件',children:[C('num',{items:[{tag:'',html:'本要點之一般申請表',subs:[]},{tag:'',html:'成果報告表',subs:[]}]})]}),M('card',{title:'3. 附件下載',children:[C('docs',{badges:false})]})]},
+ {n:'活動介紹',d:'橫幅＋簡介資訊列＋成果照片',make:()=>[M('banner'),M('card',{title:'簡介',children:[C('info',{items:[{label:'活動目的',html:'說明',notes:[]},{label:'申請時間',html:'115年4月 ～ 6月',notes:[]},{label:'申請方式',html:'填寫線上表單提出申請 <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">活動申請表</a>',notes:[]},{label:'注意事項',html:'',notes:[{html:'注意事項一'},{html:'注意事項二'}]}]})]}),M('card',{title:'成果',children:[C('p',{html:'成果說明文字。'}),C('imgs',{items:[{img:{src:'',alt:'活動照片1'}},{img:{src:'',alt:'活動照片2'}}]})]})]},
+ {n:'Logo 連結牆',d:'區段標題＋4 欄 Logo',make:()=>[M('bar',{text:'相關資源連結'}),M('grid',{variant:'logo',cols:'4',items:[1,2,3,4].map(i=>({text:'單位名稱',href:'https://',img:{src:'',alt:'Logo'+i},nt:true}))})]},
+ {n:'入口卡片',d:'3 格文字卡片',make:()=>[M('grid')]},
+ {n:'PDF 文件頁',d:'標題＋下載＋預覽',make:()=>[M('pdf'),M('spacer')]},
+ {n:'法規下載專區',d:'多張卡片＋檔案列表',make:()=>[M('card',{title:'1. 相關法規與作業要點',children:[C('docs')]}),M('card',{title:'2. 申請表單',children:[C('docs',{items:[{text:'申請表',href:'/var/file/4/1004/img/xxx.docx',note:'',nt:true}]})]})]},
+ {n:'聯絡資訊',d:'標籤＋信箱連結',make:()=>[M('card',{title:'聯絡我們',children:[C('info',{items:[{label:'聯絡信箱',html:'<a href="mailto:xxx@niu.edu.tw">xxx@niu.edu.tw</a>',notes:[]},{label:'聯絡電話',html:'03-9317xxx',notes:[]}]})]})]},
+ {n:'圖文公告',d:'海報圖＋重點＋按鈕（無外框）',make:()=>[M('card',{header:'none',frame:false,children:[C('imgs',{items:[{img:{src:'',alt:'公告海報'}}]}),C('p',{html:'<strong>對象</strong>：'}),C('bullets'),C('btn',{text:'查看清單',style:'outline'})]})]}
+];
+
+/* ========= 狀態、存檔、復原 ========= */
+const KEY='cdc-builder-v1';
+let S, sel={mid:null,ci:null}, MODE='edit', hist=[], hi=-1;
+const openState=new Map(); let LISTDEF={};
+function freshState(){return {theme:'teal',cur:null,pages:[]}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.pages&&s.pages.length)return s}catch(e){}return null}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){try{const s2=clone(S);s2.pages.forEach(p=>stripPrev(p.mods));localStorage.setItem(KEY,JSON.stringify(s2));toast('預覽圖片太大，只存了文字內容')}catch(_){}}}
+function stripPrev(o){if(Array.isArray(o))o.forEach(stripPrev);else if(o&&typeof o==='object'){delete o._prev;Object.values(o).forEach(stripPrev)}return o}
+function page(){return S.pages.find(p=>p.id===S.cur)||S.pages[0]}
+function mods(){return page().mods}
+function modById(id){return mods().find(m=>m.id===id)}
+function commit(){const s=JSON.stringify(S);if(hist[hi]===s)return;hist=hist.slice(0,hi+1);hist.push(s);if(hist.length>80)hist.shift();hi=hist.length-1;save();updUndo()}
+function updUndo(){$('#undo').disabled=hi<=0;$('#redo').disabled=hi>=hist.length-1}
+function restore(i){hi=i;S=JSON.parse(hist[hi]);save();if(!modById(sel.mid))sel={mid:null,ci:null};renderAll();updUndo()}
+
+/* ========= 畫布渲染 ========= */
+function bar(name,kind){return `<div class="ed-bar"><span class="ed-h" draggable="true" data-drag="${kind}" title="拖曳移動">⠿</span><span class="nm">${name}</span><button data-a="${kind}up" title="上移">↑</button><button data-a="${kind}down" title="下移">↓</button><button data-a="${kind}dup" title="複製">⧉</button><button data-a="${kind}del" title="刪除">✕</button></div>`}
+function renderMod(m){EDIT=true;const h=MODS[m.type].r(m,'');return `<div class="ed-mod${sel.mid===m.id?' sel':''}" data-mid="${m.id}">${bar(MODS[m.type].n,'m')}${h}</div>`}
+function renderCanvas(){
+ const cv=$('#canvas');
+ if(MODE==='preview'){EDIT=false;PV=true;cv.innerHTML=mods().map(m=>MODS[m.type].r(m,'')).join('');PV=false;return}
+ if(!mods().length){cv.innerHTML=`<div class="start"><h2>從左邊把模組拖進來開始排版</h2><p>或直接套用一個組合／載入現有頁面，再改文字就好。</p><div class="chips">${BLUEPRINTS.map((b,i)=>`<button class="chip" data-bp="${i}">${b.n}</button>`).join('')}<button class="chip" data-opentpl="1" style="border-color:var(--pri);color:var(--pri)">載入現有頁面…</button></div></div>`;return}
+ cv.innerHTML=mods().map(renderMod).join('');
+}
+function rerenderMod(id){const m=modById(id);const el=$(`#canvas .ed-mod[data-mid="${id}"]`);if(!m||!el||MODE!=='edit')return renderCanvas();const t=document.createElement('div');t.innerHTML=renderMod(m);el.replaceWith(t.firstElementChild)}
+function updSel(){$$('#canvas .ed-mod').forEach(e=>e.classList.toggle('sel',e.dataset.mid===sel.mid));$$('#canvas .ed-child').forEach(e=>e.classList.toggle('sel',e.closest('.ed-mod').dataset.mid===sel.mid&&+e.dataset.ci===sel.ci))}
+function renderAll(){renderPages();renderCanvas();renderIns()}
+
+/* ========= 屬性面板 ========= */
+function F(fields,obj,base,parent){return fields.filter(f=>!f.show||f.show(obj,parent)).map(f=>fieldHTML(f,obj,base,parent)).join('')}
+function summary(f,it){for(const g of f.of){if((g.t==='text'||g.t==='rich'||g.t==='url')&&it[g.k]){const s=strip(it[g.k]);if(s)return s}if(g.t==='img'&&it[g.k]&&(it[g.k].alt||it[g.k].src))return it[g.k].alt||it[g.k].src.split('/').pop()}return '(未填)'}
+function fieldHTML(f,obj,base,parent){
+ const p=base+f.k,v=obj[f.k];
+ const lab=`<label class="f-l">${f.l}${f.hint?`<small>${f.hint}</small>`:''}</label>`;
+ switch(f.t){
+ case 'hint':return `<div class="f-hint">${f.l}</div>`;
+ case 'text':case 'url':return `<div class="f">${lab}<input class="f-i" type="text" data-k="${p}" value="${esc(v)}" placeholder="${esc(f.ph||'')}"></div>`;
+ case 'number':return `<div class="f">${lab}<input class="f-i" type="number" data-k="${p}" data-num="1" value="${esc(v)}"></div>`;
+ case 'area':return `<div class="f">${lab}<textarea class="f-i" data-k="${p}" spellcheck="false">${esc(v)}</textarea></div>`;
+ case 'rich':return `<div class="f">${lab}<div class="f-i f-rich" contenteditable="true" data-rich="1" data-k="${p}">${v||''}</div></div>`;
+ case 'select':return `<div class="f">${lab}<select class="f-i" data-k="${p}" data-struct="1">${f.o.map(([a,b])=>`<option value="${a}"${String(v)===a?' selected':''}>${b}</option>`).join('')}</select></div>`;
+ case 'check':return `<label class="f-c"><input type="checkbox" data-k="${p}" data-struct="1" data-chk="1"${v?' checked':''}> ${f.l}</label>`;
+ case 'img':{if(!obj[f.k])obj[f.k]={src:'',alt:''};const o=obj[f.k];const th=o._prev||(o.src&&o.src.startsWith('data:')?o.src:phSVG(o.alt,o.src));
+  return `<div class="f">${lab}<div class="f-img-row"><img class="f-thumb" src="${esc(th)}"><div><input data-k="${p}.src" value="${esc(o.src)}" placeholder="圖片路徑（可留空，到後台再選）"><input data-k="${p}.alt" value="${esc(o.alt)}" placeholder="替代文字 alt"><div class="f-img-act"><label class="mini">選預覽用圖片<input type="file" accept="image/*" data-img="${p}" hidden></label>${o._prev?`<button class="mini" data-imgclr="${p}">移除預覽</button>`:''}</div></div></div><div style="font-size:11px;color:var(--ui2);margin-top:4px">預覽用圖片只在編輯器裡顯示，不會輸出到程式碼。</div></div>`}
+ case 'list':{const arr=v||(obj[f.k]=[]);LISTDEF[p]=f;
+  return `<div class="f">${lab}${arr.map((it,i)=>{const ip=p+'.'+i;const op=openState.has(ip)?openState.get(ip):arr.length<=2;
+   return `<details class="li" data-op="${ip}"${op?' open':''}><summary><span class="li-n">${i+1}</span><span class="li-s">${esc(summary(f,it))}</span><span class="li-a"><button data-la="up" data-k="${p}" data-i="${i}" title="上移">↑</button><button data-la="down" data-k="${p}" data-i="${i}" title="下移">↓</button><button data-la="dup" data-k="${p}" data-i="${i}" title="複製">⧉</button><button class="x" data-la="del" data-k="${p}" data-i="${i}" title="刪除">✕</button></span></summary><div class="li-b">${F(f.of,it,ip+'.',obj)}</div></details>`}).join('')}<button class="li-add" data-la="add" data-k="${p}">＋ ${f.add||'新增'}</button></div>`}
+ }return ''}
+function renderIns(){
+ LISTDEF={};const el=$('#ins');const m=modById(sel.mid);
+ if(MODE==='preview'){el.innerHTML=`<div class="ins-empty"><b>預覽模式</b><br>這是貼到網站後的樣子。切回「編輯」才能修改。</div>`;return}
+ if(!m){el.innerHTML=`<div class="ins-empty"><b>怎麼用</b><br>① 從左邊拖模組到中間（或直接點一下加入）<br>② 文字直接在畫面上點了就能改<br>③ 選取文字會跳出工具列：粗體、強調、加連結<br>④ 點一下模組，這裡會出現連結、圖片、項目增減等設定<br>⑤ 按右上「產出程式碼」複製貼到後台<br><br><b>圖片</b>：路徑可以先空著，輸出會放一張「請替換」的佔位圖，到後台點兩下換成正式圖片即可。</div>`;return}
+ const def=MODS[m.type];
+ if(m.type==='card'&&sel.ci!=null&&m.children[sel.ci]){
+  const c=m.children[sel.ci],cd=CH[c.type],base='children.'+sel.ci+'.';
+  el.innerHTML=`<div class="ins-hd"><div class="crumb"><a data-selci="-1">← ${esc(m.title||'標題卡片')}</a></div><h2>${cd.i} ${cd.n}</h2><div class="ins-act"><button data-a="cup">↑ 上移</button><button data-a="cdown">↓ 下移</button><button data-a="cdup">⧉ 複製</button><button class="del" data-a="cdel">✕ 刪除</button></div></div><div class="ins-bd">${cd.f.length?F(cd.f,c,base,c):'<div class="f-hint">這個元件沒有可調整的設定。</div>'}</div>`;
+ } else {
+  let kids='';
+  if(m.type==='card')kids=`<div class="sec">卡片裡的內容元件</div><div class="kids">${(m.children||[]).map((c,i)=>`<div class="kid" data-selci="${i}"><span class="k1">${CH[c.type].i} ${CH[c.type].n}</span><span class="k2">${esc(strip(c.html||(c.items&&c.items[0]&&(c.items[0].html||c.items[0].text||c.items[0].label))||c.text||''))}</span></div>`).join('')||'<div class="f-hint">還沒有內容</div>'}</div><select class="f-i" id="addKid"><option value="">＋ 加入內容元件…</option>${Object.entries(CH).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select>`;
+  el.innerHTML=`<div class="ins-hd"><h2>${def.i} ${def.n}</h2><div class="ins-act"><button data-a="mup">↑ 上移</button><button data-a="mdown">↓ 下移</button><button data-a="mdup">⧉ 複製</button><button class="del" data-a="mdel">✕ 刪除</button></div></div><div class="ins-bd">${F(def.f,m,'',m)}${kids}</div>`;
+ }
+}
+
+/* ========= 選單 ========= */
+function renderPal(){
+ $('#pal').innerHTML=`<h3>版面模組</h3>${Object.entries(MODS).map(([k,v])=>`<div class="pal-i" draggable="true" data-pal="mod" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}
+ <h3>內容元件</h3><div class="pal-note">放進「標題卡片」裡。拖到空白處會自動包一張新卡片。</div>${Object.entries(CH).map(([k,v])=>`<div class="pal-i child" draggable="true" data-pal="child" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}
+ <h3>快速組合</h3>${BLUEPRINTS.map((b,i)=>`<div class="pal-i" data-bp="${i}" style="cursor:pointer"><b>✦</b><span>${b.n}<small>${b.d}</small></span></div>`).join('')}`;
+}
+function renderPages(){$('#pageSel').innerHTML=S.pages.map(p=>`<option value="${p.id}"${p.id===S.cur?' selected':''}>${esc(p.name)}</option>`).join('')}
+function renderTheme(){$('#themeSel').innerHTML=Object.entries(THEMES).map(([k,v])=>`<option value="${k}"${S.theme===k?' selected':''}>配色：${v.name}</option>`).join('')}
+
+/* ========= 操作 ========= */
+function insertMods(list,at){const ms=mods();if(at==null){const i=ms.findIndex(m=>m.id===sel.mid);at=i<0?ms.length:i+1}ms.splice(at,0,...list);sel={mid:list[0].id,ci:null};commit();renderCanvas();renderIns();setTimeout(()=>{const e=$(`#canvas .ed-mod[data-mid="${list[0].id}"]`);e&&e.scrollIntoView({behavior:'smooth',block:'nearest'})},30)}
+function addChild(type,mid,at){
+ let m=modById(mid);
+ if(!m||m.type!=='card'){const card=M('card',{title:'新區塊',children:[]});const ms=mods();let i=ms.findIndex(x=>x.id===mid);ms.splice(i<0?ms.length:i+1,0,card);m=card;at=0}
+ if(at==null)at=sel.mid===m.id&&sel.ci!=null?sel.ci+1:m.children.length;
+ m.children.splice(at,0,C(type));sel={mid:m.id,ci:at};commit();renderCanvas();renderIns();
+}
+function modAct(a){const ms=mods();const i=ms.findIndex(m=>m.id===sel.mid);if(i<0)return;const m=ms[i];
+ if(a==='mup'&&i>0){[ms[i-1],ms[i]]=[ms[i],ms[i-1]]}
+ else if(a==='mdown'&&i<ms.length-1){[ms[i+1],ms[i]]=[ms[i],ms[i+1]]}
+ else if(a==='mdup'){const c=clone(m);c.id=uid();ms.splice(i+1,0,c);sel={mid:c.id,ci:null}}
+ else if(a==='mdel'){ms.splice(i,1);sel={mid:(ms[i]||ms[i-1]||{}).id||null,ci:null};toast('已刪除（可按 ↶ 復原）')}
+ else if(m.type==='card'&&sel.ci!=null){const k=m.children,j=sel.ci;
+  if(a==='cup'&&j>0){[k[j-1],k[j]]=[k[j],k[j-1]];sel.ci--}
+  else if(a==='cdown'&&j<k.length-1){[k[j+1],k[j]]=[k[j],k[j+1]];sel.ci++}
+  else if(a==='cdup'){k.splice(j+1,0,clone(k[j]));sel.ci++}
+  else if(a==='cdel'){k.splice(j,1);sel.ci=k.length?Math.min(j,k.length-1):null;toast('已刪除（可按 ↶ 復原）')}
+ } else return;
+ commit();renderCanvas();renderIns();
+}
+function listAct(a,k,i){const m=modById(sel.mid);const arr=getPath(m,k);const f=LISTDEF[k];if(!arr)return;
+ if(a==='add'){arr.push(f.nu());openState.set(k+'.'+(arr.length-1),true)}
+ else if(a==='up'&&i>0)[arr[i-1],arr[i]]=[arr[i],arr[i-1]];
+ else if(a==='down'&&i<arr.length-1)[arr[i+1],arr[i]]=[arr[i],arr[i+1]];
+ else if(a==='dup'){arr.splice(i+1,0,clone(arr[i]));openState.set(k+'.'+(i+1),true)}
+ else if(a==='del')arr.splice(i,1);
+ commit();rerenderMod(m.id);renderIns();
+}
+
+/* ========= 文字清理 ========= */
+function clean(html){
+ const d=document.createElement('div');d.innerHTML=html||'';
+ const walk=(n,out)=>{
+  for(const c of [...n.childNodes]){
+   if(c.nodeType===3){out.appendChild(document.createTextNode(c.nodeValue.replace(/[\t\r\n]+\s*/g,'').replace(/ {2,}/g,' ')));continue}
+   if(c.nodeType!==1)continue;
+   const tg=c.tagName.toLowerCase(),cl=c.className&&typeof c.className==='string'?c.className:'';
+   if(tg==='br'){out.appendChild(document.createElement('br'));continue}
+   let el=null;
+   if(tg==='b'||tg==='strong')el=document.createElement('strong');
+   else if(tg==='span'&&/(^|-)hl\b|highlight/.test(cl)&&!/invite-highlight|cdc-mark/.test(cl)){el=document.createElement('span');el.className='cdc-hl'}
+   else if(tg==='span'&&/invite-highlight|cdc-mark/.test(cl)){el=document.createElement('span');el.className='cdc-mark'}
+   else if(tg==='a'){el=document.createElement('a');el.setAttribute('href',c.getAttribute('href')||'#');if(c.getAttribute('target')==='_blank')el.setAttribute('target','_blank');if(/btn/.test(cl))el.className='cdc-btn-sm'}
+   if(el){walk(c,el);out.appendChild(el)}
+   else{if((tg==='div'||tg==='p')&&out.childNodes.length&&out.lastChild.nodeName!=='BR')out.appendChild(document.createElement('br'));walk(c,out)}
+  }};
+ const o=document.createElement('div');walk(d,o);
+ let s=o.innerHTML.replace(/^(\s|&nbsp;|<br>)+|(\s|<br>)+$/g,'');
+ return s.replace(/<strong><\/strong>|<span class="[^"]*"><\/span>/g,'');
+}
+
+/* ========= 舊程式碼匯入 ========= */
+const qs=(el,suf)=>el.querySelector(`[class$="${suf}"],[class*="${suf} "]`);
+const hasCls=(el,suf)=>el.classList&&[...el.classList].some(c=>c.endsWith(suf));
+const txt=el=>el?(el.textContent||'').replace(/\s+/g,' ').trim():'';
+const imgOf=el=>el?{src:el.getAttribute('src')||'',alt:el.getAttribute('alt')||''}:{src:'',alt:''};
+function detectStyle(tags){if(!tags.length)return 'num';if(tags.every((t,i)=>t===String(i+1)))return 'num';if(tags.every((t,i)=>t===CN[i]))return 'cn';if(tags.every((t,i)=>t===GAN[i]))return 'gan';return 'custom'}
+function importHTML(src){
+ const m=src.match(/<!--\s*cdc-data:([A-Za-z0-9+/=]+)\s*-->/);
+ if(m){try{const d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));if(d.mods)return d.mods.map(x=>({...x,id:uid()}))}catch(e){}}
+ const doc=new DOMParser().parseFromString('<body>'+src+'</body>','text/html');
+ doc.querySelectorAll('style,meta,title,script,link').forEach(e=>e.remove());
+ const out=[];for(const el of [...doc.body.children])parseTop(el,out);return out;
+}
+function parseTop(el,out){
+ const c=el.className||'';
+ if(hasCls(el,'pdf-wrap')){const a=el.querySelector('.pdf-header a');const fr=el.querySelector('iframe');let s=fr?fr.getAttribute('src')||'':'';let zoom='';const zm=s.match(/#zoom=(\d+)/);if(zm){zoom=zm[1];s=s.replace(/#.*$/,'')}
+  out.push(M('pdf',{title:txt(el.querySelector('.pdf-header span')),src:s||(a&&a.getAttribute('href'))||'',dl:!!a,dlText:a?txt(a):'下載 PDF',zoom,height:parseInt((fr&&getComputedHeight(fr))||700)}));return}
+ if(hasCls(el,'explore-wrap')){out.push(M('grid',{variant:'text',cols:'3',items:[...el.querySelectorAll('a')].map(a=>({text:clean(a.innerHTML),href:a.getAttribute('href')||'',img:{src:'',alt:''},nt:a.getAttribute('target')==='_blank'}))}));return}
+ if(hasCls(el,'link-section-title')){out.push(M('bar',{text:txt(el)}));return}
+ if(hasCls(el,'link-wrap')||hasCls(el,'edu-wrap')){const as=[...el.querySelectorAll('a')];const cols=el.querySelector('.col-sm-3')?'4':el.querySelector('.col-sm-6')?'2':'3';
+  out.push(M('grid',{variant:'logo',cols,items:as.map(a=>({text:clean((a.querySelector('[class$="label"]')||{}).innerHTML||''),href:a.getAttribute('href')||'',img:imgOf(a.querySelector('img')),nt:a.getAttribute('target')==='_blank'}))}));return}
+ if(hasCls(el,'invite-wrap')){const kids=[];const body=qs(el,'-body')||el;
+  for(const x of body.children){if(hasCls(x,'greeting'))kids.push(C('lead',{html:clean(x.innerHTML)}));else if(x.tagName==='P')kids.push(C('p',{html:clean(x.innerHTML),size:'lg'}));else if(hasCls(x,'-cta')){const a=x.querySelector('a');kids.push(C('btn',{lead:txt(qs(x,'cta-text')),text:txt(a),href:a?a.getAttribute('href'):'',style:'outline',dv:true,nt:true}))}}
+  out.push(M('card',{header:'image',img:imgOf(el.querySelector('img')),children:kids}));return}
+ if(hasCls(el,'survey2-wrap')){const b=qs(el,'-banner');if(b)out.push(M('banner',{img:imgOf(b.querySelector('img'))}));
+  out.push(M('card',{title:txt(el.querySelector('h2')),children:[infoOf([...el.querySelectorAll('[class$="-item"]')])]}));return}
+ if(hasCls(el,'survey-wrap')){const kids=[];const body=qs(el,'-body');
+  for(const x of body.children){if(hasCls(x,'-meta'))kids.push(C('lead',{html:clean(x.innerHTML)}));else if(x.tagName==='P')kids.push(C('p',{html:clean(x.innerHTML),size:'lg'}));else if(hasCls(x,'-cta')){const a=x.querySelector('a');kids.push(C('btn',{text:txt(a),href:a.getAttribute('href'),style:'solid',dv:true,nt:true}))}}
+  out.push(M('card',{title:txt(el.querySelector('h2')),big:true,children:kids}));return}
+ if(hasCls(el,'contact-wrap')){out.push(M('card',{title:txt(el.querySelector('h2')),children:[infoOf([...el.querySelectorAll('[class$="-item"]')])]}));return}
+ if(hasCls(el,'activity-wrap')){const b=qs(el,'-banner');if(b)out.push(M('banner',{img:imgOf(b.querySelector('img'))}));blocksOf(el,out);return}
+ if(hasCls(el,'notice-wrap')){const kids=[];const im=[...el.querySelectorAll('.notice-img img')];if(im.length)kids.push(C('imgs',{items:im.map(i=>({img:imgOf(i)}))}));const body=qs(el,'-body');if(body)kids.push(...bodyOf(body));
+  out.push(M('card',{header:'none',frame:false,children:kids}));return}
+ if(el.tagName==='SECTION'&&hasCls(el,'staff-card')||hasCls(el,'staff-card')){
+  out.push(M('staff',{name:txt(el.querySelector('.staff-name')),pills:[...el.querySelectorAll('.pill')].map(p=>({html:clean(p.innerHTML).replace(/<\/?strong>/g,'')})),dutyTitle:txt(el.querySelector('.section-title'))||'業務職掌',duties:[...el.querySelectorAll('.duties li')].map(l=>({text:txt(l)}))}));return}
+ if(/-wrap\b/.test(c)&&el.querySelector('[class$="-block"]')){blocksOf(el,out);return}
+ if(el.tagName==='P'){const as=[...el.querySelectorAll('a')];const imgs=el.querySelectorAll('img');
+  if(imgs.length&&as.length&&as.every(a=>a.querySelector('img'))&&!txt(el).replace(/\u00a0/g,'')){const items=as.map(a=>({img:imgOf(a.querySelector('img')),href:a.getAttribute('href')||'',nt:a.getAttribute('target')==='_blank'}));const last=out[out.length-1];
+   if(last&&last._pimg){last.children[0].items.push(...items)}else{const cd=M('card',{header:'none',frame:false,children:[C('imggrid',{cols:String(Math.min(4,Math.max(2,as.length))),items})]});Object.defineProperty(cd,'_pimg',{value:true,enumerable:false});out.push(cd)}return}
+  if(!txt(el).replace(/ /g,'')&&!imgs.length){out.push(M('spacer'));return}}
+ out.push(M('html',{code:el.outerHTML}));
+}
+function getComputedHeight(fr){const st=fr.getAttribute('style')||'';const m=st.match(/height:\s*(\d+)/);return m?m[1]:fr.getAttribute('height')||700}
+function blocksOf(el,out){for(const b of el.querySelectorAll('[class$="-block"]')){const h=b.querySelector('[class$="-header"] h2,h2');const body=b.querySelector('[class$="-body"]')||b;out.push(M('card',{title:txt(h),children:bodyOf(body,!!el.closest('.docs-wrap')||hasCls(el,'docs-wrap'))}))}}
+function infoOf(items){return C('info',{items:items.map(it=>{const lb=it.querySelector('[class$="-label"]');const ct=it.querySelector('[class$="-content"],[class$="-value"]')||it;const cc=ct.cloneNode(true);const nl=cc.querySelector('ul');let notes=[];if(nl){notes=[...nl.querySelectorAll('li')].map(l=>({html:clean(l.innerHTML)}));nl.remove()}
+ return {label:txt(lb),html:clean(cc.innerHTML),notes}})})}
+function bodyOf(body,badges){
+ const kids=[];let num=null,info=null,imgs=null;
+ const endAll=()=>{num=null;info=null;imgs=null};
+ const pushNum=(tag,el)=>{if(!num){num={type:'num',style:'num',items:[],_tags:[]};kids.push(num)}const cc=el.cloneNode(true);let subs=[];
+   const tb=cc.querySelector('table');let table=null;if(tb){table=tableOf(tb);tb.remove()}
+   const sl=cc.querySelector('ul');if(sl){subs=[...sl.children].map(li=>{const t=li.querySelector('[class$="-tag"],[class$="-num"]');const cl=li.cloneNode(true);const tt=cl.querySelector('[class$="-tag"],[class$="-num"]');if(tt)tt.remove();return {tag:t?txt(t):'',html:clean(cl.innerHTML)}});sl.remove()}
+   num.items.push({tag,html:clean(cc.innerHTML),subs});num._tags.push(tag);
+   if(table){kids.push(table);num=null}};
+ for(const x of body.children){
+  const tg=x.tagName;
+  if(tg==='UL'&&hasCls(x,'docs-list')){endAll();kids.push(C('docs',{badges:!!badges,items:[...x.querySelectorAll('li')].map(li=>{const a=li.querySelector('a');return {text:txt(a),href:a?a.getAttribute('href'):'',note:txt(li.querySelector('[class$="-note"]')),nt:!a||a.getAttribute('target')==='_blank'}})}));continue}
+  if(tg==='UL'&&hasCls(x,'site-list')){endAll();kids.push(C('sites',{items:[...x.children].map(li=>{const a=li.querySelector('a');return {text:txt(a),href:a?a.getAttribute('href'):'',desc:txt(li.querySelector('[class$="-desc"]')),nt:!a||a.getAttribute('target')==='_blank'}})}));continue}
+  if(tg==='UL'&&[...x.children].some(li=>li.querySelector(':scope>[class$="-num"]'))){endAll();for(const li of x.children){const n=li.querySelector(':scope>[class$="-num"]');const d=li.querySelector(':scope>div')||li;pushNum(txt(n),d)}continue}
+  if(tg==='DIV'&&x.querySelector(':scope>[class$="-num"]')){info=null;imgs=null;const n=x.querySelector(':scope>[class$="-num"]');const t=x.querySelector(':scope>[class$="-text"]')||x;pushNum(txt(n),t);continue}
+  if(tg==='DIV'&&x.querySelector(':scope>[class$="-label"]')){num=null;imgs=null;const one=infoOf([x]);if(!info){info=one;kids.push(info)}else info.items.push(...one.items);continue}
+  if(tg==='DIV'&&hasCls(x,'mech-row')){endAll();kids.push(C('imggrid',{cols:'3',items:[...x.querySelectorAll('a')].map(a=>({img:imgOf(a.querySelector('img')),href:a.getAttribute('href')||'',nt:a.getAttribute('target')==='_blank'}))}));continue}
+  if(tg==='IMG'){num=null;info=null;if(!imgs){imgs=C('imgs',{items:[]});kids.push(imgs)}imgs.items.push({img:imgOf(x)});continue}
+  if(tg==='TABLE'){endAll();kids.push(tableOf(x));continue}
+  if(tg==='P'){endAll();const a=x.querySelector('a');if(a&&!txt(x).replace(txt(a),'').trim()&&/btn/.test(a.className)){kids.push(C('btn',{text:txt(a),href:a.getAttribute('href'),style:'outline',nt:a.getAttribute('target')==='_blank'}));continue}
+   const ims=[...x.querySelectorAll('img')];if(ims.length&&!txt(x)){imgs=C('imgs',{items:ims.map(i=>({img:imgOf(i)}))});kids.push(imgs);continue}
+   if(txt(x).replace(/ /g,''))kids.push(C('p',{html:clean(x.innerHTML),size:/intro|result/.test(x.className)?'md':'sm'}));continue}
+  if(tg==='UL'||tg==='OL'){endAll();kids.push(C('bullets',{items:[...x.children].map(li=>({html:clean(li.innerHTML)}))}));continue}
+  if(tg==='HR'){endAll();kids.push(C('hr'));continue}
+  endAll();if(txt(x))kids.push(C('p',{html:clean(x.innerHTML)}));
+ }
+ for(const k of kids)if(k.type==='num'){k.style=detectStyle(k._tags);delete k._tags}
+ return kids;
+}
+function tableOf(tb){const ths=[...tb.querySelectorAll('thead th')].map(txt);const groups=[];let g=null;
+ for(const tr of tb.querySelectorAll('tbody tr')){const tds=[...tr.children];if(tds.length>=3||tds[0]&&tds[0].hasAttribute('rowspan')){g={cat:txt(tds[0]),rows:[]};groups.push(g);tds.shift()}if(!g){g={cat:'',rows:[]};groups.push(g)}g.rows.push({a:txt(tds[0]),b:txt(tds[1])})}
+ const useCat=ths.length>=3;return C('table',{c1:useCat?ths[0]:'類別',c2:ths[useCat?1:0]||'項目',c3:ths[useCat?2:1]||'金額',useCat,groups})}
+
+/* ========= 輸出 ========= */
+function pretty(html){
+ const BL=/^(div|ul|ol|li|table|thead|tbody|tr|th|td|p|h2|iframe|hr)$/i;
+ const toks=html.match(/<[^>]+>|[^<]+/g)||[];let out=[],ind=0,line='';
+ const pad=()=>'  '.repeat(Math.max(ind,0));
+ const flush=()=>{if(line.trim())out.push(pad()+line.trim());line=''};
+ for(const t of toks){
+  if(t[0]==='<'&&t[1]!=='!'){const close=t[1]==='/';const name=(t.match(/^<\/?([a-zA-Z0-9]+)/)||[])[1]||'';
+   if(BL.test(name)){flush();if(close){ind--;out.push(pad()+t)}else{out.push(pad()+t);if(!/\/>$/.test(t)&&name.toLowerCase()!=='hr')ind++}continue}}
+  line+=t;
+ }
+ flush();
+ let s=out.join('\n');
+ const re=/^(\s*)(<([a-zA-Z0-9]+)\b[^>\n]*>)\n\s*((?!\s*<\/?(?:div|ul|ol|li|table|thead|tbody|tr|th|td|p|h2|iframe|hr)\b)[^\n]+)\n\s*(<\/\3>)$/gm;
+ let prev;do{prev=s;s=s.replace(re,'$1$2$4$5')}while(s!==prev);
+ s=s.replace(/^(\s*)(<([a-zA-Z0-9]+)\b[^>\n]*>)\n\s*(<\/\3>)$/gm,'$1$2$4');
+ return s;
+}
+function exportParts(){
+ EDIT=false;const ms=mods();
+ const css=buildCSS(S.theme,usedTypes(ms),'export');
+ const body=ms.map(m=>MODS[m.type].r(m,'')).join('');
+ let html=pretty(`<div class="cdc">${body}</div>`);
+ if(EXP.data){const d=JSON.stringify({v:1,theme:S.theme,mods:stripPrev(clone(ms)).map(({id,...r})=>r)});html+=`\n<!-- cdc-data:${btoa(unescape(encodeURIComponent(d)))} -->`}
+ return {css:`<style type="text/css">\n${css}</style>`,html};
+}
+
+/* ========= 彈窗 ========= */
+function modal(title,body,foot,small){$('#mdlTitle').textContent=title;$('#mdlBd').innerHTML=body;$('#mdlFt').innerHTML=foot||'';$('#mdlBox').classList.toggle('sm',!!small);$('#mdl').classList.add('on')}
+function closeModal(){$('#mdl').classList.remove('on')}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('已複製！到後台貼到「原始碼」模式')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('已複製！')}catch(_){toast('瀏覽器不讓複製，請手動全選複製')}ta.remove()}}
+function openExport(){
+ if(!mods().length){toast('頁面還是空的');return}
+ const draw=()=>{const {css,html}=exportParts();const all=css+'\n'+html;$('#codeOut').value=all;$('#codeSize').textContent=(all.length/1024).toFixed(1)+' KB'};
+ modal('產出程式碼',`<div class="opts"><label><input type="checkbox" id="oPh"${EXP.ph?' checked':''}> 沒填路徑的圖片放「請替換」佔位圖</label><label><input type="checkbox" id="oData"${EXP.data?' checked':''}> 附上可再編輯的資料（註解）</label></div><textarea class="code" id="codeOut" readonly spellcheck="false"></textarea>
+ <div class="note">貼法：後台編輯器切到 <b>「原始碼」</b> → 全選刪掉 → 貼上 → 切回來確認。<br>佔位圖：在後台點兩下圖片 →「瀏覽伺服器」換成正式圖片。<br>可再編輯資料：之後把整段原始碼複製回「匯入舊程式碼」，就能回到這個編輯器繼續改（如果後台編輯器會刪掉 HTML 註解，就用「頁面 ⋯ → 匯出專案檔」另外備份）。</div>`,
+ `<span id="codeSize" style="margin-right:auto;color:var(--ui2)"></span><button class="tb" id="cpCss">只複製 CSS</button><button class="tb" id="cpHtml">只複製 HTML</button><button class="tb pri" id="cpAll">複製全部</button>`);
+ draw();
+ $('#oPh').onchange=e=>{EXP.ph=e.target.checked;draw()};$('#oData').onchange=e=>{EXP.data=e.target.checked;draw()};
+ $('#cpAll').onclick=()=>copyText($('#codeOut').value);$('#cpCss').onclick=()=>copyText(exportParts().css);$('#cpHtml').onclick=()=>copyText(exportParts().html);
+}
+function tplPicker(id){return `<div class="tplgrid" id="${id}">${TEMPLATES.map((t,i)=>`<button class="tpl" data-ti="${i}">${esc(t.name)}<small>現有頁面</small></button>`).join('')}</div>`}
+function openImport(tab){
+ modal('匯入',`<div class="tabs"><button data-tab="paste" class="${tab!=='tpl'?'on':''}">貼上程式碼</button><button data-tab="tpl" class="${tab==='tpl'?'on':''}">載入現有頁面</button></div>
+ <div data-pane="paste"${tab==='tpl'?' hidden':''}><textarea class="code" id="impCode" style="height:36vh" placeholder="把網站後台「原始碼」整段貼進來（含 &lt;style&gt; 也沒關係）。&#10;也可以貼這個編輯器產出的程式碼或專案檔（.json 內容）。"></textarea><div class="note">看得懂的模組會變成可編輯的區塊；看不懂的部分會變成「自訂 HTML」原封不動保留。</div></div>
+ <div data-pane="tpl"${tab!=='tpl'?' hidden':''}>${tplPicker('impTpl')}<div class="note">這些是 Google 文件「網頁編輯」裡的 24 個頁面，載入後就能直接改。</div></div>`,
+ `<label style="margin-right:auto;display:flex;gap:6px;align-items:center"><input type="radio" name="impMode" value="append" checked> 加在目前頁面後面</label><label style="display:flex;gap:6px;align-items:center;margin-right:10px"><input type="radio" name="impMode" value="replace"> 取代目前頁面</label><button class="tb pri" id="impGo">匯入</button>`);
+ let ti=null;
+ $$('#mdl [data-tab]').forEach(b=>b.onclick=()=>{$$('#mdl [data-tab]').forEach(x=>x.classList.toggle('on',x===b));$$('#mdl [data-pane]').forEach(p=>p.hidden=p.dataset.pane!==b.dataset.tab)});
+ $('#impTpl').onclick=e=>{const b=e.target.closest('[data-ti]');if(!b)return;ti=+b.dataset.ti;$$('#impTpl .tpl').forEach(x=>x.classList.toggle('on',x===b))};
+ $('#impGo').onclick=()=>{
+  const tabNow=$('#mdl [data-tab].on').dataset.tab;let list=[];
+  if(tabNow==='tpl'){if(ti==null){toast('先選一個頁面');return}list=importHTML(TEMPLATES[ti].html)}
+  else{const v=$('#impCode').value.trim();if(!v){toast('先貼上程式碼');return}
+   if(v[0]==='{'){try{const d=JSON.parse(v);if(d.pages){S=d;S.cur=S.pages[0].id;commit();renderAll();renderTheme();closeModal();toast('已匯入專案檔');return}if(d.mods)list=d.mods.map(x=>({...x,id:uid()}))}catch(e){toast('JSON 格式不對');return}}
+   else list=importHTML(v)}
+  if(!list.length){toast('沒有讀到任何內容');return}
+  const mode=document.querySelector('input[name=impMode]:checked').value;
+  if(mode==='replace'){page().mods=list;sel={mid:null,ci:null};commit();renderCanvas();renderIns()}else insertMods(list,mods().length);
+  closeModal();toast(`匯入了 ${list.length} 個模組`);
+ };
+}
+function openPageMenu(){
+ modal('頁面管理',`<label class="fl">目前頁面名稱</label><input class="fi" id="pgName" value="${esc(page().name)}">
+ <label class="fl">新增頁面</label><div style="display:flex;gap:6px"><input class="fi" id="pgNew" placeholder="新頁面名稱"><select class="fi" id="pgFrom" style="width:auto"><option value="">空白</option><optgroup label="快速組合">${BLUEPRINTS.map((b,i)=>`<option value="b${i}">${b.n}</option>`).join('')}</optgroup><optgroup label="現有頁面">${TEMPLATES.map((t,i)=>`<option value="t${i}">${esc(t.name)}</option>`).join('')}</optgroup></select></div>
+ <div class="note">所有頁面自動存在這台電腦的瀏覽器裡。換電腦或清除瀏覽器資料前，記得「匯出專案檔」備份。</div>`,
+ `<button class="tb" id="pgDel" style="color:var(--danger);margin-right:auto">刪除目前頁面</button><button class="tb" id="pgExp">匯出專案檔</button><button class="tb" id="pgAdd">新增頁面</button><button class="tb pri" id="pgSave">儲存名稱</button>`,true);
+ $('#pgSave').onclick=()=>{page().name=$('#pgName').value.trim()||'未命名';commit();renderPages();closeModal()};
+ $('#pgAdd').onclick=()=>{const f=$('#pgFrom').value;let ms=[];let nm=$('#pgNew').value.trim();
+  if(f[0]==='b'){ms=BLUEPRINTS[+f.slice(1)].make();nm=nm||BLUEPRINTS[+f.slice(1)].n}else if(f[0]==='t'){ms=importHTML(TEMPLATES[+f.slice(1)].html);nm=nm||TEMPLATES[+f.slice(1)].name}
+  const p={id:uid(),name:nm||'新頁面',mods:ms};S.pages.push(p);S.cur=p.id;sel={mid:null,ci:null};commit();renderAll();closeModal()};
+ $('#pgDel').onclick=()=>{if(S.pages.length<=1){page().mods=[];page().name='未命名頁面'}else{S.pages=S.pages.filter(p=>p.id!==S.cur);S.cur=S.pages[0].id}sel={mid:null,ci:null};commit();renderAll();closeModal();toast('已刪除（可按 ↶ 復原）')};
+ $('#pgExp').onclick=()=>{modal('專案檔（全部頁面）',`<textarea class="code" id="pjOut" readonly></textarea><div class="note">複製起來存成文字檔備份。要還原時貼到「匯入舊程式碼 → 貼上程式碼」。</div>`,`<button class="tb pri" id="pjCp">複製</button>`);$('#pjOut').value=JSON.stringify(stripPrev(clone(S)));$('#pjCp').onclick=()=>copyText($('#pjOut').value)};
+}
+
+/* ========= 行內編輯 ========= */
+let rtTarget=null,savedRange=null,editLink=null,popKind='link';
+function syncFrom(el){
+ const k=el.dataset.k;if(!k)return;const inIns=!!el.closest('#ins');const m=modById(inIns?sel.mid:(el.closest('[data-mid]')||{}).dataset?.mid);if(!m)return;
+ const v=el.dataset.rich?clean(el.innerHTML):el.innerText.replace(/\s*\n\s*/g,' ');
+ setPath(m,k,v);
+ if(inIns){clearTimeout(syncFrom.t);syncFrom.t=setTimeout(()=>rerenderMod(m.id),120)}
+ else if(m.id===sel.mid){const t=$(`#ins [data-k="${CSS_ESC(k)}"]`);if(t&&t!==document.activeElement){if(t.tagName==='INPUT')t.value=v;else t.innerHTML=v}}
+}
+const CSS_ESC=s=>s.replace(/"/g,'\\"');
+function showRT(el){rtTarget=el;const r=el.getBoundingClientRect();const rt=$('#rt');rt.style.display='flex';const w=rt.offsetWidth;rt.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+'px';rt.style.top=Math.max(58,r.top-38)+'px'}
+function hideRT(){$('#rt').style.display='none';rtTarget=null}
+function closestIn(node,sel,root){let n=node&&node.nodeType===3?node.parentNode:node;while(n&&n!==root){if(n.matches&&n.matches(sel))return n;n=n.parentNode}return null}
+function wrapSel(cls){const s=getSelection();if(!s.rangeCount||!rtTarget)return;const ex=closestIn(s.anchorNode,'span.'+cls,rtTarget);
+ if(ex){const f=document.createDocumentFragment();while(ex.firstChild)f.appendChild(ex.firstChild);ex.replaceWith(f)}
+ else{const t=s.toString();if(!t){toast('先選取要強調的文字');return}document.execCommand('insertHTML',false,`<span class="${cls}">${esc(t)}</span>`)}
+ rtTarget.dispatchEvent(new Event('input',{bubbles:true}))}
+function openPop(kind){const s=getSelection();if(!s.rangeCount||!rtTarget)return;savedRange=s.getRangeAt(0).cloneRange();popKind=kind;
+ editLink=closestIn(s.anchorNode,'a',rtTarget);
+ $('#popTitle').textContent=kind==='btn'?'插入小按鈕連結':'插入連結';$('#popUrl').value=editLink?editLink.getAttribute('href'):'';$('#popNew').checked=editLink?editLink.target==='_blank':true;$('#popRm').style.display=editLink?'':'none';
+ const r=savedRange.getBoundingClientRect();const p=$('#pop');p.style.display='block';p.style.left=Math.max(8,Math.min(innerWidth-310,r.left))+'px';p.style.top=Math.min(innerHeight-170,r.bottom+8)+'px';setTimeout(()=>$('#popUrl').focus(),0)}
+function closePop(){$('#pop').style.display='none'}
+function applyPop(remove){const tgt=rtTarget||savedRange&&closestIn(savedRange.startContainer,'[contenteditable]',document.body);closePop();if(!tgt)return;tgt.focus();const s=getSelection();s.removeAllRanges();s.addRange(savedRange);
+ const url=$('#popUrl').value.trim(),nt=$('#popNew').checked;
+ if(editLink){if(remove||!url){const f=document.createDocumentFragment();while(editLink.firstChild)f.appendChild(editLink.firstChild);editLink.replaceWith(f)}else{editLink.setAttribute('href',url);nt?editLink.setAttribute('target','_blank'):editLink.removeAttribute('target');editLink.className=popKind==='btn'?'cdc-btn-sm':(editLink.className==='cdc-btn-sm'?'cdc-btn-sm':'')}}
+ else if(url){const t=s.toString()||(popKind==='btn'?'按鈕':url);document.execCommand('insertHTML',false,`<a${popKind==='btn'?' class="cdc-btn-sm"':''} href="${esc(url)}"${nt?' target="_blank"':''}>${esc(t)}</a>`)}
+ tgt.dispatchEvent(new Event('input',{bubbles:true}));commit()}
+
+/* ========= 事件 ========= */
+document.addEventListener('focusin',e=>{const el=e.target;if(el.dataset&&el.dataset.rich)showRT(el);else if(!e.target.closest('#rt,#pop'))hideRT()});
+document.addEventListener('focusout',e=>{const el=e.target;if(el.isContentEditable&&el.dataset.k){commit();if(el.closest('#ins'))renderInsSoon()}setTimeout(()=>{const a=document.activeElement;if(!(a&&a.dataset&&a.dataset.rich)&&!$('#pop').contains(a))hideRT()},0)});
+function renderInsSoon(){clearTimeout(renderInsSoon.t);renderInsSoon.t=setTimeout(()=>{if(!$('#ins').contains(document.activeElement))renderIns()},50)}
+document.addEventListener('input',e=>{const el=e.target;if(el.isContentEditable&&el.dataset.k)syncFrom(el)});
+document.addEventListener('keydown',e=>{
+ const el=e.target;
+ if(el.isContentEditable&&el.dataset.k){
+  if(e.key==='Enter'){e.preventDefault();if(el.dataset.rich){if(!document.execCommand('insertLineBreak'))document.execCommand('insertHTML',false,'<br>')}else el.blur()}
+  return}
+ const typing=el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT';
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!typing){e.preventDefault();e.shiftKey?(hi<hist.length-1&&restore(hi+1)):(hi>0&&restore(hi-1))}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'&&!typing){e.preventDefault();hi<hist.length-1&&restore(hi+1)}
+ if(e.key==='Escape'){closeModal();closePop()}
+});
+document.addEventListener('paste',e=>{const el=e.target.closest&&e.target.closest('[contenteditable][data-k]');if(!el)return;e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,el.dataset.rich?t:t.replace(/\s*\n\s*/g,' '))});
+$('#rt').addEventListener('mousedown',e=>e.preventDefault());
+$('#rt').addEventListener('click',e=>{const b=e.target.closest('[data-rt]');if(!b||!rtTarget)return;const a=b.dataset.rt;
+ if(a==='bold'){document.execCommand('bold');rtTarget.dispatchEvent(new Event('input',{bubbles:true}))}
+ else if(a==='hl')wrapSel('cdc-hl');else if(a==='mark')wrapSel('cdc-mark');
+ else if(a==='link'||a==='btn')openPop(a);
+ else if(a==='clear'){const t=getSelection().toString();if(t)document.execCommand('insertText',false,t);else toast('先選取要清除格式的文字');rtTarget.dispatchEvent(new Event('input',{bubbles:true}))}});
+$('#popOk').onclick=()=>applyPop(false);$('#popRm').onclick=()=>applyPop(true);$('#popCancel').onclick=closePop;
+$('#popUrl').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyPop(false)}});
+
+// 畫布點擊
+$('#canvas').addEventListener('click',e=>{
+ if(e.target.closest('a'))e.preventDefault();
+ const bp=e.target.closest('[data-bp]');if(bp){insertMods(BLUEPRINTS[+bp.dataset.bp].make());return}
+ if(e.target.closest('[data-opentpl]')){openImport('tpl');return}
+ if(MODE!=='edit')return;
+ const act=e.target.closest('[data-a]');const md=e.target.closest('.ed-mod');if(!md)return;
+ const ch=e.target.closest('.ed-child');const nsel={mid:md.dataset.mid,ci:ch?+ch.dataset.ci:null};
+ const changed=nsel.mid!==sel.mid||nsel.ci!==sel.ci;sel=nsel;
+ if(act){modAct(act.dataset.a);return}
+ const ed=e.target.closest('[data-k]');
+ if(ed){const parts=ed.dataset.k.split('.');let acc=[];parts.forEach((s,i)=>{acc.push(s);if(/^\d+$/.test(s)&&i>0)openState.set(acc.join('.'),true)})}
+ if(changed){updSel();renderIns()}else if(ed)renderIns();
+ if(ed){const t=$(`#ins [data-k="${CSS_ESC(ed.dataset.k)}"]`);t&&t.scrollIntoView({block:'nearest'})}
+});
+// 按住拖曳把手時先選取，讓工具列保持顯示
+$('#canvas').addEventListener('mousedown',e=>{const h=e.target.closest('.ed-h');if(!h)return;const md=h.closest('.ed-mod');const ch=h.dataset.drag==='c'?h.closest('.ed-child'):null;sel={mid:md.dataset.mid,ci:ch?+ch.dataset.ci:null};updSel();renderIns()});
+// 點空白取消選取
+$('#stage').addEventListener('mousedown',e=>{if(e.target===$('#stage')||e.target===$('#paper')){sel={mid:null,ci:null};updSel();renderIns()}});
+
+// 屬性面板事件
+$('#ins').addEventListener('click',e=>{
+ const la=e.target.closest('[data-la]');if(la){e.preventDefault();e.stopPropagation();listAct(la.dataset.la,la.dataset.k,+la.dataset.i);return}
+ const a=e.target.closest('[data-a]');if(a){modAct(a.dataset.a);return}
+ const sc=e.target.closest('[data-selci]');if(sc){const i=+sc.dataset.selci;sel.ci=i<0?null:i;updSel();renderIns();return}
+ const clr=e.target.closest('[data-imgclr]');if(clr){const m=modById(sel.mid);const o=getPath(m,clr.dataset.imgclr);delete o._prev;commit();rerenderMod(m.id);renderIns()}
+});
+$('#ins').addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.op)openState.set(d.dataset.op,d.open)},true);
+$('#ins').addEventListener('input',e=>{const el=e.target;if(el.isContentEditable||!el.dataset.k||el.dataset.struct)return;const m=modById(sel.mid);if(!m)return;
+ let v=el.value;if(el.dataset.num)v=v===''?'':+v;setPath(m,el.dataset.k,v);clearTimeout(syncFrom.t);syncFrom.t=setTimeout(()=>rerenderMod(m.id),120)});
+$('#ins').addEventListener('change',e=>{const el=e.target;const m=modById(sel.mid);if(!m)return;
+ if(el.id==='addKid'){if(el.value)addChild(el.value,m.id);return}
+ if(el.dataset.img){const f=el.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>shrink(rd.result,f.type,(url)=>{const o=getPath(m,el.dataset.img);o._prev=url;commit();rerenderMod(m.id);renderIns()});rd.readAsDataURL(f);return}
+ if(el.dataset.struct){setPath(m,el.dataset.k,el.dataset.chk?el.checked:el.value);commit();rerenderMod(m.id);renderIns();return}
+ if(el.dataset.k){commit();renderInsLabelsSoon()}
+});
+function renderInsLabelsSoon(){/* 更新清單摘要 */const a=document.activeElement;if(!$('#ins').contains(a))renderIns()}
+function shrink(url,type,cb){if(/svg|gif/.test(type))return cb(url);const im=new Image();im.onload=()=>{const max=1000;if(im.width<=max&&url.length<300000)return cb(url);const sc=Math.min(1,max/im.width);const c=document.createElement('canvas');c.width=im.width*sc;c.height=im.height*sc;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL(type==='image/png'?'image/png':'image/jpeg',.85))};im.src=url}
+
+// 左側選單：點一下加入
+$('#pal').addEventListener('click',e=>{const it=e.target.closest('.pal-i');if(!it)return;if(MODE!=='edit')setMode('edit');
+ if(it.dataset.bp!=null){insertMods(BLUEPRINTS[+it.dataset.bp].make());return}
+ if(it.dataset.pal==='mod')insertMods([M(it.dataset.type)]);else addChild(it.dataset.type,sel.mid)});
+
+/* ========= 拖拉 ========= */
+let drag=null;const dropEl=$('#drop');
+document.addEventListener('dragstart',e=>{
+ const p=e.target.closest&&e.target.closest('[data-pal]');
+ const h=e.target.closest&&e.target.closest('.ed-h');
+ if(p){drag={src:'pal',kind:p.dataset.pal==='mod'?'mod':'child',type:p.dataset.type}}
+ else if(h){const md=h.closest('.ed-mod');if(h.dataset.drag==='m'){drag={src:'mod',kind:'mod',id:md.dataset.mid};e.dataTransfer.setDragImage(md,30,20)}else{const ch=h.closest('.ed-child');drag={src:'child',kind:'child',mid:md.dataset.mid,ci:+ch.dataset.ci};e.dataTransfer.setDragImage(ch,30,20)}}
+ else{if(e.target.closest&&e.target.closest('#canvas')&&(e.target.tagName==='A'||e.target.tagName==='IMG'))e.preventDefault();drag=null;return}
+ e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','cdc')}catch(_){}
+ if(MODE!=='edit')setMode('edit');
+});
+document.addEventListener('dragend',()=>{drag=null;hideDrop()});
+function hideDrop(){dropEl.style.display='none';$$('.ed-dropin').forEach(x=>x.classList.remove('ed-dropin'))}
+function lineAt(el,after){const r=el.getBoundingClientRect();const g=after?r.bottom+(el.classList.contains('ed-mod')?11:9):r.top-(el.classList.contains('ed-mod')?11:9);dropEl.style.display='block';dropEl.style.left=r.left+'px';dropEl.style.width=r.width+'px';dropEl.style.top=(g-1)+'px'}
+function findDrop(e){
+ const cv=$('#canvas');
+ if(drag.kind==='child'){
+  const ch=e.target.closest('.ed-child');
+  if(ch&&cv.contains(ch)){const r=ch.getBoundingClientRect();const after=e.clientY>r.top+r.height/2;return {t:'child',mid:ch.closest('.ed-mod').dataset.mid,ci:+ch.dataset.ci+(after?1:0),el:ch,after}}
+  const body=e.target.closest('[data-body]');
+  if(body&&cv.contains(body)){const mid=body.closest('.ed-mod').dataset.mid;const kids=[...body.querySelectorAll(':scope>.ed-child')];let ci=kids.length;for(let i=0;i<kids.length;i++){const r=kids[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2){ci=i;break}}
+   return kids.length?{t:'child',mid,ci,el:kids[Math.min(ci,kids.length-1)],after:ci>=kids.length}:{t:'child',mid,ci:0,box:body}}
+ }
+ const ms=[...cv.querySelectorAll(':scope>.ed-mod')];
+ if(!ms.length)return {t:'mod',idx:0,box:cv};
+ const md=e.target.closest('.ed-mod');
+ if(md&&cv.contains(md)){const r=md.getBoundingClientRect();const after=e.clientY>r.top+r.height/2;return {t:'mod',idx:ms.indexOf(md)+(after?1:0),el:md,after}}
+ let idx=ms.length;for(let i=0;i<ms.length;i++){const r=ms[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2){idx=i;break}}
+ return {t:'mod',idx,el:ms[Math.min(idx,ms.length-1)],after:idx>=ms.length};
+}
+$('#stage').addEventListener('dragover',e=>{if(!drag)return;e.preventDefault();e.dataTransfer.dropEffect='move';const d=findDrop(e);hideDrop();if(d.box){d.box.classList.add('ed-dropin')}else lineAt(d.el,d.after)});
+$('#stage').addEventListener('dragleave',e=>{if(!$('#stage').contains(e.relatedTarget))hideDrop()});
+$('#stage').addEventListener('drop',e=>{if(!drag)return;e.preventDefault();const d=findDrop(e);hideDrop();const g=drag;drag=null;const ms=mods();
+ if(g.src==='pal'){
+  if(g.kind==='mod')insertMods([M(g.type)],d.idx);
+  else if(d.t==='child')addChild(g.type,d.mid,d.ci);
+  else{const card=M('card',{title:'新區塊',children:[C(g.type)]});insertMods([card],d.idx);sel={mid:card.id,ci:0};updSel();renderIns()}
+  return}
+ if(g.src==='mod'){const from=ms.findIndex(m=>m.id===g.id);if(from<0)return;let to=d.t==='mod'?d.idx:ms.findIndex(m=>m.id===d.mid);const [m]=ms.splice(from,1);if(to>from)to--;ms.splice(to,0,m);sel={mid:m.id,ci:null}}
+ else if(g.src==='child'){const src=modById(g.mid);const [c]=src.children.splice(g.ci,1);
+  if(d.t==='child'){const tgt=modById(d.mid);let ci=d.ci;if(tgt===src&&ci>g.ci)ci--;tgt.children.splice(ci,0,c);sel={mid:tgt.id,ci}}
+  else{const card=M('card',{title:'新區塊',children:[c]});let idx=d.idx;ms.splice(idx,0,card);sel={mid:card.id,ci:0}}}
+ commit();renderCanvas();renderIns();
+});
+
+/* ========= 上方工具列 ========= */
+function setMode(m){MODE=m;$$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));document.body.classList.toggle('preview',m==='preview');hideRT();renderCanvas();renderIns()}
+$('#modeSeg').onclick=e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.mode)};
+$('#devSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;$$('#devSeg button').forEach(x=>x.classList.toggle('on',x===b));$('#paper').classList.toggle('ed-mob',b.dataset.dev==='mob')};
+$('#themeSel').onchange=e=>{S.theme=e.target.value;liveCSS();commit()};
+$('#pageSel').onchange=e=>{S.cur=e.target.value;sel={mid:null,ci:null};commit();renderCanvas();renderIns()};
+$('#pageMenu').onclick=openPageMenu;
+$('#undo').onclick=()=>hi>0&&restore(hi-1);$('#redo').onclick=()=>hi<hist.length-1&&restore(hi+1);
+$('#btnExport').onclick=openExport;$('#btnImport').onclick=()=>openImport('paste');
+$('#mdlX').onclick=closeModal;$('#mdl').addEventListener('mousedown',e=>{if(e.target===$('#mdl'))closeModal()});
+document.addEventListener('mousedown',e=>{if($('#pop').style.display==='block'&&!$('#pop').contains(e.target))closePop()});
+$('#stage').addEventListener('scroll',()=>{if(rtTarget&&rtTarget.closest('#canvas'))showRT(rtTarget)});
+
+/* ========= 啟動 ========= */
+S=load();
+if(!S){S=freshState();const p={id:uid(),name:'我的第一個頁面',mods:[]};S.pages.push(p);S.cur=p.id}
+if(!S.pages.find(p=>p.id===S.cur))S.cur=S.pages[0].id;
+renderPal();renderTheme();liveCSS();commit();renderAll();
+window.__cdc={importHTML,exportParts,get S(){return S},TEMPLATES,setMode,insertMods,M,C,addChild};
+</script>
+</body>
+</html>

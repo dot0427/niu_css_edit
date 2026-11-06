@@ -1,0 +1,189 @@
+<style type="text/css">
+.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:#1a5f5a;}
+.cdc-mark{display:inline;color:#59c0d4;font-weight:bold;border-bottom:2px solid #f5e124;padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:#1ab3a4 !important;border:1.5px solid #1ab3a4;border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:#1ab3a4;color:#fff !important;}
+.cdc-hd{background:linear-gradient(to right,#a8e6e1,#6dd5ce) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:#1a5f5a !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}
+.cdc-p{font-size:16px;line-height:2;color:#333;margin:0 0 18px;}
+.cdc-p.sm{font-size:15px;line-height:1.9;}
+.cdc-p.lg{font-size:17px;}
+.cdc-p:last-child{margin-bottom:0;}
+.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid #e0f7f5;font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:#59c0d4;border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:#59c0d4;position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e0f7f5;}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:#1a5f5a !important;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}
+.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid #e0f7f5;line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:#1a5f5a !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:#1ab3a4 !important;border-bottom-color:#a8e6e1;}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}
+.cdc-sites{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-sites:last-child{margin-bottom:0;}
+.cdc-sites li{padding:10px 0;border-bottom:1px solid #e0f7f5;}
+.cdc-sites li:first-child{padding-top:0;}
+.cdc-sites li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-sites a{font-size:15px;font-weight:bold;color:#1ab3a4 !important;text-decoration:none !important;border-bottom:1.5px solid #a8e6e1;transition:color .2s;}
+.cdc-sites a:hover{color:#59c0d4 !important;}
+.cdc-site-desc{font-size:14px;color:#555;line-height:1.8;margin-top:4px;}
+.cdc-img{width:100%;height:auto;border-radius:10px;display:block;margin-bottom:14px;box-shadow:0 2px 12px rgba(89,192,212,0.15);}
+.cdc-img:last-child{margin-bottom:0;}
+.cdc-ig{display:flex;flex-wrap:wrap;margin:-6px -6px 12px;}
+.cdc-ig:last-child{margin-bottom:-6px;}
+.cdc-ig-col{width:33.333%;padding:6px;display:flex;}
+.cdc-ig.c2 .cdc-ig-col{width:50%;}
+.cdc-ig.c4 .cdc-ig-col{width:25%;}
+.cdc-ig-card{flex:1;display:block;border-radius:10px;overflow:hidden;border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(168,230,225,0.2);}
+.cdc-ig-card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(109,213,206,0.35);}
+.cdc-ig-card img{width:100%;height:auto;display:block;}
+@media (max-width:600px){
+  .cdc-bd{padding:18px 16px;}
+  .cdc-hd{padding:12px 16px;}
+  .cdc-hd.lg{padding:14px 18px;}
+  .cdc-hd.lg h2{font-size:20px;}
+  .cdc-num>li{gap:10px;}
+  .cdc-ig .cdc-ig-col{width:50%;}
+}
+</style>
+<div class="cdc">
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>關於深耕計畫 ／ 附錄一 完善就學協助機制</h2>
+    </div>
+    <div class="cdc-bd">
+      <p class="cdc-el cdc-p">為配合教育部推動高等教育深耕計畫提升高教公共性政策，擬透過課業輔導、課程學習、實習機會、職涯規劃輔導等輔導機制直接幫助經濟不利學生，以學習替代工讀，使經濟不利學生得以安心就學。</p>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>獎勵對象</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">一</span>
+          <div class="cdc-num-tx">
+            <div>低收入戶學生、中低收入戶學生、身心障礙學生及身心障礙人士子女、特殊境遇家庭子女孫子女學生、原住民學生等符合教育部法令規定學雜費減免資格學生。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">二</span>
+          <div class="cdc-num-tx">
+            <div>獲教育部大專校院不利處境學生助學計畫補助學生。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">三</span>
+          <div class="cdc-num-tx">
+            <div>懷孕學生、扶養未滿三歲子女之學生。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">四</span>
+          <div class="cdc-num-tx">
+            <div>符合衛生福利部所定青(少)年照顧者之學生。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">五</span>
+          <div class="cdc-num-tx">
+            <div>符合本校自訂標準經濟不利學生資格者：</div>
+            <ul class="cdc-sub">
+              <li>在校期間曾符合教育部法令規定中低收入戶學雜費減免資格學生，後因地方政府調整不動產現值影響而未取得中低收入戶學雜費減免資格者。</li>
+              <li>符合第一款及第二款獎勵對象，惟因轉學生、本校校內轉系、復學生等情形，致就讀之相當學期已辦理學雜費減免及教育部弱勢助學金而無法重複辦理者。</li>
+              <li>經濟困難或家庭突遭變故經校內程序審核通過者。</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">六</span>
+          <div class="cdc-num-tx">
+            <div>符合以上條件之大學部及碩士班在校學生（不含碩士在職專班），依經濟條件較為不利者優先獎勵。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>輔導機制</h2>
+    </div>
+    <div class="cdc-bd">
+      <div class="cdc-el cdc-ig c3">
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-2992.php"><img alt="輔導機制1" src="/var/file/4/1004/img/217/134851208.jpg" /></a></div>
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-2993.php"><img alt="輔導機制2" src="/var/file/4/1004/img/217/63511630.jpg" /></a></div>
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-2994.php"><img alt="輔導機制3" src="/var/file/4/1004/img/217/966373081.jpg" /></a></div>
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-2995.php"><img alt="職涯規劃輔導" src="/var/file/4/1004/img/217/248826344.png" /></a></div>
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-3421.php"><img alt="揪團共學" src="/var/file/4/1004/img/217/734187586.png" /></a></div>
+        <div class="cdc-ig-col"><a class="cdc-ig-card" href="/p/412-1004-2997.php"><img alt="實踐永續責任" src="/var/file/4/1004/img/217/707259153.png" /></a></div>
+      </div>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>資料下載</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-docs">
+        <li><a href="/var/file/4/1004/img/226/779896772.pdf" target="_blank">國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點</a><span class="cdc-note">（115學年度第5次行政會議修正通過）</span></li>
+        <li><a href="/var/file/4/1004/img/226/611912559.zip" target="_blank">115年度高教深耕計畫提升高教公共性獎勵要點申請表</a></li>
+        <li><a href="/var/file/4/1004/img/217/1080187502A.pdf" target="_blank">國立宜蘭大學高等教育深耕計畫提升高教公共性獎勵要點免稅證明</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>申請須知</h2>
+    </div>
+    <div class="cdc-bd">
+      <div class="cdc-el cdc-imgs"><img class="cdc-img" alt="115年深耕附錄1申請須知" src="/var/file/4/1004/img/217/474662729.jpg" /><img class="cdc-img" alt="115年揪團共學主題" src="/var/file/4/1004/img/217/859983984.jpg" /></div>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>其他相關網站</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-sites">
+        <li>
+          <a href="https://www.edu.tw/helpdreams/Default.aspx" target="_blank">圓夢助學網</a>
+          <div class="cdc-site-desc">教育部匯集各項獎、助學資訊所設立之網站，結合政府、民間資源，為有需求的青年朋友提供必要的支援。</div>
+        </li>
+        <li><a href="http://sme.moeasmea.gov.tw/startup/" target="_blank">青年創業及圓夢網</a></li>
+        <li><a href="http://www.yda.gov.tw/index.aspx?SiteID=563426067575657313" target="_blank">教育部青年發展署</a></li>
+        <li><a href="https://lic.niu.edu.tw/files/11-1010-2304.php" target="_blank">宜大磨課師</a></li>
+        <li><a href="http://ocw.niu.edu.tw/moodle/" target="_blank">宜大開放式課程</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- cdc-data:eyJ2IjoxLCJ0aGVtZSI6InRlYWwiLCJtb2RzIjpbeyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiLpl5zmlrzmt7HogJXoqIjnlasg77yPIOmZhOmMhOS4gCDlrozlloTlsLHlrbjljZTliqnmqZ/liLYiLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6InAiLCJodG1sIjoi54K66YWN5ZCI5pWZ6IKy6YOo5o6o5YuV6auY562J5pWZ6IKy5rex6ICV6KiI55Wr5o+Q5Y2H6auY5pWZ5YWs5YWx5oCn5pS/562W77yM5pOs6YCP6YGO6Kqy5qWt6LyU5bCO44CB6Kqy56iL5a2457+S44CB5a+m57+S5qmf5pyD44CB6IG35rav6KaP5YqD6LyU5bCO562J6LyU5bCO5qmf5Yi255u05o6l5bmr5Yqp57aT5r+f5LiN5Yip5a2455Sf77yM5Lul5a2457+S5pu/5Luj5bel6K6A77yM5L2/57aT5r+f5LiN5Yip5a2455Sf5b6X5Lul5a6J5b+D5bCx5a2444CCIiwic2l6ZSI6Im1kIn1dfSx7InR5cGUiOiJjYXJkIiwiaGVhZGVyIjoiZ3JhZGllbnQiLCJ0aXRsZSI6IueNjuWLteWwjeixoSIsImJpZyI6ZmFsc2UsImltZyI6eyJzcmMiOiIiLCJhbHQiOiIifSwiZnJhbWUiOnRydWUsImNoaWxkcmVuIjpbeyJ0eXBlIjoibnVtIiwic3R5bGUiOiJjbiIsIml0ZW1zIjpbeyJ0YWciOiLkuIAiLCJodG1sIjoi5L2O5pS25YWl5oi25a2455Sf44CB5Lit5L2O5pS25YWl5oi25a2455Sf44CB6Lqr5b+D6Zqc56SZ5a2455Sf5Y+K6Lqr5b+D6Zqc56SZ5Lq65aOr5a2Q5aWz44CB54m55q6K5aKD6YGH5a625bqt5a2Q5aWz5a2r5a2Q5aWz5a2455Sf44CB5Y6f5L2P5rCR5a2455Sf562J56ym5ZCI5pWZ6IKy6YOo5rOV5Luk6KaP5a6a5a246Zuc6LK75rib5YWN6LOH5qC85a2455Sf44CCIiwic3VicyI6W119LHsidGFnIjoi5LqMIiwiaHRtbCI6IueNsuaVmeiCsumDqOWkp+WwiOagoemZouS4jeWIqeiZleWig+WtuOeUn+WKqeWtuOioiOeVq+ijnOWKqeWtuOeUn+OAgiIsInN1YnMiOltdfSx7InRhZyI6IuS4iSIsImh0bWwiOiLmh7flrZXlrbjnlJ/jgIHmibbppIrmnKrmu7/kuInmrbLlrZDlpbPkuYvlrbjnlJ/jgIIiLCJzdWJzIjpbXX0seyJ0YWciOiLlm5siLCJodG1sIjoi56ym5ZCI6KGb55Sf56aP5Yip6YOo5omA5a6a6Z2SKOWwkSnlubTnhafpoafogIXkuYvlrbjnlJ/jgIIiLCJzdWJzIjpbXX0seyJ0YWciOiLkupQiLCJodG1sIjoi56ym5ZCI5pys5qCh6Ieq6KiC5qiZ5rqW57aT5r+f5LiN5Yip5a2455Sf6LOH5qC86ICF77yaIiwic3VicyI6W3sidGFnIjoiIiwiaHRtbCI6IuWcqOagoeacn+mWk+abvuespuWQiOaVmeiCsumDqOazleS7pOimj+WumuS4reS9juaUtuWFpeaItuWtuOmbnOiyu+a4m+WFjeizh+agvOWtuOeUn++8jOW+jOWboOWcsOaWueaUv+W6nOiqv+aVtOS4jeWLleeUouePvuWAvOW9semfv+iAjOacquWPluW+l+S4reS9juaUtuWFpeaItuWtuOmbnOiyu+a4m+WFjeizh+agvOiAheOAgiJ9LHsidGFnIjoiIiwiaHRtbCI6IuespuWQiOesrOS4gOasvuWPiuesrOS6jOasvueNjuWLteWwjeixoe+8jOaDn+WboOi9ieWtuOeUn+OAgeacrOagoeagoeWFp+i9ieezu+OAgeW+qeWtuOeUn+etieaDheW9ou+8jOiHtOWwseiugOS5i+ebuOeVtuWtuOacn+W3sui+pueQhuWtuOmbnOiyu+a4m+WFjeWPiuaVmeiCsumDqOW8seWLouWKqeWtuOmHkeiAjOeEoeazlemHjeikh+i+pueQhuiAheOAgiJ9LHsidGFnIjoiIiwiaHRtbCI6Iue2k+a/n+WbsOmbo+aIluWutuW6reeqgemBreiuiuaVhee2k+agoeWFp+eoi+W6j+WvqeaguOmAmumBjuiAheOAgiJ9XX0seyJ0YWciOiLlha0iLCJodG1sIjoi56ym5ZCI5Lul5LiK5qKd5Lu25LmL5aSn5a246YOo5Y+K56Kp5aOr54+t5Zyo5qCh5a2455Sf77yI5LiN5ZCr56Kp5aOr5Zyo6IG35bCI54+t77yJ77yM5L6d57aT5r+f5qKd5Lu26LyD54K65LiN5Yip6ICF5YSq5YWI542O5Yu144CCIiwic3VicyI6W119XX1dfSx7InR5cGUiOiJjYXJkIiwiaGVhZGVyIjoiZ3JhZGllbnQiLCJ0aXRsZSI6Iui8lOWwjuapn+WItiIsImJpZyI6ZmFsc2UsImltZyI6eyJzcmMiOiIiLCJhbHQiOiIifSwiZnJhbWUiOnRydWUsImNoaWxkcmVuIjpbeyJ0eXBlIjoiaW1nZ3JpZCIsImNvbHMiOiIzIiwiaXRlbXMiOlt7ImltZyI6eyJzcmMiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMTcvMTM0ODUxMjA4LmpwZyIsImFsdCI6Iui8lOWwjuapn+WItjEifSwiaHJlZiI6Ii9wLzQxMi0xMDA0LTI5OTIucGhwIiwibnQiOmZhbHNlfSx7ImltZyI6eyJzcmMiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMTcvNjM1MTE2MzAuanBnIiwiYWx0Ijoi6LyU5bCO5qmf5Yi2MiJ9LCJocmVmIjoiL3AvNDEyLTEwMDQtMjk5My5waHAiLCJudCI6ZmFsc2V9LHsiaW1nIjp7InNyYyI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIxNy85NjYzNzMwODEuanBnIiwiYWx0Ijoi6LyU5bCO5qmf5Yi2MyJ9LCJocmVmIjoiL3AvNDEyLTEwMDQtMjk5NC5waHAiLCJudCI6ZmFsc2V9LHsiaW1nIjp7InNyYyI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIxNy8yNDg4MjYzNDQucG5nIiwiYWx0Ijoi6IG35rav6KaP5YqD6LyU5bCOIn0sImhyZWYiOiIvcC80MTItMTAwNC0yOTk1LnBocCIsIm50IjpmYWxzZX0seyJpbWciOnsic3JjIjoiL3Zhci9maWxlLzQvMTAwNC9pbWcvMjE3LzczNDE4NzU4Ni5wbmciLCJhbHQiOiLmj6rlnJjlhbHlrbgifSwiaHJlZiI6Ii9wLzQxMi0xMDA0LTM0MjEucGhwIiwibnQiOmZhbHNlfSx7ImltZyI6eyJzcmMiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMTcvNzA3MjU5MTUzLnBuZyIsImFsdCI6IuWvpui4kOawuOe6jOiyrOS7uyJ9LCJocmVmIjoiL3AvNDEyLTEwMDQtMjk5Ny5waHAiLCJudCI6ZmFsc2V9XX1dfSx7InR5cGUiOiJjYXJkIiwiaGVhZGVyIjoiZ3JhZGllbnQiLCJ0aXRsZSI6Iuizh+aWmeS4i+i8iSIsImJpZyI6ZmFsc2UsImltZyI6eyJzcmMiOiIiLCJhbHQiOiIifSwiZnJhbWUiOnRydWUsImNoaWxkcmVuIjpbeyJ0eXBlIjoiZG9jcyIsImJhZGdlcyI6ZmFsc2UsIml0ZW1zIjpbeyJ0ZXh0Ijoi5ZyL56uL5a6c6Jit5aSn5a246auY562J5pWZ6IKy5rex6ICV6KiI55Wr5o+Q5Y2H6auY5pWZ5YWs5YWx5oCn542O5Yu16KaB6bueIiwiaHJlZiI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIyNi83Nzk4OTY3NzIucGRmIiwibm90ZSI6Iu+8iDExNeWtuOW5tOW6puesrDXmrKHooYzmlL/mnIPorbDkv67mraPpgJrpgY7vvIkiLCJudCI6dHJ1ZX0seyJ0ZXh0IjoiMTE15bm05bqm6auY5pWZ5rex6ICV6KiI55Wr5o+Q5Y2H6auY5pWZ5YWs5YWx5oCn542O5Yu16KaB6bue55Sz6KuL6KGoIiwiaHJlZiI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIyNi82MTE5MTI1NTkuemlwIiwibm90ZSI6IiIsIm50Ijp0cnVlfSx7InRleHQiOiLlnIvnq4vlrpzomK3lpKflrbjpq5jnrYnmlZnogrLmt7HogJXoqIjnlavmj5DljYfpq5jmlZnlhazlhbHmgKfnjY7li7XopoHpu57lhY3nqIXorYnmmI4iLCJocmVmIjoiL3Zhci9maWxlLzQvMTAwNC9pbWcvMjE3LzEwODAxODc1MDJBLnBkZiIsIm5vdGUiOiIiLCJudCI6dHJ1ZX1dfV19LHsidHlwZSI6ImNhcmQiLCJoZWFkZXIiOiJncmFkaWVudCIsInRpdGxlIjoi55Sz6KuL6aCI55+lIiwiYmlnIjpmYWxzZSwiaW1nIjp7InNyYyI6IiIsImFsdCI6IiJ9LCJmcmFtZSI6dHJ1ZSwiY2hpbGRyZW4iOlt7InR5cGUiOiJpbWdzIiwiaXRlbXMiOlt7ImltZyI6eyJzcmMiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMTcvNDc0NjYyNzI5LmpwZyIsImFsdCI6IjExNeW5tOa3seiAlemZhOmMhDHnlLPoq4vpoIjnn6UifX0seyJpbWciOnsic3JjIjoiL3Zhci9maWxlLzQvMTAwNC9pbWcvMjE3Lzg1OTk4Mzk4NC5qcGciLCJhbHQiOiIxMTXlubTmj6rlnJjlhbHlrbjkuLvpoYwifX1dfV19LHsidHlwZSI6ImNhcmQiLCJoZWFkZXIiOiJncmFkaWVudCIsInRpdGxlIjoi5YW25LuW55u46Zec57ay56uZIiwiYmlnIjpmYWxzZSwiaW1nIjp7InNyYyI6IiIsImFsdCI6IiJ9LCJmcmFtZSI6dHJ1ZSwiY2hpbGRyZW4iOlt7InR5cGUiOiJzaXRlcyIsIml0ZW1zIjpbeyJ0ZXh0Ijoi5ZyT5aSi5Yqp5a2457ayIiwiaHJlZiI6Imh0dHBzOi8vd3d3LmVkdS50dy9oZWxwZHJlYW1zL0RlZmF1bHQuYXNweCIsImRlc2MiOiLmlZnogrLpg6jljK/pm4blkITpoIXnjY7jgIHliqnlrbjos4foqIrmiYDoqK3nq4vkuYvntrLnq5nvvIzntZDlkIjmlL/lupzjgIHmsJHplpPos4fmupDvvIzngrrmnInpnIDmsYLnmoTpnZLlubTmnIvlj4vmj5Dkvpvlv4XopoHnmoTmlK/mj7TjgIIiLCJudCI6dHJ1ZX0seyJ0ZXh0Ijoi6Z2S5bm05Ym15qWt5Y+K5ZyT5aSi57ayIiwiaHJlZiI6Imh0dHA6Ly9zbWUubW9lYXNtZWEuZ292LnR3L3N0YXJ0dXAvIiwiZGVzYyI6IiIsIm50Ijp0cnVlfSx7InRleHQiOiLmlZnogrLpg6jpnZLlubTnmbzlsZXnvbIiLCJocmVmIjoiaHR0cDovL3d3dy55ZGEuZ292LnR3L2luZGV4LmFzcHg/U2l0ZUlEPTU2MzQyNjA2NzU3NTY1NzMxMyIsImRlc2MiOiIiLCJudCI6dHJ1ZX0seyJ0ZXh0Ijoi5a6c5aSn56Oo6Kqy5birIiwiaHJlZiI6Imh0dHBzOi8vbGljLm5pdS5lZHUudHcvZmlsZXMvMTEtMTAxMC0yMzA0LnBocCIsImRlc2MiOiIiLCJudCI6dHJ1ZX0seyJ0ZXh0Ijoi5a6c5aSn6ZaL5pS+5byP6Kqy56iLIiwiaHJlZiI6Imh0dHA6Ly9vY3cubml1LmVkdS50dy9tb29kbGUvIiwiZGVzYyI6IiIsIm50Ijp0cnVlfV19XX1dfQ== -->

@@ -1,0 +1,112 @@
+<style type="text/css">
+.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:#1a5f5a;}
+.cdc-mark{display:inline;color:#59c0d4;font-weight:bold;border-bottom:2px solid #f5e124;padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:#1ab3a4 !important;border:1.5px solid #1ab3a4;border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:#1ab3a4;color:#fff !important;}
+.cdc-hd{background:linear-gradient(to right,#a8e6e1,#6dd5ce) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:#1a5f5a !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}
+.cdc-p{font-size:16px;line-height:2;color:#333;margin:0 0 18px;}
+.cdc-p.sm{font-size:15px;line-height:1.9;}
+.cdc-p.lg{font-size:17px;}
+.cdc-p:last-child{margin-bottom:0;}
+.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid #e0f7f5;font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:#59c0d4;border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:#59c0d4;position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e0f7f5;}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:#1a5f5a !important;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}
+.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid #e0f7f5;line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:#1a5f5a !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:#1ab3a4 !important;border-bottom-color:#a8e6e1;}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}
+@media (max-width:600px){
+  .cdc-bd{padding:18px 16px;}
+  .cdc-hd{padding:12px 16px;}
+  .cdc-hd.lg{padding:14px 18px;}
+  .cdc-hd.lg h2{font-size:20px;}
+  .cdc-num>li{gap:10px;}
+}
+</style>
+<div class="cdc">
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>1. 獎助資格與金額</h2>
+    </div>
+    <div class="cdc-bd">
+      <p class="cdc-el cdc-p sm">參加校內各單位審定之校外實習，每學分實習獎助學金津貼 <span class="cdc-hl">二千元</span>，每人至多申請 <span class="cdc-hl">四學分</span>；本方案限非畢業必修課程且未領取校外實習薪資者。<br>完成實習、獲該科目學分且成績達 <span class="cdc-hl">八十分以上</span>者，加發獎助 <span class="cdc-hl">二千元</span>。</p>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>2. 檢附文件</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>校外實習計畫或校外實習合約書</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>校外實習證明</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">3</span>
+          <div class="cdc-num-tx">
+            <div>校外實習成果報告表</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">4</span>
+          <div class="cdc-num-tx">
+            <div>本要點之一般申請表</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>3. 附件下載</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-docs">
+        <li><a href="/var/file/4/1004/img/226/575469140.docx" target="_blank">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）</a></li>
+        <li><a href="/var/file/4/1004/img/226/852864639.doc" target="_blank">校外實習成果報告表</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- cdc-data:eyJ2IjoxLCJ0aGVtZSI6InRlYWwiLCJtb2RzIjpbeyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIxLiDnjY7liqnos4fmoLzoiIfph5HpoY0iLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6InAiLCJodG1sIjoi5Y+D5Yqg5qCh5YWn5ZCE5Zau5L2N5a+p5a6a5LmL5qCh5aSW5a+m57+S77yM5q+P5a245YiG5a+m57+S542O5Yqp5a246YeR5rSl6LK8IDxzcGFuIGNsYXNzPVwiY2RjLWhsXCI+5LqM5Y2D5YWDPC9zcGFuPu+8jOavj+S6uuiHs+WkmueUs+iriyA8c3BhbiBjbGFzcz1cImNkYy1obFwiPuWbm+WtuOWIhjwvc3Bhbj7vvJvmnKzmlrnmoYjpmZDpnZ7nlaLmpa3lv4Xkv67oqrLnqIvkuJTmnKrpoJjlj5bmoKHlpJblr6bnv5Lolqros4fogIXjgII8YnI+5a6M5oiQ5a+m57+S44CB542y6Kmy56eR55uu5a245YiG5LiU5oiQ57i+6YGUIDxzcGFuIGNsYXNzPVwiY2RjLWhsXCI+5YWr5Y2B5YiG5Lul5LiKPC9zcGFuPuiAhe+8jOWKoOeZvOeNjuWKqSA8c3BhbiBjbGFzcz1cImNkYy1obFwiPuS6jOWNg+WFgzwvc3Bhbj7jgIIiLCJzaXplIjoic20ifV19LHsidHlwZSI6ImNhcmQiLCJoZWFkZXIiOiJncmFkaWVudCIsInRpdGxlIjoiMi4g5qqi6ZmE5paH5Lu2IiwiYmlnIjpmYWxzZSwiaW1nIjp7InNyYyI6IiIsImFsdCI6IiJ9LCJmcmFtZSI6dHJ1ZSwiY2hpbGRyZW4iOlt7InR5cGUiOiJudW0iLCJzdHlsZSI6Im51bSIsIml0ZW1zIjpbeyJ0YWciOiIxIiwiaHRtbCI6IuagoeWkluWvpue/kuioiOeVq+aIluagoeWkluWvpue/kuWQiOe0hOabuCIsInN1YnMiOltdfSx7InRhZyI6IjIiLCJodG1sIjoi5qCh5aSW5a+m57+S6K2J5piOIiwic3VicyI6W119LHsidGFnIjoiMyIsImh0bWwiOiLmoKHlpJblr6bnv5LmiJDmnpzloLHlkYrooagiLCJzdWJzIjpbXX0seyJ0YWciOiI0IiwiaHRtbCI6IuacrOimgem7nuS5i+S4gOiIrOeUs+iri+ihqCIsInN1YnMiOltdfV19XX0seyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIzLiDpmYTku7bkuIvovIkiLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6ImRvY3MiLCJiYWRnZXMiOmZhbHNlLCJpdGVtcyI6W3sidGV4dCI6IumrmOaVmea3seiAleioiOeVq+aPkOWNh+mrmOaVmeWFrOWFseaAp+eNjuWLteimgem7nueUs+iri+ihqO+8iOS4gOiIrOeUs+iri+ihqO+8iSIsImhyZWYiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMjYvNTc1NDY5MTQwLmRvY3giLCJub3RlIjoiIiwibnQiOnRydWV9LHsidGV4dCI6IuagoeWkluWvpue/kuaIkOaenOWgseWRiuihqCIsImhyZWYiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMjYvODUyODY0NjM5LmRvYyIsIm5vdGUiOiIiLCJudCI6dHJ1ZX1dfV19XX0= -->

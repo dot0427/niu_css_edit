@@ -1,0 +1,106 @@
+<style type="text/css">
+.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:#1a5f5a;}
+.cdc-mark{display:inline;color:#59c0d4;font-weight:bold;border-bottom:2px solid #f5e124;padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:#1ab3a4 !important;border:1.5px solid #1ab3a4;border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:#1ab3a4;color:#fff !important;}
+.cdc-hd{background:linear-gradient(to right,#a8e6e1,#6dd5ce) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:#1a5f5a !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}
+.cdc-p{font-size:16px;line-height:2;color:#333;margin:0 0 18px;}
+.cdc-p.sm{font-size:15px;line-height:1.9;}
+.cdc-p.lg{font-size:17px;}
+.cdc-p:last-child{margin-bottom:0;}
+.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid #e0f7f5;font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:#59c0d4;border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:#59c0d4;position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e0f7f5;}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:#1a5f5a !important;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}
+.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid #e0f7f5;line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:#1a5f5a !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:#1ab3a4 !important;border-bottom-color:#a8e6e1;}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}
+@media (max-width:600px){
+  .cdc-bd{padding:18px 16px;}
+  .cdc-hd{padding:12px 16px;}
+  .cdc-hd.lg{padding:14px 18px;}
+  .cdc-hd.lg h2{font-size:20px;}
+  .cdc-num>li{gap:10px;}
+}
+</style>
+<div class="cdc">
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>1. 獎助資格與金額</h2>
+    </div>
+    <div class="cdc-bd">
+      <p class="cdc-el cdc-p sm">經與各學系職涯導師職涯輔導及晤談後，每人每次獎助「<span class="cdc-hl">職涯規劃獎助學金</span>」<span class="cdc-hl">三百元</span>，每人每學期至多申請 <span class="cdc-hl">二次</span>。<br>連續 <span class="cdc-hl">二學期（含）以上</span>參與本方案者，加發獎助 <span class="cdc-hl">一百元</span>。</p>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>2. 檢附文件</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>職涯導師輔導紀錄表</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>職涯輔導回饋單</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">3</span>
+          <div class="cdc-num-tx">
+            <div>本要點之一般申請表</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>3. 附件下載</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-docs">
+        <li><a href="/var/file/4/1004/img/226/575469140.docx" target="_blank">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）</a></li>
+        <li><a href="/var/file/4/1004/img/217/245194069.docx" target="_blank">職涯輔導回饋單</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- cdc-data:eyJ2IjoxLCJ0aGVtZSI6InRlYWwiLCJtb2RzIjpbeyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIxLiDnjY7liqnos4fmoLzoiIfph5HpoY0iLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6InAiLCJodG1sIjoi57aT6IiH5ZCE5a2457O76IG35rav5bCO5bir6IG35rav6LyU5bCO5Y+K5pmk6KuH5b6M77yM5q+P5Lq65q+P5qyh542O5Yqp44CMPHNwYW4gY2xhc3M9XCJjZGMtaGxcIj7ogbfmtq/opo/lioPnjY7liqnlrbjph5E8L3NwYW4+44CNPHNwYW4gY2xhc3M9XCJjZGMtaGxcIj7kuInnmb7lhYM8L3NwYW4+77yM5q+P5Lq65q+P5a245pyf6Iez5aSa55Sz6KuLIDxzcGFuIGNsYXNzPVwiY2RjLWhsXCI+5LqM5qyhPC9zcGFuPuOAgjxicj7pgKPnuowgPHNwYW4gY2xhc3M9XCJjZGMtaGxcIj7kuozlrbjmnJ/vvIjlkKvvvInku6XkuIo8L3NwYW4+5Y+D6IiH5pys5pa55qGI6ICF77yM5Yqg55m8542O5YqpIDxzcGFuIGNsYXNzPVwiY2RjLWhsXCI+5LiA55m+5YWDPC9zcGFuPuOAgiIsInNpemUiOiJzbSJ9XX0seyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIyLiDmqqLpmYTmlofku7YiLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6Im51bSIsInN0eWxlIjoibnVtIiwiaXRlbXMiOlt7InRhZyI6IjEiLCJodG1sIjoi6IG35rav5bCO5bir6LyU5bCO57SA6YyE6KGoIiwic3VicyI6W119LHsidGFnIjoiMiIsImh0bWwiOiLogbfmtq/ovJTlsI7lm57ppYvllq4iLCJzdWJzIjpbXX0seyJ0YWciOiIzIiwiaHRtbCI6IuacrOimgem7nuS5i+S4gOiIrOeUs+iri+ihqCIsInN1YnMiOltdfV19XX0seyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIzLiDpmYTku7bkuIvovIkiLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6ImRvY3MiLCJiYWRnZXMiOmZhbHNlLCJpdGVtcyI6W3sidGV4dCI6IumrmOaVmea3seiAleioiOeVq+aPkOWNh+mrmOaVmeWFrOWFseaAp+eNjuWLteimgem7nueUs+iri+ihqO+8iOS4gOiIrOeUs+iri+ihqO+8iSIsImhyZWYiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMjYvNTc1NDY5MTQwLmRvY3giLCJub3RlIjoiIiwibnQiOnRydWV9LHsidGV4dCI6IuiBt+a2r+i8lOWwjuWbnumli+WWriIsImhyZWYiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMTcvMjQ1MTk0MDY5LmRvY3giLCJub3RlIjoiIiwibnQiOnRydWV9XX1dfV19 -->

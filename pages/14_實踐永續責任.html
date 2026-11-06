@@ -1,0 +1,137 @@
+<style type="text/css">
+.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:#1a5f5a;}
+.cdc-mark{display:inline;color:#59c0d4;font-weight:bold;border-bottom:2px solid #f5e124;padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:#1ab3a4 !important;border:1.5px solid #1ab3a4;border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:#1ab3a4;color:#fff !important;}
+.cdc-hd{background:linear-gradient(to right,#a8e6e1,#6dd5ce) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:#1a5f5a !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}
+.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid #e0f7f5;font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:#59c0d4;border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:#59c0d4;position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e0f7f5;}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:#1a5f5a !important;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}
+.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid #e0f7f5;line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:#1a5f5a !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:#1ab3a4 !important;border-bottom-color:#a8e6e1;}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}
+@media (max-width:600px){
+  .cdc-bd{padding:18px 16px;}
+  .cdc-hd{padding:12px 16px;}
+  .cdc-hd.lg{padding:14px 18px;}
+  .cdc-hd.lg h2{font-size:20px;}
+  .cdc-num>li{gap:10px;}
+}
+</style>
+<div class="cdc">
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>1. 獎助資格與金額</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>欲參加本方案學生，須事先向職涯發展中心領取「<span class="cdc-hl">實踐永續責任護照</span>」。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>參與校內各單位辦理有關下列甲至戊五種類型活動（服務活動得參加校外服務，不在此限）且完成學習成果者，每人獎助 <span class="cdc-hl">三千元</span>，每人每學期獎助一次為限；完成實踐永續責任學習方案並將成果製作成學習分享短片（三至五分鐘）者，加發獎助 <span class="cdc-hl">一千元</span>。</div>
+            <ul class="cdc-sub">
+              <li class="t">
+                <span class="cdc-stag">甲</span>
+                <div>健康與福祉活動 <strong>至少一場</strong>：如健康促進、食品衛生安全、防災演練或心理健康等相關活動。</div>
+              </li>
+              <li class="t">
+                <span class="cdc-stag">乙</span>
+                <div>服務活動 <strong>至少二場次</strong>：如校園服務、社會服務或資訊服務等能提升公民文化素養活動。</div>
+              </li>
+              <li class="t">
+                <span class="cdc-stag">丙</span>
+                <div>職涯發展（增能）活動或講座合計 <strong>至少三場</strong>。</div>
+              </li>
+              <li class="t">
+                <span class="cdc-stag">丁</span>
+                <div>多元文化活動 <strong>至少一場</strong>。</div>
+              </li>
+              <li class="t">
+                <span class="cdc-stag">戊</span>
+                <div>其他符合 SDGs 任一指標活動 <strong>至少一場</strong>。</div>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>2. 檢附文件</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>本要點之一般申請表</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>活動成果報告表</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">3</span>
+          <div class="cdc-num-tx">
+            <div>實踐永續責任護照</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>3. 附件下載</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-docs">
+        <li><a href="/var/file/4/1004/img/226/575469140.docx" target="_blank">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）</a></li>
+        <li><a href="/var/file/4/1004/img/226/602174161.doc" target="_blank">活動成果報告表</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- cdc-data:eyJ2IjoxLCJ0aGVtZSI6InRlYWwiLCJtb2RzIjpbeyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIxLiDnjY7liqnos4fmoLzoiIfph5HpoY0iLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6Im51bSIsInN0eWxlIjoibnVtIiwiaXRlbXMiOlt7InRhZyI6IjEiLCJodG1sIjoi5qyy5Y+D5Yqg5pys5pa55qGI5a2455Sf77yM6aCI5LqL5YWI5ZCR6IG35rav55m85bGV5Lit5b+D6aCY5Y+W44CMPHNwYW4gY2xhc3M9XCJjZGMtaGxcIj7lr6bouJDmsLjnuozosqzku7vorbfnhac8L3NwYW4+44CN44CCIiwic3VicyI6W119LHsidGFnIjoiMiIsImh0bWwiOiLlj4PoiIfmoKHlhaflkITllq7kvY3ovqbnkIbmnInpl5zkuIvliJfnlLLoh7PmiIrkupTnqK7poZ7lnovmtLvli5XvvIjmnI3li5nmtLvli5Xlvpflj4PliqDmoKHlpJbmnI3li5nvvIzkuI3lnKjmraTpmZDvvInkuJTlrozmiJDlrbjnv5LmiJDmnpzogIXvvIzmr4/kurrnjY7liqkgPHNwYW4gY2xhc3M9XCJjZGMtaGxcIj7kuInljYPlhYM8L3NwYW4+77yM5q+P5Lq65q+P5a245pyf542O5Yqp5LiA5qyh54K66ZmQ77yb5a6M5oiQ5a+m6LiQ5rC457qM6LKs5Lu75a2457+S5pa55qGI5Lim5bCH5oiQ5p6c6KO95L2c5oiQ5a2457+S5YiG5Lqr55+t54mH77yI5LiJ6Iez5LqU5YiG6ZCY77yJ6ICF77yM5Yqg55m8542O5YqpIDxzcGFuIGNsYXNzPVwiY2RjLWhsXCI+5LiA5Y2D5YWDPC9zcGFuPuOAgiIsInN1YnMiOlt7InRhZyI6IueUsiIsImh0bWwiOiLlgaXlurfoiIfnpo/npYnmtLvli5UgPHN0cm9uZz7oh7PlsJHkuIDloLQ8L3N0cm9uZz7vvJrlpoLlgaXlurfkv4PpgLLjgIHpo5/lk4HooZvnlJ/lronlhajjgIHpmLLngb3mvJTnt7TmiJblv4PnkIblgaXlurfnrYnnm7jpl5zmtLvli5XjgIIifSx7InRhZyI6IuS5mSIsImh0bWwiOiLmnI3li5nmtLvli5UgPHN0cm9uZz7oh7PlsJHkuozloLTmrKE8L3N0cm9uZz7vvJrlpoLmoKHlnJLmnI3li5njgIHnpL7mnIPmnI3li5nmiJbos4foqIrmnI3li5nnrYnog73mj5DljYflhazmsJHmlofljJbntKDppIrmtLvli5XjgIIifSx7InRhZyI6IuS4mSIsImh0bWwiOiLogbfmtq/nmbzlsZXvvIjlop7og73vvInmtLvli5XmiJborJvluqflkIjoqIggPHN0cm9uZz7oh7PlsJHkuInloLQ8L3N0cm9uZz7jgIIifSx7InRhZyI6IuS4gSIsImh0bWwiOiLlpJrlhYPmlofljJbmtLvli5UgPHN0cm9uZz7oh7PlsJHkuIDloLQ8L3N0cm9uZz7jgIIifSx7InRhZyI6IuaIiiIsImh0bWwiOiLlhbbku5bnrKblkIggU0RHcyDku7vkuIDmjIfmqJnmtLvli5UgPHN0cm9uZz7oh7PlsJHkuIDloLQ8L3N0cm9uZz7jgIIifV19XX1dfSx7InR5cGUiOiJjYXJkIiwiaGVhZGVyIjoiZ3JhZGllbnQiLCJ0aXRsZSI6IjIuIOaqoumZhOaWh+S7tiIsImJpZyI6ZmFsc2UsImltZyI6eyJzcmMiOiIiLCJhbHQiOiIifSwiZnJhbWUiOnRydWUsImNoaWxkcmVuIjpbeyJ0eXBlIjoibnVtIiwic3R5bGUiOiJudW0iLCJpdGVtcyI6W3sidGFnIjoiMSIsImh0bWwiOiLmnKzopoHpu57kuYvkuIDoiKznlLPoq4vooagiLCJzdWJzIjpbXX0seyJ0YWciOiIyIiwiaHRtbCI6Iua0u+WLleaIkOaenOWgseWRiuihqCIsInN1YnMiOltdfSx7InRhZyI6IjMiLCJodG1sIjoi5a+m6LiQ5rC457qM6LKs5Lu76K2354WnIiwic3VicyI6W119XX1dfSx7InR5cGUiOiJjYXJkIiwiaGVhZGVyIjoiZ3JhZGllbnQiLCJ0aXRsZSI6IjMuIOmZhOS7tuS4i+i8iSIsImJpZyI6ZmFsc2UsImltZyI6eyJzcmMiOiIiLCJhbHQiOiIifSwiZnJhbWUiOnRydWUsImNoaWxkcmVuIjpbeyJ0eXBlIjoiZG9jcyIsImJhZGdlcyI6ZmFsc2UsIml0ZW1zIjpbeyJ0ZXh0Ijoi6auY5pWZ5rex6ICV6KiI55Wr5o+Q5Y2H6auY5pWZ5YWs5YWx5oCn542O5Yu16KaB6bue55Sz6KuL6KGo77yI5LiA6Iis55Sz6KuL6KGo77yJIiwiaHJlZiI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIyNi81NzU0NjkxNDAuZG9jeCIsIm5vdGUiOiIiLCJudCI6dHJ1ZX0seyJ0ZXh0Ijoi5rS75YuV5oiQ5p6c5aCx5ZGK6KGoIiwiaHJlZiI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIyNi82MDIxNzQxNjEuZG9jIiwibm90ZSI6IiIsIm50Ijp0cnVlfV19XX1dfQ== -->

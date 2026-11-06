@@ -1,0 +1,193 @@
+<style type="text/css">
+.cdc{font-family:微軟正黑體,"Microsoft JhengHei",Arial,sans-serif;max-width:860px;margin:0 auto;color:#333;}
+.cdc *{box-sizing:border-box;}
+.cdc-m{margin:0 0 22px;}
+.cdc-el{margin:0 0 18px;}
+.cdc-el:last-child{margin-bottom:0;}
+.cdc-hl{display:inline;font-weight:bold;color:#1a5f5a;}
+.cdc-mark{display:inline;color:#59c0d4;font-weight:bold;border-bottom:2px solid #f5e124;padding-bottom:1px;}
+.cdc-btn-sm{display:inline-block;color:#1ab3a4 !important;border:1.5px solid #1ab3a4;border-radius:20px;padding:3px 14px;margin:2px 4px;background:#fff;text-decoration:none !important;font-size:14px;font-weight:bold;line-height:1.6;transition:background .2s,color .2s;}
+.cdc-btn-sm:hover{background:#1ab3a4;color:#fff !important;}
+.cdc-hd{background:linear-gradient(to right,#a8e6e1,#6dd5ce) !important;border-radius:10px 10px 0 0;padding:13px 24px;}
+.cdc-hd h2{color:#1a5f5a !important;font-size:18px;font-weight:bold;margin:0;letter-spacing:.04em;line-height:1.5;}
+.cdc-hd.lg{padding:18px 32px;}
+.cdc-hd.lg h2{font-size:24px;letter-spacing:.05em;}
+.cdc-hdimg img{width:100%;height:auto;display:block;border-radius:10px 10px 0 0;}
+.cdc-bd{background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#a8e6e1,#6dd5ce) border-box;border:2.5px solid transparent;border-top:none;border-radius:0 0 14px 14px;padding:24px 30px;}
+.cdc-bd.solo{border-top:2.5px solid transparent;border-radius:14px;}
+.cdc-num{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-num:last-child{margin-bottom:0;}
+.cdc-num>li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid #e0f7f5;font-size:15px;color:#333;line-height:1.9;}
+.cdc-num>li:first-child{padding-top:0;}
+.cdc-num>li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-tag{font-size:13px;font-weight:bold;color:#fff;background:#59c0d4;border-radius:20px;padding:2px 12px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.7;}
+.cdc-num-tx{flex:1;min-width:0;}
+.cdc-sub{list-style:none;padding:0;margin:8px 0 0;}
+.cdc-sub li{font-size:14px;color:#555;line-height:1.9;padding-left:14px;position:relative;}
+.cdc-sub li::before{content:"›";color:#59c0d4;position:absolute;left:0;font-weight:bold;}
+.cdc-sub li.t{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e0f7f5;}
+.cdc-sub li.t:last-child{border-bottom:none;}
+.cdc-sub li.t::before{content:none;}
+.cdc-stag{font-size:12px;font-weight:bold;color:#1a5f5a !important;background:linear-gradient(135deg,#a8e6e1,#6dd5ce);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-top:3px;line-height:1.6;}
+.cdc-docs{list-style:none;padding:0;margin:0 0 18px;}
+.cdc-docs:last-child{margin-bottom:0;}
+.cdc-docs li{padding:10px 0;border-bottom:1px solid #e0f7f5;line-height:1.7;}
+.cdc-docs li:first-child{padding-top:0;}
+.cdc-docs li:last-child{border-bottom:none;padding-bottom:0;}
+.cdc-docs a{font-size:15px;color:#1a5f5a !important;text-decoration:none !important;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}
+.cdc-docs a:hover{color:#1ab3a4 !important;border-bottom-color:#a8e6e1;}
+.cdc-docs.bg a::before{display:inline-block;font-size:11px;font-weight:bold;padding:0 5px;border-radius:3px;margin-right:8px;color:#fff;vertical-align:1px;line-height:1.6;}
+.cdc-docs.bg a[href$=".pdf"]::before{content:"PDF";background:#d94040;}
+.cdc-docs.bg a[href$=".doc"]::before,.cdc-docs.bg a[href$=".docx"]::before,.cdc-docs.bg a[href$=".odt"]::before{content:"DOC";background:#1a6ec7;}
+.cdc-docs.bg a[href$=".ppt"]::before,.cdc-docs.bg a[href$=".pptx"]::before,.cdc-docs.bg a[href$=".odp"]::before{content:"PPT";background:#d95a1e;}
+.cdc-docs.bg a[href$=".xls"]::before,.cdc-docs.bg a[href$=".xlsx"]::before,.cdc-docs.bg a[href$=".ods"]::before{content:"XLS";background:#217346;}
+.cdc-docs.bg a[href$=".zip"]::before,.cdc-docs.bg a[href$=".rar"]::before{content:"ZIP";background:#7a7a7a;}
+.cdc-note{font-size:13px;color:#888;margin-left:4px;}
+.cdc-tblw{overflow-x:auto;}
+.cdc-tbl{width:100%;border-collapse:collapse;font-size:14px;}
+.cdc-tbl th{background:#59c0d4;color:#fff;padding:9px 14px;text-align:left;font-weight:bold;border:1px solid rgba(89,192,212,0.22);}
+.cdc-tbl td{padding:9px 14px;border:1px solid rgba(89,192,212,0.22);vertical-align:middle;line-height:1.7;background:#fff;}
+.cdc-tbl tr.alt td{background:#e8f7f6;}
+.cdc-tcat{font-weight:bold;color:#59c0d4;}
+.cdc-tamt{font-weight:bold;color:#1a5f5a;white-space:nowrap;}
+@media (max-width:600px){
+  .cdc-bd{padding:18px 16px;}
+  .cdc-hd{padding:12px 16px;}
+  .cdc-hd.lg{padding:14px 18px;}
+  .cdc-hd.lg h2{font-size:20px;}
+  .cdc-num>li{gap:10px;}
+  .cdc-tbl th{padding:8px 8px;}
+  .cdc-tbl td{padding:8px 8px;}
+}
+</style>
+<div class="cdc">
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>1. 獎助資格與金額</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>參加校內各單位辦理之國家考試或證照輔導相關課程學習後，須報考並通過考試，<strong>全額補助報名費用</strong>。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>參加校內各單位辦理之相關課程學習後，須報考相關專業之國家考試或證照考試並取得合格證明者，分級獎助如下：</div>
+          </div>
+        </li>
+      </ul>
+      <div class="cdc-el cdc-tblw">
+        <table class="cdc-tbl">
+          <thead>
+            <tr>
+              <th>類別</th>
+              <th>項目</th>
+              <th>獎助金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4"><span class="cdc-tcat">甲、國家考試</span></td>
+              <td>公務人員高等考試三級或相當等級</td>
+              <td><span class="cdc-tamt">10,000 元</span></td>
+            </tr>
+            <tr>
+              <td>公務人員普通考試或相當等級</td>
+              <td><span class="cdc-tamt">8,000 元</span></td>
+            </tr>
+            <tr>
+              <td>公務人員初等考試或相當等級</td>
+              <td><span class="cdc-tamt">5,000 元</span></td>
+            </tr>
+            <tr>
+              <td>其他相當等級考試（由各學系自訂，經系務會議通過）</td>
+              <td><span class="cdc-tamt">至多 10,000 元</span></td>
+            </tr>
+            <tr class="alt">
+              <td rowspan="2"><span class="cdc-tcat">乙、專業／技術士</span></td>
+              <td>一般類專業證照、丙級技術士或同級</td>
+              <td><span class="cdc-tamt">1,000 元</span></td>
+            </tr>
+            <tr class="alt">
+              <td>乙級技術士或同級</td>
+              <td><span class="cdc-tamt">5,000 元</span></td>
+            </tr>
+            <tr>
+              <td rowspan="3"><span class="cdc-tcat">丙、外國語言</span></td>
+              <td>GEPT 中級複試 / 相當 CEFR B1 或其他外語同等級</td>
+              <td><span class="cdc-tamt">3,000 元</span></td>
+            </tr>
+            <tr>
+              <td>GEPT 中高級初試或其他外語同等級</td>
+              <td><span class="cdc-tamt">4,000 元</span></td>
+            </tr>
+            <tr>
+              <td>GEPT 中高級複試以上 / 相當 CEFR B2 或其他外語同等級</td>
+              <td><span class="cdc-tamt">5,000 元</span></td>
+            </tr>
+            <tr class="alt">
+              <td rowspan="3"><span class="cdc-tcat">丁、本土語言</span></td>
+              <td>原住民語／閩南語／客家語 初級認證</td>
+              <td><span class="cdc-tamt">1,000 元</span></td>
+            </tr>
+            <tr class="alt">
+              <td>原住民語／閩南語／客家語 中級認證</td>
+              <td><span class="cdc-tamt">3,000 元</span></td>
+            </tr>
+            <tr class="alt">
+              <td>原住民語／閩南語／客家語 中高級認證</td>
+              <td><span class="cdc-tamt">5,000 元</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">3</span>
+          <div class="cdc-num-tx">
+            <div>同類科每張（級）證照或國家考試錄取證明以申請<strong>一次</strong>為限，且不得向本校其他單位重覆申請獎助。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>2. 檢附文件</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-num">
+        <li>
+          <span class="cdc-tag">1</span>
+          <div class="cdc-num-tx">
+            <div>由辦理輔導課程單位出具之證照相關課程學習參與證明、證照相關課程學習成果報告表、本要點之一般申請表及報名費收據正本。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cdc-tag">2</span>
+          <div class="cdc-num-tx">
+            <div>本要點之一般申請表、檢定成績單或合格證照（申請「專業證照考試獎助學金」者檢附）。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="cdc-m cdc-card">
+    <div class="cdc-hd">
+      <h2>3. 附件下載</h2>
+    </div>
+    <div class="cdc-bd">
+      <ul class="cdc-el cdc-docs">
+        <li><a href="/var/file/4/1004/img/226/575469140.docx" target="_blank">高教深耕計畫提升高教公共性獎勵要點申請表（一般申請表）</a></li>
+        <li><a href="/var/file/4/1004/img/226/486522964.doc" target="_blank">證照相關課程學習參與證明</a></li>
+        <li><a href="/var/file/4/1004/img/226/361612772.doc" target="_blank">證照相關課程學習成果報告表</a></li>
+        <li><a href="/var/file/4/1004/img/226/135488700.doc" target="_blank">未重複申領證照補助切結書</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- cdc-data:eyJ2IjoxLCJ0aGVtZSI6InRlYWwiLCJtb2RzIjpbeyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIxLiDnjY7liqnos4fmoLzoiIfph5HpoY0iLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6Im51bSIsInN0eWxlIjoibnVtIiwiaXRlbXMiOlt7InRhZyI6IjEiLCJodG1sIjoi5Y+D5Yqg5qCh5YWn5ZCE5Zau5L2N6L6m55CG5LmL5ZyL5a626ICD6Kmm5oiW6K2J54Wn6LyU5bCO55u46Zec6Kqy56iL5a2457+S5b6M77yM6aCI5aCx6ICD5Lim6YCa6YGO6ICD6Kmm77yMPHN0cm9uZz7lhajpoY3oo5zliqnloLHlkI3osrvnlKg8L3N0cm9uZz7jgIIiLCJzdWJzIjpbXX0seyJ0YWciOiIyIiwiaHRtbCI6IuWPg+WKoOagoeWFp+WQhOWWruS9jei+pueQhuS5i+ebuOmXnOiqsueoi+WtuOe/kuW+jO+8jOmgiOWgseiAg+ebuOmXnOWwiOalreS5i+Wci+WutuiAg+ippuaIluitieeFp+iAg+ippuS4puWPluW+l+WQiOagvOitieaYjuiAhe+8jOWIhue0mueNjuWKqeWmguS4i++8miIsInN1YnMiOltdfV19LHsidHlwZSI6InRhYmxlIiwiYzEiOiLpoZ7liKUiLCJjMiI6IumgheebriIsImMzIjoi542O5Yqp6YeR6aGNIiwidXNlQ2F0Ijp0cnVlLCJncm91cHMiOlt7ImNhdCI6IueUsuOAgeWci+WutuiAg+ippiIsInJvd3MiOlt7ImEiOiLlhazli5nkurrlk6Hpq5jnrYnogIPoqabkuInntJrmiJbnm7jnlbbnrYnntJoiLCJiIjoiMTAsMDAwIOWFgyJ9LHsiYSI6IuWFrOWLmeS6uuWToeaZrumAmuiAg+ippuaIluebuOeVtuetiee0miIsImIiOiI4LDAwMCDlhYMifSx7ImEiOiLlhazli5nkurrlk6HliJ3nrYnogIPoqabmiJbnm7jnlbbnrYnntJoiLCJiIjoiNSwwMDAg5YWDIn0seyJhIjoi5YW25LuW55u455W2562J57Sa6ICD6Kmm77yI55Sx5ZCE5a2457O76Ieq6KiC77yM57aT57O75YuZ5pyD6K2w6YCa6YGO77yJIiwiYiI6IuiHs+WkmiAxMCwwMDAg5YWDIn1dfSx7ImNhdCI6IuS5meOAgeWwiOalre+8j+aKgOihk+WjqyIsInJvd3MiOlt7ImEiOiLkuIDoiKzpoZ7lsIjmpa3orYnnhafjgIHkuJnntJrmioDooZPlo6vmiJblkIzntJoiLCJiIjoiMSwwMDAg5YWDIn0seyJhIjoi5LmZ57Sa5oqA6KGT5aOr5oiW5ZCM57SaIiwiYiI6IjUsMDAwIOWFgyJ9XX0seyJjYXQiOiLkuJnjgIHlpJblnIvoqp7oqIAiLCJyb3dzIjpbeyJhIjoiR0VQVCDkuK3ntJropIfoqaYgLyDnm7jnlbYgQ0VGUiBCMSDmiJblhbbku5blpJboqp7lkIznrYnntJoiLCJiIjoiMywwMDAg5YWDIn0seyJhIjoiR0VQVCDkuK3pq5jntJrliJ3oqabmiJblhbbku5blpJboqp7lkIznrYnntJoiLCJiIjoiNCwwMDAg5YWDIn0seyJhIjoiR0VQVCDkuK3pq5jntJropIfoqabku6XkuIogLyDnm7jnlbYgQ0VGUiBCMiDmiJblhbbku5blpJboqp7lkIznrYnntJoiLCJiIjoiNSwwMDAg5YWDIn1dfSx7ImNhdCI6IuS4geOAgeacrOWcn+iqnuiogCIsInJvd3MiOlt7ImEiOiLljp/kvY/msJHoqp7vvI/plqnljZfoqp7vvI/lrqLlrrboqp4g5Yid57Sa6KqN6K2JIiwiYiI6IjEsMDAwIOWFgyJ9LHsiYSI6IuWOn+S9j+awkeiqnu+8j+mWqeWNl+iqnu+8j+WuouWutuiqniDkuK3ntJroqo3orYkiLCJiIjoiMywwMDAg5YWDIn0seyJhIjoi5Y6f5L2P5rCR6Kqe77yP6Zap5Y2X6Kqe77yP5a6i5a626KqeIOS4remrmOe0muiqjeitiSIsImIiOiI1LDAwMCDlhYMifV19XX0seyJ0eXBlIjoibnVtIiwic3R5bGUiOiJjdXN0b20iLCJpdGVtcyI6W3sidGFnIjoiMyIsImh0bWwiOiLlkIzpoZ7np5Hmr4/lvLXvvIjntJrvvInorYnnhafmiJblnIvlrrbogIPoqabpjITlj5borYnmmI7ku6XnlLPoq4s8c3Ryb25nPuS4gOasoTwvc3Ryb25nPueCuumZkO+8jOS4lOS4jeW+l+WQkeacrOagoeWFtuS7luWWruS9jemHjeimhueUs+iri+eNjuWKqeOAgiIsInN1YnMiOltdfV19XX0seyJ0eXBlIjoiY2FyZCIsImhlYWRlciI6ImdyYWRpZW50IiwidGl0bGUiOiIyLiDmqqLpmYTmlofku7YiLCJiaWciOmZhbHNlLCJpbWciOnsic3JjIjoiIiwiYWx0IjoiIn0sImZyYW1lIjp0cnVlLCJjaGlsZHJlbiI6W3sidHlwZSI6Im51bSIsInN0eWxlIjoibnVtIiwiaXRlbXMiOlt7InRhZyI6IjEiLCJodG1sIjoi55Sx6L6m55CG6LyU5bCO6Kqy56iL5Zau5L2N5Ye65YW35LmL6K2J54Wn55u46Zec6Kqy56iL5a2457+S5Y+D6IiH6K2J5piO44CB6K2J54Wn55u46Zec6Kqy56iL5a2457+S5oiQ5p6c5aCx5ZGK6KGo44CB5pys6KaB6bue5LmL5LiA6Iis55Sz6KuL6KGo5Y+K5aCx5ZCN6LK75pS25pOa5q2j5pys44CCIiwic3VicyI6W119LHsidGFnIjoiMiIsImh0bWwiOiLmnKzopoHpu57kuYvkuIDoiKznlLPoq4vooajjgIHmqqLlrprmiJDnuL7llq7miJblkIjmoLzorYnnhafvvIjnlLPoq4vjgIzlsIjmpa3orYnnhafogIPoqabnjY7liqnlrbjph5HjgI3ogIXmqqLpmYTvvInjgIIiLCJzdWJzIjpbXX1dfV19LHsidHlwZSI6ImNhcmQiLCJoZWFkZXIiOiJncmFkaWVudCIsInRpdGxlIjoiMy4g6ZmE5Lu25LiL6LyJIiwiYmlnIjpmYWxzZSwiaW1nIjp7InNyYyI6IiIsImFsdCI6IiJ9LCJmcmFtZSI6dHJ1ZSwiY2hpbGRyZW4iOlt7InR5cGUiOiJkb2NzIiwiYmFkZ2VzIjpmYWxzZSwiaXRlbXMiOlt7InRleHQiOiLpq5jmlZnmt7HogJXoqIjnlavmj5DljYfpq5jmlZnlhazlhbHmgKfnjY7li7XopoHpu57nlLPoq4vooajvvIjkuIDoiKznlLPoq4vooajvvIkiLCJocmVmIjoiL3Zhci9maWxlLzQvMTAwNC9pbWcvMjI2LzU3NTQ2OTE0MC5kb2N4Iiwibm90ZSI6IiIsIm50Ijp0cnVlfSx7InRleHQiOiLorYnnhafnm7jpl5zoqrLnqIvlrbjnv5Llj4PoiIforYnmmI4iLCJocmVmIjoiL3Zhci9maWxlLzQvMTAwNC9pbWcvMjI2LzQ4NjUyMjk2NC5kb2MiLCJub3RlIjoiIiwibnQiOnRydWV9LHsidGV4dCI6IuitieeFp+ebuOmXnOiqsueoi+WtuOe/kuaIkOaenOWgseWRiuihqCIsImhyZWYiOiIvdmFyL2ZpbGUvNC8xMDA0L2ltZy8yMjYvMzYxNjEyNzcyLmRvYyIsIm5vdGUiOiIiLCJudCI6dHJ1ZX0seyJ0ZXh0Ijoi5pyq6YeN6KSH55Sz6aCY6K2J54Wn6KOc5Yqp5YiH57WQ5pu4IiwiaHJlZiI6Ii92YXIvZmlsZS80LzEwMDQvaW1nLzIyNi8xMzU0ODg3MDAuZG9jIiwibm90ZSI6IiIsIm50Ijp0cnVlfV19XX1dfQ== -->
