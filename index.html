@@ -28,7 +28,11 @@ select.tb{padding-right:4px}
 .sp{flex:1}
 .vsep{width:1px;height:22px;background:var(--bd);margin:0 2px}
 main{display:flex;height:calc(100% - 52px)}
-.pal{width:228px;flex-shrink:0;background:#fff;border-right:1px solid var(--bd);overflow-y:auto;padding:10px 10px 30px}
+.pal{width:228px;flex-shrink:0;background:#fff;border-right:1px solid var(--bd);overflow-y:auto;padding:0 10px 30px}
+.pal-tabs{position:sticky;top:0;z-index:2;background:#fff;display:flex;gap:2px;padding:10px 0 8px;margin-bottom:6px;border-bottom:1px solid var(--bd)}
+.pal-tabs button{flex:1;border:0;background:#f2f5f6;border-radius:7px;padding:6px 0;font-size:12px;color:var(--ui2);white-space:nowrap}
+.pal-tabs button:hover{background:#e9eef0}
+.pal-tabs button.on{background:var(--pri2);color:var(--pri);font-weight:700}
 .pal h3{font-size:12px;color:var(--ui2);margin:14px 4px 6px;font-weight:700;letter-spacing:.05em}
 .pal h3:first-child{margin-top:4px}
 .pal-i{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--bd);border-radius:8px;margin-bottom:5px;background:#fff;cursor:grab;user-select:none}
@@ -571,10 +575,13 @@ function renderIns(){
 }
 
 /* ========= 選單 ========= */
+let PALTAB=(()=>{try{return localStorage.getItem('cdc-paltab')||'bp'}catch(e){return 'bp'}})();
 function renderPal(){
- $('#pal').innerHTML=`<h3>版面模組</h3>${Object.entries(MODS).map(([k,v])=>`<div class="pal-i" draggable="true" data-pal="mod" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}
- <h3>內容元件</h3><div class="pal-note">放進「標題卡片」裡。拖到空白處會自動包一張新卡片。</div>${Object.entries(CH).map(([k,v])=>`<div class="pal-i child" draggable="true" data-pal="child" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}
- <h3>快速組合</h3>${BLUEPRINTS.map((b,i)=>`<div class="pal-i" data-bp="${i}" style="cursor:pointer"><b>✦</b><span>${b.n}<small>${b.d}</small></span></div>`).join('')}`;
+ const tabs=[['bp','快速組合'],['child','內容元件'],['mod','版面模組']];
+ const body=PALTAB==='bp'?`<div class="pal-note">點一下就加入一整組，再改文字就好。</div>${BLUEPRINTS.map((b,i)=>`<div class="pal-i" data-bp="${i}" style="cursor:pointer"><b>✦</b><span>${b.n}<small>${b.d}</small></span></div>`).join('')}`
+  :PALTAB==='child'?`<div class="pal-note">放進「標題卡片」裡。拖到空白處會自動包一張新卡片。</div>${Object.entries(CH).map(([k,v])=>`<div class="pal-i child" draggable="true" data-pal="child" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}`
+  :`<div class="pal-note">頁面的大區塊，拖進中間或點一下加入。</div>${Object.entries(MODS).map(([k,v])=>`<div class="pal-i" draggable="true" data-pal="mod" data-type="${k}"><b>${v.i}</b><span>${v.n}<small>${v.d}</small></span></div>`).join('')}`;
+ $('#pal').innerHTML=`<div class="pal-tabs">${tabs.map(([k,n])=>`<button data-ptab="${k}" class="${PALTAB===k?'on':''}">${n}</button>`).join('')}</div><div class="pal-list">${body}</div>`;
 }
 function renderPages(){$('#pageSel').innerHTML=S.pages.map(p=>`<option value="${p.id}"${p.id===S.cur?' selected':''}>${esc(p.name)}</option>`).join('')}
 function renderTheme(){$('#themeSel').innerHTML=Object.entries(THEMES).map(([k,v])=>`<option value="${k}"${S.theme===k?' selected':''}>配色：${v.name}</option>`).join('')}
@@ -878,7 +885,7 @@ function renderInsLabelsSoon(){/* 更新清單摘要 */const a=document.activeEl
 function shrink(url,type,cb){if(/svg|gif/.test(type))return cb(url);const im=new Image();im.onload=()=>{const max=1000;if(im.width<=max&&url.length<300000)return cb(url);const sc=Math.min(1,max/im.width);const c=document.createElement('canvas');c.width=im.width*sc;c.height=im.height*sc;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL(type==='image/png'?'image/png':'image/jpeg',.85))};im.src=url}
 
 // 左側選單：點一下加入
-$('#pal').addEventListener('click',e=>{const it=e.target.closest('.pal-i');if(!it)return;if(MODE!=='edit')setMode('edit');
+$('#pal').addEventListener('click',e=>{const tb=e.target.closest('[data-ptab]');if(tb){PALTAB=tb.dataset.ptab;try{localStorage.setItem('cdc-paltab',PALTAB)}catch(_){}renderPal();return}const it=e.target.closest('.pal-i');if(!it)return;if(MODE!=='edit')setMode('edit');
  if(it.dataset.bp!=null){insertMods(BLUEPRINTS[+it.dataset.bp].make());return}
  if(it.dataset.pal==='mod')insertMods([M(it.dataset.type)]);else addChild(it.dataset.type,sel.mid)});
 
