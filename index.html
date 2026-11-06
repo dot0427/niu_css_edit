@@ -391,68 +391,74 @@ function autoTag(s,i,it){return s==='num'?String(i+1):s==='cn'?(CN[i]||String(i+
 
 /* ========= 內容元件（放在標題卡片裡） ========= */
 const IMGF=(k='img',l='圖片')=>({k,l,t:'img'});
+/* 預設文字自動編號：大標題1、區塊標題2…（依頁面上已有的編號往下接） */
+const g=(o,k,f)=>k in o?o[k]:f();
+let NCTX=null;
+function N(kind){if(!NCTX){NCTX={};queueMicrotask(()=>{NCTX=null})}
+ if(NCTX[kind]==null){let mx=0;try{const s=JSON.stringify(mods());const re=new RegExp('(?<![\\u4e00-\\u9fff])'+kind+'(\\d+)','g');let m;while((m=re.exec(s)))mx=Math.max(mx,+m[1])}catch(e){}NCTX[kind]=mx}
+ return kind+(++NCTX[kind])}
 const CH={
-p:{n:'段落文字',i:'¶',d:'一般說明文字',def:()=>({html:'在這裡輸入說明文字。',size:'md'}),
+p:{n:'段落文字',i:'¶',d:'一般說明文字',def:(o={})=>({html:g(o,'html',()=>N('內文')),size:'md'}),
  f:[{k:'html',l:'內容',t:'rich'},{k:'size',l:'字級',t:'select',o:[['sm','小 15px'],['md','中 16px'],['lg','大 17px']]}],
  r:(c,p)=>`<p class="cdc-el cdc-p${c.size&&c.size!=='md'?' '+c.size:''}"${H(p+'html',c.html,'輸入段落文字')}</p>`},
-lead:{n:'強調大字',i:'A',d:'問候語、對象說明',def:()=>({html:'尊敬的企業主　您好'}),
+lead:{n:'強調大字',i:'A',d:'問候語、對象說明',def:(o={})=>({html:g(o,'html',()=>N('強調文字'))}),
  f:[{k:'html',l:'內容',t:'rich'}],
  r:(c,p)=>`<div class="cdc-el cdc-lead"${H(p+'html',c.html,'強調文字')}</div>`},
-num:{n:'編號項目',i:'①',d:'資格、文件、獎勵對象',def:()=>({style:'num',items:[{tag:'',html:'第一項說明',subs:[]},{tag:'',html:'第二項說明',subs:[]}]}),
+num:{n:'編號項目',i:'①',d:'資格、文件、獎勵對象',def:(o={})=>({style:'num',items:g(o,'items',()=>[{tag:'',html:N('項目'),subs:[]},{tag:'',html:N('項目'),subs:[]}])}),
  f:[{k:'style',l:'編號樣式',t:'select',o:[['num','1 2 3'],['cn','一 二 三'],['gan','甲 乙 丙'],['abc','A B C'],['custom','自訂文字'],['none','不顯示編號']]},
-  {k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({tag:'',html:'新項目',subs:[]}),of:[
+  {k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({tag:'',html:N('項目'),subs:[]}),of:[
    {k:'tag',l:'編號文字',t:'text',show:(o,m)=>m&&m.style==='custom'},
    {k:'html',l:'內容',t:'rich'},
-   {k:'subs',l:'子項目',hint:'有「標籤」會顯示成小方塊，沒有就是 › 符號',t:'list',add:'新增子項目',nu:()=>({tag:'',html:'子項目'}),of:[{k:'tag',l:'標籤（可留空）',t:'text'},{k:'html',l:'內容',t:'rich'}]}]}],
+   {k:'subs',l:'子項目',hint:'有「標籤」會顯示成小方塊，沒有就是 › 符號',t:'list',add:'新增子項目',nu:()=>({tag:'',html:N('子項目')}),of:[{k:'tag',l:'標籤（可留空）',t:'text'},{k:'html',l:'內容',t:'rich'}]}]}],
  r:(c,p)=>`<ul class="cdc-el cdc-num">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';const tag=autoTag(c.style,i,it);
   const tg=c.style==='none'?'':c.style==='custom'?`<span class="cdc-tag"${T(ip+'tag',it.tag,'編號')}</span>`:`<span class="cdc-tag">${esc(tag)}</span>`;
   const subs=(it.subs||[]).length?`<ul class="cdc-sub">${it.subs.map((s,j)=>{const sp=ip+'subs.'+j+'.';return s.tag?`<li class="t"><span class="cdc-stag"${T(sp+'tag',s.tag)}</span><div${H(sp+'html',s.html)}</div></li>`:`<li${H(sp+'html',s.html)}</li>`}).join('')}</ul>`:'';
   return `<li>${tg}<div class="cdc-num-tx"><div${H(ip+'html',it.html,'項目內容')}</div>${subs}</div></li>`}).join('')}</ul>`},
-info:{n:'標籤資訊列',i:'⊟',d:'左標籤＋右內容',def:()=>({items:[{label:'活動目的',html:'說明文字',notes:[]},{label:'申請方式',html:'填寫線上表單 <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">申請表</a>',notes:[]}]}),
- f:[{k:'items',l:'資訊列',t:'list',add:'新增一列',nu:()=>({label:'標籤',html:'內容',notes:[]}),of:[
+info:{n:'標籤資訊列',i:'⊟',d:'左標籤＋右內容',def:(o={})=>({items:g(o,'items',()=>[{label:N('標籤'),html:N('內文'),notes:[]},{label:N('標籤'),html:N('內文')+' <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">連結按鈕</a>',notes:[]}])}),
+ f:[{k:'items',l:'資訊列',t:'list',add:'新增一列',nu:()=>({label:N('標籤'),html:N('內文'),notes:[]}),of:[
   {k:'label',l:'標籤',t:'text'},{k:'html',l:'內容',hint:'選取文字可加小按鈕',t:'rich'},
-  {k:'notes',l:'✦ 注意事項清單',t:'list',add:'新增注意事項',nu:()=>({html:'注意事項'}),of:[{k:'html',l:'內容',t:'rich'}]}]}],
+  {k:'notes',l:'✦ 注意事項清單',t:'list',add:'新增注意事項',nu:()=>({html:N('注意事項')}),of:[{k:'html',l:'內容',t:'rich'}]}]}],
  r:(c,p)=>`<div class="cdc-el cdc-info">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
   const notes=(it.notes||[]).length?`<ul class="cdc-notes">${it.notes.map((n,j)=>`<li${H(ip+'notes.'+j+'.html',n.html)}</li>`).join('')}</ul>`:'';
   const ct=(it.html||EDIT||!notes)?`<div${H(ip+'html',it.html,'內容')}</div>`:'';
   return `<div class="cdc-info-row"><span class="cdc-info-lb"${T(ip+'label',it.label,'標籤')}</span><div class="cdc-info-ct">${ct}${notes}</div></div>`}).join('')}</div>`},
-docs:{n:'檔案下載列表',i:'⇩',d:'法規、表單、附件',def:()=>({badges:true,items:[{text:'檔案名稱',href:'/var/file/4/1004/img/xxx.pdf',note:'',nt:true}]}),
+docs:{n:'檔案下載列表',i:'⇩',d:'法規、表單、附件',def:(o={})=>({badges:true,items:g(o,'items',()=>[{text:N('檔案名稱'),href:'/var/file/4/1004/img/xxx.pdf',note:'',nt:true}])}),
  f:[{k:'badges',l:'依副檔名顯示 PDF／DOC 小標籤',t:'check'},
-  {k:'items',l:'檔案',t:'list',add:'新增檔案',nu:()=>({text:'檔案名稱',href:'',note:'',nt:true}),of:[
+  {k:'items',l:'檔案',t:'list',add:'新增檔案',nu:()=>({text:N('檔案名稱'),href:'',note:'',nt:true}),of:[
    {k:'text',l:'顯示名稱',t:'text'},{k:'href',l:'檔案路徑',t:'url',ph:'/var/file/4/1004/img/…/xxx.pdf'},{k:'note',l:'灰色備註（可留空）',t:'text'},{k:'nt',l:'另開新分頁',t:'check'}]}],
  r:(c,p)=>`<ul class="cdc-el cdc-docs${c.badges?' bg':''}">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
   return `<li><a href="${esc(it.href||'#')}"${TGT(it.nt)}${T(ip+'text',it.text,'檔案名稱')}</a>${it.note||EDIT?`<span class="cdc-note"${T(ip+'note',it.note,EDIT?'（備註）':'')}</span>`:''}</li>`}).join('')}</ul>`},
-sites:{n:'網站連結列表',i:'🔗',d:'名稱＋一行說明',def:()=>({items:[{text:'網站名稱',href:'https://',desc:'網站說明（可留空）',nt:true}]}),
- f:[{k:'items',l:'網站',t:'list',add:'新增網站',nu:()=>({text:'網站名稱',href:'https://',desc:'',nt:true}),of:[
+sites:{n:'網站連結列表',i:'🔗',d:'名稱＋一行說明',def:(o={})=>({items:g(o,'items',()=>[{text:N('網站名稱'),href:'https://',desc:N('說明'),nt:true}])}),
+ f:[{k:'items',l:'網站',t:'list',add:'新增網站',nu:()=>({text:N('網站名稱'),href:'https://',desc:'',nt:true}),of:[
   {k:'text',l:'名稱',t:'text'},{k:'href',l:'網址',t:'url'},{k:'desc',l:'說明（可留空）',t:'text'},{k:'nt',l:'另開新分頁',t:'check'}]}],
  r:(c,p)=>`<ul class="cdc-el cdc-sites">${(c.items||[]).map((it,i)=>{const ip=p+'items.'+i+'.';
   return `<li><a href="${esc(it.href||'#')}"${TGT(it.nt)}${T(ip+'text',it.text,'網站名稱')}</a>${it.desc||EDIT?`<div class="cdc-site-desc"${T(ip+'desc',it.desc,'說明（可留空）')}</div>`:''}</li>`}).join('')}</ul>`},
-table:{n:'獎助金額表',i:'▦',d:'分類＋項目＋金額',def:()=>({c1:'類別',c2:'項目',c3:'獎助金額',useCat:true,groups:[{cat:'甲、類別一',rows:[{a:'項目說明',b:'1,000 元'},{a:'項目說明',b:'2,000 元'}]}]}),
+table:{n:'獎助金額表',i:'▦',d:'分類＋項目＋金額',def:(o={})=>({c1:'類別',c2:'項目',c3:'獎助金額',useCat:true,groups:g(o,'groups',()=>[{cat:N('類別'),rows:[{a:N('項目'),b:'1,000 元'},{a:N('項目'),b:'2,000 元'}]}])}),
  f:[{k:'useCat',l:'顯示「類別」欄（合併儲存格）',t:'check'},{k:'c1',l:'第 1 欄標題',t:'text',show:o=>o.useCat},{k:'c2',l:'項目欄標題',t:'text'},{k:'c3',l:'金額欄標題',t:'text'},
-  {k:'groups',l:'類別',t:'list',add:'新增類別',nu:()=>({cat:'新類別',rows:[{a:'項目',b:'0 元'}]}),of:[
-   {k:'cat',l:'類別名稱',t:'text',show:(o,m)=>m&&m.useCat},{k:'rows',l:'列',t:'list',add:'新增一列',nu:()=>({a:'項目',b:'0 元'}),of:[{k:'a',l:'項目',t:'text'},{k:'b',l:'金額',t:'text'}]}]}],
+  {k:'groups',l:'類別',t:'list',add:'新增類別',nu:()=>({cat:N('類別'),rows:[{a:N('項目'),b:'0 元'}]}),of:[
+   {k:'cat',l:'類別名稱',t:'text',show:(o,m)=>m&&m.useCat},{k:'rows',l:'列',t:'list',add:'新增一列',nu:()=>({a:N('項目'),b:'0 元'}),of:[{k:'a',l:'項目',t:'text'},{k:'b',l:'金額',t:'text'}]}]}],
  r:(c,p)=>{let rows='';(c.groups||[]).forEach((g,gi)=>{const gp=p+'groups.'+gi+'.';(g.rows||[]).forEach((r,ri)=>{const rp=gp+'rows.'+ri+'.';
   rows+=`<tr${gi%2?' class="alt"':''}>${c.useCat&&ri===0?`<td rowspan="${g.rows.length}"><span class="cdc-tcat"${T(gp+'cat',g.cat,'類別')}</span></td>`:''}<td${T(rp+'a',r.a,'項目')}</td><td><span class="cdc-tamt"${T(rp+'b',r.b,'金額')}</span></td></tr>`})});
   return `<div class="cdc-el cdc-tblw"><table class="cdc-tbl"><thead><tr>${c.useCat?`<th${T(p+'c1',c.c1)}</th>`:''}<th${T(p+'c2',c.c2)}</th><th${T(p+'c3',c.c3)}</th></tr></thead><tbody>${rows}</tbody></table></div>`}},
-imgs:{n:'圖片',i:'▣',d:'一張或多張滿版圖',def:()=>({items:[{img:{src:'',alt:''}}]}),
- f:[{k:'items',l:'圖片',t:'list',add:'新增圖片',nu:()=>({img:{src:'',alt:''}}),of:[IMGF()]}],
+imgs:{n:'圖片',i:'▣',d:'一張或多張滿版圖',def:(o={})=>({items:g(o,'items',()=>[{img:{src:'',alt:N('圖片')}}])}),
+ f:[{k:'items',l:'圖片',t:'list',add:'新增圖片',nu:()=>({img:{src:'',alt:N('圖片')}}),of:[IMGF()]}],
  r:(c,p)=>`<div class="cdc-el cdc-imgs">${(c.items||[]).map(it=>IMG(it.img,'cdc-img')).join('')}</div>`},
-imggrid:{n:'圖片連結格',i:'▦',d:'圖片卡片，點了跳頁',def:()=>({cols:'3',items:[{img:{src:'',alt:'圖片1'},href:'',nt:false},{img:{src:'',alt:'圖片2'},href:'',nt:false},{img:{src:'',alt:'圖片3'},href:'',nt:false}]}),
+imggrid:{n:'圖片連結格',i:'▦',d:'圖片卡片，點了跳頁',def:(o={})=>({cols:'3',items:g(o,'items',()=>[0,1,2].map(()=>({img:{src:'',alt:N('圖片')},href:'',nt:false})))}),
  f:[{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
-  {k:'items',l:'圖片卡',t:'list',add:'新增圖片卡',nu:()=>({img:{src:'',alt:''},href:'',nt:false}),of:[IMGF(),{k:'href',l:'連結',t:'url',ph:'/p/412-1004-xxxx.php'},{k:'nt',l:'另開新分頁',t:'check'}]}],
+  {k:'items',l:'圖片卡',t:'list',add:'新增圖片卡',nu:()=>({img:{src:'',alt:N('圖片')},href:'',nt:false}),of:[IMGF(),{k:'href',l:'連結',t:'url',ph:'/p/412-1004-xxxx.php'},{k:'nt',l:'另開新分頁',t:'check'}]}],
  r:(c,p)=>`<div class="cdc-el cdc-ig c${c.cols||3}">${(c.items||[]).map(it=>`<div class="cdc-ig-col">${it.href?`<a class="cdc-ig-card" href="${esc(it.href)}"${TGT(it.nt)}>${IMG(it.img)}</a>`:`<div class="cdc-ig-card">${IMG(it.img)}</div>`}</div>`).join('')}</div>`},
-btn:{n:'按鈕',i:'⬭',d:'報名、問卷、表單',def:()=>({lead:'',text:'立即報名',href:'https://forms.gle/',style:'solid',dv:false,nt:true}),
+btn:{n:'按鈕',i:'⬭',d:'報名、問卷、表單',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'solid',dv:false,nt:true}),
  f:[{k:'text',l:'按鈕文字',t:'text'},{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'},{k:'style',l:'樣式',t:'select',o:[['solid','實心漸層'],['outline','外框']]},{k:'lead',l:'按鈕左邊的大字（可留空）',t:'text',ph:'例：歡迎企業踴躍報名！'},{k:'dv',l:'上方加分隔線',t:'check'}],
  r:(c,p)=>`<div class="cdc-el cdc-cta${c.dv?' dv':''}">${c.lead?`<span class="cdc-cta-tx"${T(p+'lead',c.lead)}</span>`:''}<a class="cdc-btn ${c.style||'solid'}" href="${esc(c.href||'#')}"${TGT(c.nt)}${T(p+'text',c.text,'按鈕文字')}</a></div>`},
-bullets:{n:'項目符號清單',i:'•',d:'一般圓點清單',def:()=>({items:[{html:'清單項目'},{html:'清單項目'}]}),
- f:[{k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({html:'清單項目'}),of:[{k:'html',l:'內容',t:'rich'}]}],
+bullets:{n:'項目符號清單',i:'•',d:'一般圓點清單',def:(o={})=>({items:g(o,'items',()=>[{html:N('清單項目')},{html:N('清單項目')}])}),
+ f:[{k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({html:N('清單項目')}),of:[{k:'html',l:'內容',t:'rich'}]}],
  r:(c,p)=>`<ul class="cdc-el cdc-ul">${(c.items||[]).map((it,i)=>`<li${H(p+'items.'+i+'.html',it.html)}</li>`).join('')}</ul>`},
 hr:{n:'分隔線',i:'—',d:'細線分隔',def:()=>({}),f:[],r:()=>`<hr class="cdc-el cdc-hr" />`}
 };
 
 /* ========= 版面模組 ========= */
 const MODS={
-card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',def:()=>({header:'gradient',title:'區塊標題',big:false,img:{src:'',alt:''},frame:true,children:[CH.p.def()].map(c=>({type:'p',...c}))}),
+card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',def:(o={})=>({header:'gradient',title:g(o,'title',()=>N(o.big?'大標題':'區塊標題')),big:false,img:{src:'',alt:''},frame:true,children:g(o,'children',()=>[C('p')])}),
  f:[{k:'header',l:'頂部樣式',t:'select',o:[['gradient','漸層標題列'],['image','圖片橫幅'],['none','不要頂部']]},
   {k:'title',l:'標題',t:'text',show:o=>o.header==='gradient'},{k:'big',l:'大標題（字級較大）',t:'check',show:o=>o.header==='gradient'},
   {k:'img',l:'頂部圖片',t:'img',show:o=>o.header==='image'},{k:'frame',l:'顯示外框',t:'check',show:o=>o.header==='none'}],
@@ -462,23 +468,23 @@ card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',de
   const bc=m.header==='none'?(m.frame?'cdc-bd solo':'cdc-plain'):'cdc-bd';
   const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c')}${html}</div>`:html}).join('');
   return `<div class="cdc-m cdc-card">${h}<div class="${bc}"${EDIT?' data-body="1"':''}>${kids||(EDIT?'<div class="ed-empty">把左邊的「內容元件」拖進來，或選取這張卡片後點元件加入</div>':'')}</div></div>`}},
-grid:{n:'卡片連結格',i:'▥',d:'入口卡片、Logo 連結牆',def:()=>({variant:'text',cols:'3',items:[{text:'校園徵才活動',href:'/p/412-1004-2455.php',img:{src:'',alt:''},nt:false},{text:'校內工讀機會調查',href:'',img:{src:'',alt:''},nt:false},{text:'就業求職<br>相關資源連結',href:'',img:{src:'',alt:''},nt:false}]}),
+grid:{n:'卡片連結格',i:'▥',d:'入口卡片、Logo 連結牆',def:(o={})=>({variant:'text',cols:'3',items:g(o,'items',()=>[0,1,2].map(()=>({text:N('卡片'),href:'',img:{src:'',alt:''},nt:false})))}),
  f:[{k:'variant',l:'卡片樣式',t:'select',o:[['text','純文字卡片'],['logo','Logo＋名稱'],['image','整張圖片']]},{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
-  {k:'items',l:'卡片',t:'list',add:'新增卡片',nu:()=>({text:'新卡片',href:'',img:{src:'',alt:''},nt:false}),of:[
+  {k:'items',l:'卡片',t:'list',add:'新增卡片',nu:()=>({text:N('卡片'),href:'',img:{src:'',alt:''},nt:false}),of:[
    {k:'text',l:'文字',hint:'Logo 樣式可留空',t:'rich',show:(o,m)=>m&&m.variant!=='image'},IMGF('img','圖片'),{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'}].map(f=>f.t==='img'?{...f,show:(o,m)=>m&&m.variant!=='text'}:f)}],
  r:(m,p)=>`<div class="cdc-m cdc-grid c${m.cols||3}">${(m.items||[]).map((it,i)=>{const ip='items.'+i+'.';
   const inner=m.variant==='text'?`<span${H(ip+'text',it.text,'卡片文字')}</span>`:IMG(it.img)+(m.variant==='logo'&&(it.text||EDIT)?`<span class="cdc-gc-lb"${H(ip+'text',it.text,'名稱（可留空）')}</span>`:'');
   return `<div class="cdc-gcol"><a class="cdc-gc ${m.variant}" href="${esc(it.href||'#')}"${TGT(it.nt)}>${inner}</a></div>`}).join('')}</div>`},
-pdf:{n:'PDF 嵌入',i:'⎙',d:'標題列＋下載鈕＋PDF 預覽',def:()=>({title:'文件標題',src:'',dl:true,dlText:'下載 PDF',zoom:'',height:700}),
+pdf:{n:'PDF 嵌入',i:'⎙',d:'標題列＋下載鈕＋PDF 預覽',def:(o={})=>({title:g(o,'title',()=>N('區塊標題')),src:'',dl:true,dlText:'下載 PDF',zoom:'',height:700}),
  f:[{k:'title',l:'標題',t:'text'},{k:'src',l:'PDF 路徑',t:'url',ph:'/var/file/4/1004/img/226/xxx.pdf'},{k:'dl',l:'顯示下載按鈕',t:'check'},{k:'dlText',l:'下載按鈕文字',t:'text',show:o=>o.dl},{k:'zoom',l:'預設縮放 %（可留空）',t:'number'},{k:'height',l:'高度 px',t:'number'}],
  r:(m)=>`<div class="cdc-m cdc-pdf"><div class="cdc-pdf-hd"><span${T('title',m.title,'文件標題')}</span>${m.dl?`<a href="${esc(m.src||'#')}" target="_blank"${T('dlText',m.dlText,'下載 PDF')}</a>`:''}</div><div class="cdc-pdf-vw">${EDIT||PV?`<div class="ed-pdfph">PDF 預覽：${esc(m.src||'尚未設定檔案路徑（右側面板填寫）')}<small>網站上實際高度 ${esc(m.height||700)}px</small></div>`:`<iframe src="${esc((m.src||'')+(m.zoom?'#zoom='+m.zoom:''))}" style="height:${parseInt(m.height)||700}px"></iframe>`}</div></div>`},
-banner:{n:'橫幅圖片',i:'▭',d:'頁首大圖，可加連結',def:()=>({img:{src:'',alt:'橫幅'},href:'',nt:false}),
+banner:{n:'橫幅圖片',i:'▭',d:'頁首大圖，可加連結',def:(o={})=>({img:g(o,'img',()=>({src:'',alt:N('橫幅')})),href:'',nt:false}),
  f:[IMGF('img','圖片'),{k:'href',l:'連結（可留空）',t:'url'},{k:'nt',l:'另開新分頁',t:'check',show:o=>o.href}],
  r:(m)=>`<div class="cdc-m cdc-banner">${m.href?`<a href="${esc(m.href)}"${TGT(m.nt)}>${IMG(m.img)}</a>`:IMG(m.img)}</div>`},
-bar:{n:'區段標題條',i:'▬',d:'獨立的漸層標題',def:()=>({text:'就業求職相關資源連結'}),
+bar:{n:'區段標題條',i:'▬',d:'獨立的漸層標題',def:(o={})=>({text:g(o,'text',()=>N('大標題'))}),
  f:[{k:'text',l:'文字',t:'text'}], r:(m)=>`<div class="cdc-m cdc-bar"${T('text',m.text,'標題')}</div>`},
-staff:{n:'成員卡片',i:'☺',d:'姓名、聯絡資訊、業務職掌',def:()=>({name:'王小明 小姐',pills:[{html:'連絡電話：03-9317xxx'},{html:'電子信箱：xxx@niu.edu.tw'},{html:'職務代理：○○○ 先生'}],dutyTitle:'業務職掌',duties:[{text:'業務一'},{text:'業務二'}]}),
- f:[{k:'name',l:'姓名職稱',t:'text'},{k:'pills',l:'資訊膠囊',t:'list',add:'新增',nu:()=>({html:'資訊'}),of:[{k:'html',l:'內容',t:'rich'}]},{k:'dutyTitle',l:'小標',t:'text'},{k:'duties',l:'職掌',t:'list',add:'新增職掌',nu:()=>({text:'業務'}),of:[{k:'text',l:'內容',t:'text'}]}],
+staff:{n:'成員卡片',i:'☺',d:'姓名、聯絡資訊、業務職掌',def:(o={})=>({name:g(o,'name',()=>N('姓名')+' 職稱'),pills:[{html:'連絡電話：'},{html:'電子信箱：'},{html:'職務代理：'}],dutyTitle:'業務職掌',duties:g(o,'duties',()=>[{text:N('職掌')},{text:N('職掌')}])}),
+ f:[{k:'name',l:'姓名職稱',t:'text'},{k:'pills',l:'資訊膠囊',t:'list',add:'新增',nu:()=>({html:'資訊'}),of:[{k:'html',l:'內容',t:'rich'}]},{k:'dutyTitle',l:'小標',t:'text'},{k:'duties',l:'職掌',t:'list',add:'新增職掌',nu:()=>({text:N('職掌')}),of:[{k:'text',l:'內容',t:'text'}]}],
  r:(m)=>`<div class="cdc-m cdc-staff"><div class="cdc-staff-name"${T('name',m.name,'姓名')}</div><div class="cdc-staff-info">${(m.pills||[]).map((x,i)=>`<span class="cdc-pill"${H('pills.'+i+'.html',x.html)}</span>`).join('')}</div><div class="cdc-staff-st"${T('dutyTitle',m.dutyTitle)}</div><ul class="cdc-duties">${(m.duties||[]).map((x,i)=>`<li${T('duties.'+i+'.text',x.text)}</li>`).join('')}</ul></div>`},
 spacer:{n:'空白間距',i:'↕',d:'多空一行',def:()=>({}),f:[],r:()=>EDIT?'<div class="cdc-m ed-spacer">空白間距</div>':'<p class="cdc-m">&nbsp;</p>'},
 html:{n:'自訂 HTML',i:'{ }',d:'放任何現成程式碼',def:()=>({code:'<p>自訂內容</p>'}),
@@ -487,18 +493,18 @@ html:{n:'自訂 HTML',i:'{ }',d:'放任何現成程式碼',def:()=>({code:'<p>�
 };
 
 /* ========= 快速組合 ========= */
-const C=(type,o={})=>({type,...CH[type].def(),...o});
-const M=(type,o={})=>({id:uid(),type,...MODS[type].def(),...o});
+const C=(type,o={})=>({type,...CH[type].def(o),...o});
+const M=(type,o={})=>({id:uid(),type,...MODS[type].def(o),...o});
 const BLUEPRINTS=[
- {n:'說明＋按鈕',d:'如：校內工讀機會調查',make:()=>[M('card',{title:'校內工讀機會調查',big:true,children:[C('lead',{html:'調查對象：本校各單位、師長'}),C('p',{html:'說明文字第一段。',size:'lg'}),C('p',{html:'說明文字第二段。',size:'lg'}),C('btn',{text:'請由此進入表單',dv:true})]})]},
- {n:'獎助方案三段式',d:'資格與金額／檢附文件／附件下載',make:()=>[M('card',{title:'1. 獎助資格與金額',children:[C('num')]}),M('card',{title:'2. 檢附文件',children:[C('num',{items:[{tag:'',html:'本要點之一般申請表',subs:[]},{tag:'',html:'成果報告表',subs:[]}]})]}),M('card',{title:'3. 附件下載',children:[C('docs',{badges:false})]})]},
- {n:'活動介紹',d:'橫幅＋簡介資訊列＋成果照片',make:()=>[M('banner'),M('card',{title:'簡介',children:[C('info',{items:[{label:'活動目的',html:'說明',notes:[]},{label:'申請時間',html:'115年4月 ～ 6月',notes:[]},{label:'申請方式',html:'填寫線上表單提出申請 <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">活動申請表</a>',notes:[]},{label:'注意事項',html:'',notes:[{html:'注意事項一'},{html:'注意事項二'}]}]})]}),M('card',{title:'成果',children:[C('p',{html:'成果說明文字。'}),C('imgs',{items:[{img:{src:'',alt:'活動照片1'}},{img:{src:'',alt:'活動照片2'}}]})]})]},
- {n:'Logo 連結牆',d:'區段標題＋4 欄 Logo',make:()=>[M('bar',{text:'相關資源連結'}),M('grid',{variant:'logo',cols:'4',items:[1,2,3,4].map(i=>({text:'單位名稱',href:'https://',img:{src:'',alt:'Logo'+i},nt:true}))})]},
+ {n:'活動發文',d:'海報圖＋標題＋內文＋按鈕（無外框）',make:()=>[M('card',{header:'none',frame:false,title:'',children:[C('imgs'),C('p',{html:'<strong>'+N('標題')+'</strong>'}),C('p'),C('btn',{style:'outline'})]})]},
+ {n:'說明＋按鈕',d:'大標題＋強調文字＋內文＋按鈕',make:()=>[M('card',{big:true,title:N('大標題'),children:[C('lead'),C('p',{size:'lg'}),C('p',{size:'lg'}),C('btn',{dv:true})]})]},
+ {n:'獎助方案三段式',d:'編號項目×2＋檔案下載',make:()=>[M('card',{children:[C('num')]}),M('card',{children:[C('num')]}),M('card',{children:[C('docs',{badges:false})]})]},
+ {n:'活動介紹',d:'橫幅＋資訊列＋成果照片',make:()=>[M('banner'),M('card',{children:[C('info',{items:[0,1,2].map(i=>({label:N('標籤'),html:N('內文')+(i===2?' <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">連結按鈕</a>':''),notes:[]})).concat([{label:N('標籤'),html:'',notes:[{html:N('注意事項')},{html:N('注意事項')}]}])})]}),M('card',{children:[C('p'),C('imgs',{items:[{img:{src:'',alt:N('圖片')}},{img:{src:'',alt:N('圖片')}}]})]})]},
+ {n:'Logo 連結牆',d:'大標題＋4 欄 Logo',make:()=>[M('bar'),M('grid',{variant:'logo',cols:'4',items:[0,1,2,3].map(()=>({text:N('名稱'),href:'https://',img:{src:'',alt:N('Logo')},nt:true}))})]},
  {n:'入口卡片',d:'3 格文字卡片',make:()=>[M('grid')]},
  {n:'PDF 文件頁',d:'標題＋下載＋預覽',make:()=>[M('pdf'),M('spacer')]},
- {n:'法規下載專區',d:'多張卡片＋檔案列表',make:()=>[M('card',{title:'1. 相關法規與作業要點',children:[C('docs')]}),M('card',{title:'2. 申請表單',children:[C('docs',{items:[{text:'申請表',href:'/var/file/4/1004/img/xxx.docx',note:'',nt:true}]})]})]},
- {n:'聯絡資訊',d:'標籤＋信箱連結',make:()=>[M('card',{title:'聯絡我們',children:[C('info',{items:[{label:'聯絡信箱',html:'<a href="mailto:xxx@niu.edu.tw">xxx@niu.edu.tw</a>',notes:[]},{label:'聯絡電話',html:'03-9317xxx',notes:[]}]})]})]},
- {n:'圖文公告',d:'海報圖＋重點＋按鈕（無外框）',make:()=>[M('card',{header:'none',frame:false,children:[C('imgs',{items:[{img:{src:'',alt:'公告海報'}}]}),C('p',{html:'<strong>對象</strong>：'}),C('bullets'),C('btn',{text:'查看清單',style:'outline'})]})]}
+ {n:'法規下載專區',d:'多張卡片＋檔案列表',make:()=>[M('card',{children:[C('docs')]}),M('card',{children:[C('docs')]})]},
+ {n:'聯絡資訊',d:'標籤＋內容',make:()=>[M('card',{children:[C('info',{items:[{label:N('標籤'),html:N('內文'),notes:[]},{label:N('標籤'),html:N('內文'),notes:[]}]})]})]}
 ];
 
 /* ========= 狀態、存檔、復原 ========= */
@@ -574,7 +580,8 @@ function renderPages(){$('#pageSel').innerHTML=S.pages.map(p=>`<option value="${
 function renderTheme(){$('#themeSel').innerHTML=Object.entries(THEMES).map(([k,v])=>`<option value="${k}"${S.theme===k?' selected':''}>配色：${v.name}</option>`).join('')}
 
 /* ========= 操作 ========= */
-function insertMods(list,at){const ms=mods();if(at==null){const i=ms.findIndex(m=>m.id===sel.mid);at=i<0?ms.length:i+1}ms.splice(at,0,...list);sel={mid:list[0].id,ci:null};commit();renderCanvas();renderIns();setTimeout(()=>{const e=$(`#canvas .ed-mod[data-mid="${list[0].id}"]`);e&&e.scrollIntoView({behavior:'smooth',block:'nearest'})},30)}
+let lastGroup=[];
+function insertMods(list,at){const ms=mods();if(at==null){let i=ms.findIndex(m=>m.id===sel.mid);if(i>=0&&lastGroup.includes(sel.mid))i=Math.max(...lastGroup.map(id=>ms.findIndex(m=>m.id===id)));at=i<0?ms.length:i+1}ms.splice(at,0,...list);lastGroup=list.map(m=>m.id);sel={mid:list[0].id,ci:null};commit();renderCanvas();renderIns();setTimeout(()=>{const e=$(`#canvas .ed-mod[data-mid="${list[0].id}"]`);e&&e.scrollIntoView({behavior:'smooth',block:'nearest'})},30)}
 function addChild(type,mid,at){
  let m=modById(mid);
  if(!m||m.type!=='card'){const card=M('card',{title:'新區塊',children:[]});const ms=mods();let i=ms.findIndex(x=>x.id===mid);ms.splice(i<0?ms.length:i+1,0,card);m=card;at=0}
