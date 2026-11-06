@@ -64,6 +64,9 @@ main{display:flex;height:calc(100% - 52px)}
 .ed-bar button:hover{background:rgba(255,255,255,.2)}
 .ed-bar .ed-h{cursor:grab;font-size:13px}
 .ed-bar .nm{font-weight:700;padding-right:8px}
+.ed-add{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);display:none;z-index:4;background:#fff;border:1.5px solid #5b7fc4;color:#3d63ad;border-radius:14px;padding:1px 12px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.ed-add:hover{background:#5b7fc4;color:#fff}
+.ed-child:hover>.ed-add,.ed-child.sel>.ed-add{display:block}
 .ed-empty{border:2px dashed #cfe3e0;border-radius:10px;padding:22px;text-align:center;color:#7a9a96;font-size:14px}
 .ed-pdfph{height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6b8b88;background:repeating-linear-gradient(45deg,#f7fbfb,#f7fbfb 10px,#f0f7f6 10px,#f0f7f6 20px);font-size:14px;text-align:center;padding:10px;word-break:break-all}
 .ed-pdfph small{color:#99b0ad;margin-top:6px}
@@ -372,7 +375,7 @@ function buildCSS(theme,used,mode){
  }
  return css;
 }
-function usedTypes(mods){const s=new Set();for(const m of mods){s.add(m.type);if(m.type==='card'){(m.children||[]).forEach(c=>s.add(c.type));}}return s}
+function usedTypes(mods){const s=new Set();for(const m of mods){s.add(m.type);if(m.type==='card'){(m.children||[]).forEach(c=>s.add(c.type==='btn2'?'btn':c.type));}}return s}
 function liveCSS(){ $('#liveCss').textContent=buildCSS(S.theme,new Set(Object.keys(CSS)),'live'); }
 
 /* ========= 渲染工具 ========= */
@@ -418,7 +421,7 @@ num:{n:'編號項目',i:'①',d:'資格、文件、獎勵對象',def:(o={})=>({s
   const tg=c.style==='none'?'':c.style==='custom'?`<span class="cdc-tag"${T(ip+'tag',it.tag,'編號')}</span>`:`<span class="cdc-tag">${esc(tag)}</span>`;
   const subs=(it.subs||[]).length?`<ul class="cdc-sub">${it.subs.map((s,j)=>{const sp=ip+'subs.'+j+'.';return s.tag?`<li class="t"><span class="cdc-stag"${T(sp+'tag',s.tag)}</span><div${H(sp+'html',s.html)}</div></li>`:`<li${H(sp+'html',s.html)}</li>`}).join('')}</ul>`:'';
   return `<li>${tg}<div class="cdc-num-tx"><div${H(ip+'html',it.html,'項目內容')}</div>${subs}</div></li>`}).join('')}</ul>`},
-info:{n:'標籤資訊列',i:'⊟',d:'左標籤＋右內容',def:(o={})=>({items:g(o,'items',()=>[{label:N('標籤'),html:N('內文'),notes:[]},{label:N('標籤'),html:N('內文')+' <a class="cdc-btn-sm" href="https://forms.gle/" target="_blank">連結按鈕</a>',notes:[]}])}),
+info:{n:'標籤資訊列',i:'⊟',d:'左標籤＋右內容',def:(o={})=>({items:g(o,'items',()=>[{label:N('標籤'),html:N('內文'),notes:[]},{label:N('標籤'),html:N('內文'),notes:[]}])}),
  f:[{k:'items',l:'資訊列',t:'list',add:'新增一列',nu:()=>({label:N('標籤'),html:N('內文'),notes:[]}),of:[
   {k:'label',l:'標籤',t:'text'},{k:'html',l:'內容',hint:'選取文字可加小按鈕',t:'rich'},
   {k:'notes',l:'✦ 注意事項清單',t:'list',add:'新增注意事項',nu:()=>({html:N('注意事項')}),of:[{k:'html',l:'內容',t:'rich'}]}]}],
@@ -451,15 +454,19 @@ imggrid:{n:'圖片連結格',i:'▦',d:'圖片卡片，點了跳頁',def:(o={})=
  f:[{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
   {k:'items',l:'圖片卡',t:'list',add:'新增圖片卡',nu:()=>({img:{src:'',alt:N('圖片')},href:'',nt:false}),of:[IMGF(),{k:'href',l:'連結',t:'url',ph:'/p/412-1004-xxxx.php'},{k:'nt',l:'另開新分頁',t:'check'}]}],
  r:(c,p)=>`<div class="cdc-el cdc-ig c${c.cols||3}">${(c.items||[]).map(it=>`<div class="cdc-ig-col">${it.href?`<a class="cdc-ig-card" href="${esc(it.href)}"${TGT(it.nt)}>${IMG(it.img)}</a>`:`<div class="cdc-ig-card">${IMG(it.img)}</div>`}</div>`).join('')}</div>`},
-btn:{n:'按鈕',i:'⬭',d:'報名、問卷、表單',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'solid',dv:false,nt:true}),
+btn:{n:'實心按鈕',i:'⬬',d:'漸層底色，報名、問卷',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'solid',dv:false,nt:true}),
  f:[{k:'text',l:'按鈕文字',t:'text'},{k:'href',l:'連結',t:'url'},{k:'nt',l:'另開新分頁',t:'check'},{k:'style',l:'樣式',t:'select',o:[['solid','實心漸層'],['outline','外框']]},{k:'lead',l:'按鈕左邊的大字（可留空）',t:'text',ph:'例：歡迎企業踴躍報名！'},{k:'dv',l:'上方加分隔線',t:'check'}],
  r:(c,p)=>`<div class="cdc-el cdc-cta${c.dv?' dv':''}">${c.lead?`<span class="cdc-cta-tx"${T(p+'lead',c.lead)}</span>`:''}<a class="cdc-btn ${c.style||'solid'}" href="${esc(c.href||'#')}"${TGT(c.nt)}${T(p+'text',c.text,'按鈕文字')}</a></div>`},
+btn2:{n:'外框按鈕',i:'⬭',d:'外框樣式，次要連結',def:()=>({lead:'',text:'連結按鈕',href:'https://',style:'outline',dv:false,nt:true}),f:[],r:(c,p)=>CH.btn.r(c,p)},
 bullets:{n:'項目符號清單',i:'•',d:'一般圓點清單',def:(o={})=>({items:g(o,'items',()=>[{html:N('清單項目')},{html:N('清單項目')}])}),
  f:[{k:'items',l:'項目',t:'list',add:'新增項目',nu:()=>({html:N('清單項目')}),of:[{k:'html',l:'內容',t:'rich'}]}],
  r:(c,p)=>`<ul class="cdc-el cdc-ul">${(c.items||[]).map((it,i)=>`<li${H(p+'items.'+i+'.html',it.html)}</li>`).join('')}</ul>`},
 hr:{n:'分隔線',i:'—',d:'細線分隔',def:()=>({}),f:[],r:()=>`<hr class="cdc-el cdc-hr" />`}
 };
 
+CH.btn2.f=CH.btn.f;
+/* 畫布上可直接新增項目的清單 */
+const ADDS={num:['items','新增項目'],info:['items','新增一列'],bullets:['items','新增項目'],docs:['items','新增檔案'],sites:['items','新增網站'],imgs:['items','新增圖片'],imggrid:['items','新增圖片卡'],table:['groups','新增類別']};
 /* ========= 版面模組 ========= */
 const MODS={
 card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',def:(o={})=>({header:'gradient',title:g(o,'title',()=>N(o.big?'大標題':'區塊標題')),big:false,img:{src:'',alt:''},frame:true,children:g(o,'children',()=>[C('p')])}),
@@ -470,7 +477,7 @@ card:{n:'標題卡片',i:'▤',d:'漸層標題＋外框，內容自由組合',de
   if(m.header==='gradient')h=`<div class="cdc-hd${m.big?' lg':''}"><h2${T('title',m.title,'區塊標題')}</h2></div>`;
   else if(m.header==='image')h=`<div class="cdc-hdimg">${IMG(m.img)}</div>`;
   const bc=m.header==='none'?(m.frame?'cdc-bd solo':'cdc-plain'):'cdc-bd';
-  const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c')}${html}</div>`:html}).join('');
+  const kids=(m.children||[]).map((c,i)=>{const html=CH[c.type].r(c,'children.'+i+'.');return EDIT?`<div class="ed-child${sel.mid===m.id&&sel.ci===i?' sel':''}" data-ci="${i}">${bar(CH[c.type].n,'c')}${html}${ADDS[c.type]?`<button class="ed-add" data-addlist="children.${i}.${ADDS[c.type][0]}" title="在項目裡按 Ctrl／⌘ + Enter 也能新增下一項">＋ ${ADDS[c.type][1]}</button>`:''}</div>`:html}).join('');
   return `<div class="cdc-m cdc-card">${h}<div class="${bc}"${EDIT?' data-body="1"':''}>${kids||(EDIT?'<div class="ed-empty">把左邊的「內容元件」拖進來，或選取這張卡片後點元件加入</div>':'')}</div></div>`}},
 grid:{n:'卡片連結格',i:'▥',d:'入口卡片、Logo 連結牆',def:(o={})=>({variant:'text',cols:'3',items:g(o,'items',()=>[0,1,2].map(()=>({text:N('卡片'),href:'',img:{src:'',alt:''},nt:false})))}),
  f:[{k:'variant',l:'卡片樣式',t:'select',o:[['text','純文字卡片'],['logo','Logo＋名稱'],['image','整張圖片']]},{k:'cols',l:'每列幾張',t:'select',o:[['2','2 張'],['3','3 張'],['4','4 張']]},
@@ -562,7 +569,7 @@ function fieldHTML(f,obj,base,parent){
 function renderIns(){
  LISTDEF={};const el=$('#ins');const m=modById(sel.mid);
  if(MODE==='preview'){el.innerHTML=`<div class="ins-empty"><b>預覽模式</b><br>這是貼到網站後的樣子。切回「編輯」才能修改。</div>`;return}
- if(!m){el.innerHTML=`<div class="ins-empty"><b>怎麼用</b><br>① 從左邊拖模組到中間（或直接點一下加入）<br>② 文字直接在畫面上點了就能改<br>③ 選取文字會跳出工具列：粗體、強調、加連結<br>④ 點一下模組，這裡會出現連結、圖片、項目增減等設定<br>⑤ 按右上「產出程式碼」複製貼到後台<br><br><b>圖片</b>：路徑可以先空著，輸出會放一張「請替換」的佔位圖，到後台點兩下換成正式圖片即可。</div>`;return}
+ if(!m){el.innerHTML=`<div class="ins-empty"><b>怎麼用</b><br>① 從左邊拖模組到中間（或直接點一下加入）<br>② 文字直接在畫面上點了就能改<br>③ 選取文字會跳出工具列：粗體、強調、加連結<br>④ 清單類（編號項目、標籤資訊列、清單…）：滑過去下方有「＋ 新增」；或在項目裡按 <b>Ctrl／⌘ + Enter</b> 新增下一項，清空後按 <b>Backspace</b> 刪掉這項。Enter 是換行<br>⑤ 點一下模組，這裡會出現連結、圖片、項目增減等設定<br>⑥ 按右上「產出程式碼」複製貼到後台<br><br><b>圖片</b>：路徑可以先空著，輸出會放一張「請替換」的佔位圖，到後台點兩下換成正式圖片即可。</div>`;return}
  const def=MODS[m.type];
  if(m.type==='card'&&sel.ci!=null&&m.children[sel.ci]){
   const c=m.children[sel.ci],cd=CH[c.type],base='children.'+sel.ci+'.';
@@ -591,7 +598,7 @@ let lastGroup=[];
 function insertMods(list,at){const ms=mods();if(at==null){let i=ms.findIndex(m=>m.id===sel.mid);if(i>=0&&lastGroup.includes(sel.mid))i=Math.max(...lastGroup.map(id=>ms.findIndex(m=>m.id===id)));at=i<0?ms.length:i+1}ms.splice(at,0,...list);lastGroup=list.map(m=>m.id);sel={mid:list[0].id,ci:null};commit();renderCanvas();renderIns();setTimeout(()=>{const e=$(`#canvas .ed-mod[data-mid="${list[0].id}"]`);e&&e.scrollIntoView({behavior:'smooth',block:'nearest'})},30)}
 function addChild(type,mid,at){
  let m=modById(mid);
- if(!m||m.type!=='card'){const card=M('card',{title:'新區塊',children:[]});const ms=mods();let i=ms.findIndex(x=>x.id===mid);ms.splice(i<0?ms.length:i+1,0,card);m=card;at=0}
+ if(!m||m.type!=='card'){const card=M('card',{children:[]});const ms=mods();let i=ms.findIndex(x=>x.id===mid);ms.splice(i<0?ms.length:i+1,0,card);m=card;at=0}
  if(at==null)at=sel.mid===m.id&&sel.ci!=null?sel.ci+1:m.children.length;
  m.children.splice(at,0,C(type));sel={mid:m.id,ci:at};commit();renderCanvas();renderIns();
 }
@@ -617,6 +624,27 @@ function listAct(a,k,i){const m=modById(sel.mid);const arr=getPath(m,k);const f=
  commit();rerenderMod(m.id);renderIns();
 }
 
+/* 清單項目：新增／刪除 */
+function listField(m,path){let fields=MODS[m.type].f,parts=path.split('.');
+ if(parts[0]==='children'){const c=m.children[+parts[1]];if(!c)return null;fields=CH[c.type].f;parts=parts.slice(2)}
+ let f=null;for(const k of parts){if(/^\d+$/.test(k)){fields=(f&&f.of)||[];continue}f=fields.find(x=>x.k===k);if(!f)return null}
+ return f&&f.t==='list'?f:null}
+function addItem(m,lp,at){if(!m)return;const f=listField(m,lp);const arr=getPath(m,lp);if(!f||!arr)return;
+ if(at==null)at=arr.length;arr.splice(at,0,f.nu());openState.set(lp+'.'+at,true);commit();rerenderMod(m.id);renderIns();
+ (()=>{const el=$(`#canvas .ed-mod[data-mid="${m.id}"] [data-k^="${lp}.${at}."][contenteditable]`);if(!el)return;
+  const all=[...$$(`#canvas .ed-mod[data-mid="${m.id}"] [data-k^="${lp}.${at}."][contenteditable]`)];const tgt=all.find(x=>/\.(html|text)$/.test(x.dataset.k))||all[0];
+  tgt.focus();const r=document.createRange();r.selectNodeContents(tgt);const s=getSelection();s.removeAllRanges();s.addRange(r)})()}
+function itemFromKey(el,act){const md=el.closest('.ed-mod');if(!md)return false;const m=modById(md.dataset.mid);
+ const mt=el.dataset.k.match(/^(.*)\.(\d+)\.[a-zA-Z]+$/);if(!mt)return false;let lp=mt[1],i=+mt[2];
+ if(!listField(m,lp))return false;
+ if(act==='add'){addItem(m,lp,i+1);return true}
+ const arr=getPath(m,lp);const it=arr[i];
+ const texts=[];(function w(o){if(o&&typeof o==='object')for(const[k,v]of Object.entries(o)){if(['src','href','style','nt','tag','alt'].includes(k))continue;typeof v==='string'?texts.push(strip(v)):w(v)}})(it);
+ if(texts.some(t=>t))return false;
+ if(arr.length<=1)return false;
+ arr.splice(i,1);commit();rerenderMod(m.id);renderIns();
+ (()=>{const prev=[...$$(`#canvas .ed-mod[data-mid="${m.id}"] [data-k^="${lp}.${Math.max(0,i-1)}."][contenteditable]`)].pop();if(prev){prev.focus();const r=document.createRange();r.selectNodeContents(prev);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}})();
+ return true}
 /* ========= 文字清理 ========= */
 function clean(html){
  const d=document.createElement('div');d.innerHTML=html||'';
@@ -828,6 +856,8 @@ document.addEventListener('input',e=>{const el=e.target;if(el.isContentEditable&
 document.addEventListener('keydown',e=>{
  const el=e.target;
  if(el.isContentEditable&&el.dataset.k){
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();itemFromKey(el,'add');return}
+  if(e.key==='Backspace'&&!el.textContent&&itemFromKey(el,'del')){e.preventDefault();return}
   if(e.key==='Enter'){e.preventDefault();if(el.dataset.rich){if(!document.execCommand('insertLineBreak'))document.execCommand('insertHTML',false,'<br>')}else el.blur()}
   return}
  const typing=el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT';
@@ -855,6 +885,7 @@ $('#canvas').addEventListener('click',e=>{
  const ch=e.target.closest('.ed-child');const nsel={mid:md.dataset.mid,ci:ch?+ch.dataset.ci:null};
  const changed=nsel.mid!==sel.mid||nsel.ci!==sel.ci;sel=nsel;
  if(act){modAct(act.dataset.a);return}
+ const al=e.target.closest('[data-addlist]');if(al){addItem(modById(sel.mid),al.dataset.addlist,null);return}
  const ed=e.target.closest('[data-k]');
  if(ed){const parts=ed.dataset.k.split('.');let acc=[];parts.forEach((s,i)=>{acc.push(s);if(/^\d+$/.test(s)&&i>0)openState.set(acc.join('.'),true)})}
  if(changed){updSel();renderIns()}else if(ed)renderIns();
@@ -925,12 +956,12 @@ $('#stage').addEventListener('drop',e=>{if(!drag)return;e.preventDefault();const
  if(g.src==='pal'){
   if(g.kind==='mod')insertMods([M(g.type)],d.idx);
   else if(d.t==='child')addChild(g.type,d.mid,d.ci);
-  else{const card=M('card',{title:'新區塊',children:[C(g.type)]});insertMods([card],d.idx);sel={mid:card.id,ci:0};updSel();renderIns()}
+  else{const card=M('card',{children:[C(g.type)]});insertMods([card],d.idx);sel={mid:card.id,ci:0};updSel();renderIns()}
   return}
  if(g.src==='mod'){const from=ms.findIndex(m=>m.id===g.id);if(from<0)return;let to=d.t==='mod'?d.idx:ms.findIndex(m=>m.id===d.mid);const [m]=ms.splice(from,1);if(to>from)to--;ms.splice(to,0,m);sel={mid:m.id,ci:null}}
  else if(g.src==='child'){const src=modById(g.mid);const [c]=src.children.splice(g.ci,1);
   if(d.t==='child'){const tgt=modById(d.mid);let ci=d.ci;if(tgt===src&&ci>g.ci)ci--;tgt.children.splice(ci,0,c);sel={mid:tgt.id,ci}}
-  else{const card=M('card',{title:'新區塊',children:[c]});let idx=d.idx;ms.splice(idx,0,card);sel={mid:card.id,ci:0}}}
+  else{const card=M('card',{children:[c]});let idx=d.idx;ms.splice(idx,0,card);sel={mid:card.id,ci:0}}}
  commit();renderCanvas();renderIns();
 });
 
